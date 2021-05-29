@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>whosgot</TITLE>
+   <META NAME="Author" CONTENT="Roland Rashleigh-Berry">
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.01Gold (Win95; I) [Netscape]">
+   <META NAME="Description" CONTENT="SAS tips and techniques by Roland Rashleigh-Berry">
+   <META NAME="KeyWords" CONTENT="sas tips techniques">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#C0C0C0" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+
+<H1 ALIGN=CENTER>listempty</H1>
+
+<P><B>[last updated - 27 July 2003]</B></P>
+
+<P>This is a QC'ing tool. You go to the output directory with your tables
+or listings in it and type in something like <B><TT>&quot;listempty *.lst&quot;</TT></B>
+and it will show you a list of all the files that fit this bill that are
+empty. I'll go straight into the code of this utility and then explain
+any features you might not have seen before. Copy and paste the code into
+a member called &quot;listempty&quot; in your shell script library.</P>
+
+<PRE><B>#!/bin/sh
+# Script     : listempty
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 27 July 2003
+# Contact    : roland@rashleigh-berry.fsnet.co.uk
+# Purpose    : To list &quot;empty&quot; files 
+# SubScripts : none
+# Notes      : You can use this to check that all your output listings contain
+#              something.
+# Usage      : listempty *.lst
+#              
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+#  1   File or list of files to check that they contain something
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+# 
+#================================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#================================================================================
+
+if [ $# -lt 1 ] ; then
+  echo &quot;Usage: listempty *.lst&quot; 1&gt;&amp;2
+  exit 1
+fi
+
+while [ $# -gt 0 ]
+do
+  if [ ! -s $1 ]
+  then
+    echo $1
+  fi
+  shift
+done</B>
+
+</PRE>
+
+<P>The header and check for number of parameters and writing a usage message
+to standard error I assume you are familiar with. If not then please refer
+to the previous examples as I will only explain what follows it. The rest
+of the code might be a puzzle, though. See the <B>&quot;shift&quot;</B>
+command in the <B>&quot;do...done&quot;</B> loop? This is another way of
+performing a loop. I'll explain...</P>
+
+<P>I'm going to explain about <B>shift</B>. When you type in a command
+like <B><TT>&quot;listempty *.lst&quot;</TT></B> then the script does not
+see the parameter as you typed it. Instead of the <B><TT>*.lst</TT></B>
+you typed in it sees what the command interpreter gives it. This scans
+your command line before anything else is allowed to see it. The command
+interpreter sees <B><TT>*.lst</TT></B> and matches every file it can to
+it and turns it into a list. So instead of <B><TT>*.lst</TT></B> the command
+interpreter might translate it into something like <B><TT>aa.lst bb.lst
+cc.lst dd.lst</TT></B> etc., depending on what files in that directory
+match the pattern you specified, and this is what your shell script receives.
+Now think of the command you type in as parameter <B>0</B> and that you
+can refer to its name as <B>$0</B>. The first of the file names will be
+parameter <B>1</B> and you refer to its contents as <B>$1</B>. The next
+parameter is <B>2</B> and you refer to it as <B>$2</B>. And so on up to
+parameter <B>9</B> where the rest of the parameters are all lumped together.
+Now what you can do is <B>shift</B> the parameters along. When you <B>shift</B>
+parameters then <B>$1</B> gets lost and <B>$2</B> becomes <B>$1</B>. You
+can keep doing this until none are left. Have a look at the above code
+again. You see my test <B><TT>while [ $# -gt 0 ]</TT></B>?. This is testing
+if the number of parameters left are still greater than zero. In other
+words whether I have one or more parameter values left to work on. This
+will be a file name. So then I test whether the file contains something
+using <B><TT>if [ ! -s $1 ]</TT></B> which you can think of as <B>&quot;if
+not something in file named to parameter 1&quot;</B> and if this condition
+is met it echoes the filename to standard output. Then it has done its
+work for that file so it makes the next filename available in position
+one by <B>shift</B>ing everything along one. And it keeps doing this until
+nothing is left.</P>
+
+<P>I've used shift in this script but you would more often see it used
+in a script where your first one or two parameters were not file names
+but your third parameter was. You'd then assign the parameter values that
+are not file names to variables and then shift until the first file name
+was at position 1. You would then use the loop like the above that shifts
+one along each time you are finished with a file until you were done with
+all of them.</P>
+
+<CENTER><P>Go back to the home <A HREF="../SASMAC~1/index.html">page</A>.</P></CENTER>
+
+<CENTER><P>E-mail the macro and web site <A HREF="mailto:roland@rashleigh-berry.fsnet.co.uk">author</A>.</P></CENTER>
+
+<CENTER><P><BR>
+<BR>
+<BR>
+</P></CENTER>
+
+</BODY>
+</HTML>

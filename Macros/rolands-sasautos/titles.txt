@@ -1,0 +1,33 @@
+*<pre><b> This is the titles and footnotes template flat file
+* that will be read in by the %mktitles macro.
+
+* You can write what you like as comments outside a program:/end: block
+* and it will be ignored. Also you can do the same after the program:
+* line or suffix: line and it will be ignored. The program identity
+* must follow program: and be on the same line. The same for suffix:
+* But titles and footnotes must be on the lines following the titles:
+* and footnotes: label. You can make copies of the ruler line and
+* place this at allowed places for comments as shown below to help you
+* get the lengths of these correct.
+
+(It makes no difference if you start comments with an asterisk but
+obviously you must not start a comment line with program:, seq: etc.)
+
+
+program: <put your program name here>
+seq: <put your sequence number here if required>
+---------1---------2---------3---------4---------5---------6---------7---------8---------9---------0---------1---------2--
+titles:
+Put your first title here. This one will be centred which is standard for titles
+ This second title will be aligned one space from the left
+footnotes:
+This is the first footnote. All footnotes will be left aligned.
+ This is the second footnote and will be aligned one space from the left.
+end:
+---------1---------2---------3---------4---------5---------6---------7---------8---------9---------0---------1---------2--
+
+program:
+seq:
+titles:
+footnotes:
+end:

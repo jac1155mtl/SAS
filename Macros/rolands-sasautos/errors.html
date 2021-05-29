@@ -1,0 +1,371 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>Roland's SAS tips and techniques</TITLE>
+   <META NAME="Author" CONTENT="Roland Rashleigh-Berry">
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.01Gold (Win95; I) [Netscape]">
+   <META NAME="Description" CONTENT="SAS tips and techniques by Roland Rashleigh-Berry">
+   <META NAME="KeyWords" CONTENT="sas errors">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#C0C0C0" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+
+<H1 ALIGN=CENTER>Deadly errors you can make</H1>
+
+<P><B>[This site is not connected with the SAS Institute]</B></P>
+
+<P><B>[last updated - 29 June 2003]</B></P>
+
+<H2>Introduction</H2>
+
+<P>The errors I will list here will be very few in number and they are
+errors that <B>you</B> will make in your career. And errors so serious
+that it might ruin your career because of the embarrassment or financial
+damage to your employer. No matter how expert you are with the language,
+you are liable to make the following mistakes unless you remain alert.</P>
+
+<H2>Missing &quot;by&quot; statement in merge</H2>
+
+<P>There is an option you can set to detect missing by statements in merges.
+You can specify <B>mergenoby=nowarn|warn|error</B>. It might be a good
+idea to always set this to <B>mergenoby=error</B> at the head of your code
+but you have got to keep in mind that you might be calling standard macros
+that do unusual merges and so you might get an error message coming out
+of one of them. If you don't, then all well and good. Maybe you have an
+autoexec that you could specify this option in or a piece of code you always
+&quot;%inc&quot;lude at the top of every program and so you could put it
+in there. If you can do this so you are sure it is there, then you will
+never hit the problem I am describing next.</P>
+
+<P>This is one of these errors you make when working under pressure. You
+are merging two datasets together. You are being very careful to have only
+the variables you want in the keep lists. You make sure the &quot;where&quot;
+clause is correct. You carefully code the rest of the data step. You run
+it. It works. There are no errors or warning. You move on to the next task
+in the certain knowledge that your code is correct. <B>BUT -</B> you have
+forgotten the &quot;by&quot; statement.</P>
+
+<P>Take a look at this log and print. It is the simplest illustration of
+this type of error. I am merging a treatment dataset with an AE dataset
+but have missed out the &quot;by&quot; statement. Do you see any errors
+in the log? Any warnings? No, there are none. The observations will be
+merged one on one in this case since no &quot;by&quot; statement was specified.
+You end up with subj=1 having two different treatment groups and subj=2
+having none.</P>
+
+<P>Make an error like that for a pharmaceutical company or miss it on a
+QC and you could be in trouble.</P>
+
+<P><TT>47 data tmt;<BR>
+48 subj=1;tmt=0;output;<BR>
+49 subj=2;tmt=1;output;<BR>
+50 run;</TT></P>
+
+<P><TT>NOTE: The data set WORK.TMT has 2 observations and 2 variables.<BR>
+NOTE: DATA statement used: real time 0.04 seconds</TT></P>
+
+<P><TT>51<BR>
+52 data aes;<BR>
+53 length ae $ 10;<BR>
+54 subj=1;ae='cough';output;<BR>
+55 subj=1;ae='cold';output;<BR>
+56 subj=2;ae='flu';output;<BR>
+57 run;</TT></P>
+
+<P><TT>NOTE: The data set WORK.AES has 3 observations and 2 variables.<BR>
+NOTE: DATA statement used: real time 0.00 seconds</TT></P>
+
+<P><TT>58<BR>
+59 data bad;<BR>
+60 merge tmt aes;<BR>
+61 run;</TT></P>
+
+<P><TT>NOTE: There were 2 observations read from the data set WORK.TMT.<BR>
+NOTE: There were 3 observations read from the data set WORK.AES.<BR>
+NOTE: The data set WORK.BAD has 3 observations and 3 variables.<BR>
+NOTE: DATA statement used: real time 0.05 seconds</TT></P>
+
+<P><TT>62<BR>
+63 options nocenter;<BR>
+64 proc print data=bad;<BR>
+65 run;</TT></P>
+
+<P><TT>NOTE: There were 3 observations read from the data set WORK.BAD.<BR>
+NOTE: PROCEDURE PRINT used: real time 0.05 seconds</TT></P>
+
+<P><TT>Obs subj tmt ae</TT></P>
+
+<P><TT>&nbsp;1 &nbsp;&nbsp;&nbsp;1 &nbsp;&nbsp;0 cough<BR>
+&nbsp;2&nbsp;&nbsp;&nbsp; 1 &nbsp;&nbsp;1 cold<BR>
+&nbsp;3&nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp; . flu </TT></P>
+
+<H2>Using &quot;set&quot; instead of &quot;merge&quot;</H2>
+
+<P>You won't get any warning messages or even notes out of this error.
+That is when you intend to merge datasets together but you use the &quot;set&quot;
+statement instead of your intended &quot;merge&quot; statement. I made
+this mistake the other day. That's what happens when you work under pressure.
+I check for duplicates in datasets where I know there should be no duplicates
+so it was soon spotted. Checking for duplicates in datasets you know should
+be unique on a key is something you should do often in your code.</P>
+
+<H2>/*.....*/ comments</H2>
+
+<P>I use slash-aster aster-slash comments a lot in my code to mark where
+sections begin like this:</P>
+
+<P><TT>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/**************************<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Output
+Dataset<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**************************<BR>
+<BR>
+data out.tmt(label='Treatment Log');<BR>
+&nbsp;&nbsp;set tmt;<BR>
+run;<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/**************************<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Next
+Section<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**************************/<BR>
+<BR>
+proc sort data=tmt;<BR>
+&nbsp;&nbsp;by tmtgrp;<BR>
+run;</TT></P>
+
+<P>The above is very similar to a piece of code I wrote. Imagine my surprise
+when I found no <B>tmt</B> dataset stored in my <B>out</B> library, yet
+everything else worked fine. I hope you have spotted what is wrong. I missed
+the slash off the top comment for &quot;Output Dataset&quot; and so the
+compiler thought everything was a comment right until the ending '<B><TT>*/</TT></B>'
+of the &quot;Next Section&quot; comment header. That way the code that
+outputs my <B>tmt</B> dataset doesn't get run.</P>
+
+<H2>Existing &quot;in&quot; variable in merge</H2>
+
+<P>You realize the importance of using meaningful variable names so you
+assign meaningful names to the &quot;in&quot; statement when you are merging
+your two datasets. So let us look at a corrected version of the code above
+and its log and print.</P>
+
+<P><TT>77<BR>
+78 data bad;<BR>
+79 merge tmt(in=tmt) aes(in=aes);<BR>
+80 by subj;<BR>
+81 if tmt and aes;<BR>
+82 run;</TT></P>
+
+<P><TT>NOTE: The variable tmt exists on an input data set, but was also
+specified in an I/O statement option. The variable will not be included
+on any output data set.<BR>
+NOTE: There were 2 observations read from the data set WORK.TMT.<BR>
+NOTE: There were 3 observations read from the data set WORK.AES.<BR>
+NOTE: The data set WORK.BAD has 1 observations and 2 variables.<BR>
+NOTE: DATA statement used: real time 0.05 seconds</TT></P>
+
+<P><TT>83<BR>
+84 options nocenter;<BR>
+85 proc print data=bad;<BR>
+86 run;</TT></P>
+
+<P><TT>NOTE: There were 1 observations read from the data set WORK.BAD.<BR>
+NOTE: PROCEDURE PRINT used: real time 0.04 seconds</TT></P>
+
+<P><TT>Obs subj ae</TT></P>
+
+<P><TT>&nbsp;1 &nbsp;&nbsp;&nbsp;2 &nbsp;flu</TT></P>
+
+<P><BR>
+Do you see that the treatment variable is missing from the output dataset
+and that there is only one observation? Look at that first NOTE in the
+log after the merge. The situation now is not as bad as it used to be.
+In the good old days the treatment variable will still have been there
+on the output dataset and you would have not got a NOTE to that effect.
+So if you make this error these days it will be spotted. If you look at
+the code written by old-timer SAS programmers you will see some of them
+put an underscore as the first character of the variable defined to the
+&quot;in&quot; statement, the assumption being that nobody would have put
+a variable in a dataset that starts with an underscore so no clash could
+occur. It is to get round this problem that used to be so damaging in the
+past. But this problem of declaring a flag variable that already exists
+occurs again and again in another form as in the next example.</P>
+
+<H2>&quot;Flag&quot; variables in data steps</H2>
+
+<P>I have seen examples of code in data steps where the logic has become
+quite convoluted and a &quot;flag&quot; variable is set and changed. It
+is often called &quot;flag&quot; as well so that it is clear that this
+is a flag variable. But what appears in that output dataset is scientifically
+impossible in that it defies all logic. You look at the data step code
+again and again. You maybe write out examples using paper and pencil. Still
+the output defies all logic. You go for a cup of coffee to clear your head.
+You go to lunch, maybe, to give yourself the energy to tackle it anew.
+You come back to it refreshed and replenished and it <B>STILL</B> doesn't
+make any sense.</P>
+
+<P>Well what has happened is that good ideas tend to be reused. Either
+the same programmer or a different programmer also thought it would be
+a good idea to use a &quot;flag&quot; variable in a data step. But they
+didn't think to drop it from the output dataset. So the flag variable is
+already in the input dataset. With each observation you are reading you
+could be resetting your flag variable. And <B>THIS</B> is why the output
+dataset is not as you expected it to be.</P>
+
+<P>If you are lucky then this problem will drive you mad and stop you making
+further progress until you have spotted the problem. If you are unlucky
+(which is far more likely) then errors will be introduced that you have
+not spotted. This sort of convoluted logic is more often found in efficacy
+analysis where accuracy is of the utmost importance. So it will be the
+efficacy programmer or statistician who make the above mistake. Their turn
+to get into trouble.</P>
+
+<H2>&quot;Fixing&quot; data during a merge</H2>
+
+<P>Very rarely something so unusual happens with the data that the only
+way you can handle it is to &quot;fix&quot; the data in the code. It vary
+rarely happens that a subject can end up in the wrong treatment arm and
+experience a recorded event while under treatment in that wrong treatment
+arm. And when you come to do the safety tables you need to assign that
+event to the correct treatment arm. So to do this you reset the treatment
+arm for just that one subject and their one event. And because you are
+mindful of efficiency and because that dataset is huge you don't waste
+processing time by doing this in a following data step. You do it in the
+merge itself.</P>
+
+<P>I've kept this example as simple as possible. Take a look at the following
+log and the print.</P>
+
+<P><TT>87 data tmt;<BR>
+88 subj=1;tmtarm='On drug';output;<BR>
+89 subj=2;tmtarm='Placebo';output;<BR>
+90 run;</TT></P>
+
+<P><TT>NOTE: The data set WORK.TMT has 2 observations and 2 variables.<BR>
+NOTE: DATA statement used: real time 0.05 seconds</TT></P>
+
+<P><TT>91<BR>
+92 data aes;<BR>
+93 length ae $ 10;<BR>
+94 subj=1;ae='cough';output;<BR>
+95 subj=1;ae='cold';output;<BR>
+96 subj=1;ae='vomiting';output;<BR>
+97 subj=1;ae='death';output;<BR>
+98 subj=2;ae='flu';output;<BR>
+99 run;</TT></P>
+
+<P><TT>NOTE: The data set WORK.AES has 5 observations and 2 variables.<BR>
+NOTE: DATA statement used: real time 0.00 seconds</TT></P>
+
+<P><TT>100<BR>
+101 data bad;<BR>
+102 merge tmt(in=_tmt) aes(in=_aes);<BR>
+103 by subj;<BR>
+104 if _tmt and _aes;<BR>
+105 if subj EQ 1 and ae='cold' then tmtarm='Placebo'; /* data fix */<BR>
+106 run;</TT></P>
+
+<P><TT>NOTE: There were 2 observations read from the data set WORK.TMT.<BR>
+NOTE: There were 5 observations read from the data set WORK.AES.<BR>
+NOTE: The data set WORK.BAD has 5 observations and 3 variables.<BR>
+NOTE: DATA statement used: real time 0.10 seconds</TT></P>
+
+<P><TT>107<BR>
+108 options nocenter;<BR>
+109 proc print data=bad;<BR>
+110 run;</TT></P>
+
+<P><TT>NOTE: There were 5 observations read from the data set WORK.BAD.<BR>
+NOTE: PROCEDURE PRINT used: real time 0.00 seconds</TT></P>
+
+<P><TT>Obs subj tmtarm &nbsp;ae</TT></P>
+
+<P><TT>1 &nbsp;&nbsp;&nbsp;&nbsp;1&nbsp; On drug cough<BR>
+2&nbsp;&nbsp;&nbsp;&nbsp; 1 &nbsp;Placebo cold<BR>
+3&nbsp;&nbsp;&nbsp;&nbsp; 1 &nbsp;Placebo vomitting<BR>
+4&nbsp;&nbsp;&nbsp;&nbsp; 1 &nbsp;Placebo death<BR>
+5&nbsp;&nbsp;&nbsp;&nbsp; 2 &nbsp;Placebo flu </TT></P>
+
+<P>If you look at the above you will see that although it was intended
+to move subj=1 ae of &quot;cold&quot; to the placebo group only, this setting
+has remained for the following aes. &quot;Vomiting&quot; and &quot;death&quot;
+are now in the Placebo arm when they should have been in the &quot;On Drug&quot;
+arm.</P>
+
+<P>Maybe you make a few errors like that and some serious AEs that happened
+on drug are assigned to the Placebo arm. Your submission goes to the FDA
+with a table that shows that just as many serious AEs happened on placebo
+as on drug. Your drug gets approved. It goes to market. Then somebody later
+discovers your little &quot;faux pas&quot; and are obliged to report it
+to the FDA. You get a multi-million dollar fine and your drug gets pulled.
+They send the auditors in to audit your entire Biometrics department at
+your company's expense. Oops!</P>
+
+<P>Make this mistake and report a serious AE in the wrong treatment arm
+and you are in trouble. Fail to spot it during a QC and you are in trouble.</P>
+
+<H2>Averaging averages</H2>
+
+<P>You probably won't be fired for making this error but it is still a
+very bad one to make and can result in tables being reissued and resent.
+Your manager might get fired if it happens too often but not you. The error
+is in averaging averages. Even statisticians trip up on this one and you
+would have thought they would be the very last people to make this mistake.
+Let us take daily dose as an example. You have to produce a table showing
+the average daily dose. You have a week at the start of the trial at half
+dose and then two two-week periods on full dose. Let us say that in the
+first week the subjects took one tablet a day and in the following two
+two-week periods they took two tablets a day until they stopped. So is
+the average dose (1+2+2)/3 ? No, it is not, because the period on half
+dose was half of that on full dose. Also, suppose some subjects dropped
+out of the final two week period. Their time on half dose would play a
+bigger part. The proper way to calculate it is to divide the total number
+of tablets taken by the total number of days. So suppose you have correctly
+calculated this average for each subject by dividing the number of tablets
+by the number of days on trial. So then you average all these values for
+each subject to give you your final result. Is that right? No, it is not.
+It is averaging averages again. To get the correct result you would have
+to divide the number of tablets taken by all subjects and divide by the
+number of days on trial added up for all subjects.</P>
+
+<P>Make that mistake as a programmer and you can plead ignorance. You can
+say &quot;Oh, it is? I didn't realize that&quot;. Make that mistake as
+a statistician and you get a red face. Keep making that mistake and keep
+reissuing tables after word has gone uplines that the task is complete
+and the deadline met and your manager gets into trouble .</P>
+
+<H2>Merging in Key Variables</H2>
+
+<P>It seems to be common practice to build Data Marts these days. These
+have important key variables merged in with the data. Typically, there
+would be a standard macro to do a final merging in of these key variables
+with the rest of your data just before the data gets written to a Data
+Mart. But there is a <B>big trap</B> here. You must make sure you are using
+the fields from the correct dataset. You should always assume the programmer
+might have merged in some of these fields already and even changed the
+contents. You have to make sure you drop these if they exist. The safest
+way to achieve this is to do an SQL join and make sure your key dataset
+is the first one. SQL&nbsp;will only accept the contents from the first
+table and issue a warning when it finds duplicate variables in the second
+table. But these SQL warnings bug people. Warnings need to be checked out
+in case there is a real problem. But so many programmers have difficulty
+with SQL that these warnings can really throw them. They think something
+is maybe wrong with the utlity that is merging in these key fields. So
+to keep people happy, this final merge of key variables might have been
+coded as a data step merge. But that check for duplicate variables had
+better be in there checking for and dropping these duplicate variables
+otherwise the utility macro writer gets into trouble.</P>
+
+<P>I've written a utility macro to do this and wanted to keep this checking
+and dropping of duplicate variables as thorough and neat as possible. I
+came up with a solution I was very pleased with. It is applied directly
+to the code in the merge step. What it does is identify the duplicate variables
+that are not in a list of variables you are going to merge by and you use
+this list in a drop statement applied to the second dataset. The macro
+that detects these duplicate variables is called %duplvars and to see this
+and read the usage of this macro then click <A HREF="duplvars.sas">here</A>.
+</P>
+
+<CENTER><P>Go back to the home <A HREF="index.html">page</A>.</P></CENTER>
+
+<CENTER><P>E-mail the macro and web site <A HREF="mailto:roland@rashleigh-berry.fsnet.co.uk">author</A>.</P></CENTER>
+
+</BODY>
+</HTML>

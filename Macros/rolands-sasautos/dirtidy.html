@@ -1,0 +1,248 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>whosgot</TITLE>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+   <META NAME="Author" CONTENT="Roland Rashleigh-Berry">
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.01Gold (Win95; I) [Netscape]">
+   <META NAME="Description" CONTENT="SAS tips and techniques by Roland Rashleigh-Berry">
+   <META NAME="KeyWords" CONTENT="sas tips techniques">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#C0C0C0" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+
+<H1 ALIGN=CENTER>dirtidy</H1>
+
+<P><B>[last updated - 29 July 2003]</B></P>
+
+<P>A very important utility that I haven't introduced yet is the <B>join</B>
+utility. It's a bit like merge in SAS. It comes in useful when you are
+comparing lists of things. In this case I am going to develop a script
+that checks on the SAS programs in a directory and also checks the list
+and log outputs to see which logs and list outputs do not belong to a SAS
+program (usually because a SAS program got renamed). This list will then
+be fed to the <B>delsome</B> utility so that the user can be prompted to
+ask them if they want to delete them. You will need access to Unix when
+you read this as you will have to try out some commands. Please make current
+a directory where you have sas programs and associated logs and/or listings
+and where there might possibly be some logs and listings left over from
+previously named programs.</P>
+
+<P>Firstly get a list of sas programs by typing in the command <B><TT>ls
+*.sas</TT></B>. If we are going to compare the programs with what logs
+and lists are there they we won't be able to join on names with extensions.
+We want names without the <B><TT>.sas</TT></B> , .<B><TT>log</TT></B> and
+<B><TT>.lst</TT></B> at the end. There are different ways of doing this.
+We can use awk and tell it that the field separator character is a period
+and ask it to print the first field. Try this:</P>
+
+<P><B><TT>ls *.sas | awk -F. '{print $1}'</TT></B></P>
+
+<P>That works just fine. But I'd like to introduce you to yet another very
+useful utility called <B>sed</B>. &quot;sed&quot; is short for stream editor.
+You'll probably never use it as such, though. You are more likely to use
+it with its substitution facility. I want you to try this command. But
+I will warn you now that although the output looks correct the call to
+the command is not correct:</P>
+
+<P><B><TT>ls *.sas | sed 's/.sas//g'</TT></B></P>
+
+<P>The output LOOKS okay. The &quot;s&quot; before the first slash tells
+you to substitute what is inbetween the first two slashes with what is
+between the last two slashes (nothing in this case) and the &quot;g&quot;
+at the end tells you to do it not once but globally (repeat until there
+are none left). The way it appears to have worked is that it has substituted
+&quot;.sas&quot; in the first two slashes with nothing in the last two
+slashes. But remember I told you you had to become good at something called
+&quot;pattern matching&quot; if you are going to become a script writer?
+This is where we get into it a bit more deeply. There is actually something
+wrong with the &quot;.sas&quot; in the first two slashes if what you want
+to do is substitute the &quot;.sas&quot; in the filenames with nothing.
+Try copying this command and submitting it:</P>
+
+<P><B><TT>echo asashello worldysas | sed 's/.sas//'</TT></B></P>
+
+<P>You get left with the message &quot;hello world&quot;. What could be
+the matter? Well I'll tell you straight off. They call these patterns &quot;regular
+expressions&quot;. You should not, however, get them mixed up with the
+RX expressions in SAS. They are not the same thing (and I am somwhat disappointed
+that SAS did their own thing with RX). So a period in a regular expression
+is not a period. It stands for &quot;any single character&quot;. So in
+&quot;asashello&quot;, &quot;.sas&quot; matches with &quot;asas&quot; and
+in &quot;worldysas&quot; it matches with &quot;ysas&quot;. And that is
+why we get &quot;hello world&quot; coming out. But sometimes we really
+do mean a period rather than any character so to tell it we really mean
+a period we put an excape character in front of it. This happens to be
+a slash also but one that goes the other way. Try this:</P>
+
+<P><B><TT>echo asashello worldysas | sed 's/\.sas//'</TT></B></P>
+
+<P>This time it works okay. No substitution has been done. But let's check
+on this command:</P>
+
+<P><B><TT>echo .sashello world.sas | sed 's/\.sas//g'</TT></B></P>
+
+<P>It has matched the .sas at the start of &quot;.sashello&quot;. We want
+it to match the end of the line. To do this we add a trailing dollar sign
+like this:</P>
+
+<P><B><TT>echo .sashello world.sas | sed 's/\.sas$//g'</TT></B></P>
+
+<P>You will see that this works as we expected it. So the correct command
+to drop the &quot;.sas&quot; at the end of a list of files is in the form
+above. Try this again with the ls command:</P>
+
+<P><B><TT>ls *.sas | sed 's/\.sas$//g'</TT></B></P>
+
+<P>Hopefully you are satisfied that this is working correctly. The next
+thing I want you to do is to sort this list and store it in your home directory
+like this:</P>
+
+<P><B><TT>ls *.sas | sed 's/\.sas$//g' | sort &gt; $HOME/saslist.tmp</TT></B></P>
+
+<P><B>cat</B> the output file, if you like, to convince yourself the list
+was written to there.</P>
+
+<P>Now we are going to do the same with the log and lst files. Except we
+will give the files different names. For the log files, type in this command:</P>
+
+<P><B><TT>ls *.log | sed 's/\.log$//g' | sort &gt; $HOME/loglist.tmp</TT></B></P>
+
+<P>and for the lst files do this:</P>
+
+<P><B><TT>ls *.lst | sed 's/\.lst$//g' | sort &gt; $HOME/lstlist.tmp</TT></B></P>
+
+<P>Now we have three files for the files ending <B>.sas</B> , <B>.log</B>
+and <B>.lst</B> . We are now going to <B>join</B> them to find out the
+differences. Because we have used the <B>sort</B> utility, at least we
+know they are in the right order for joining ( I sort of sneaked in that
+utility, didn't I? ).</P>
+
+<P>We don't know how <B>join</B> works yet, so go to your home directory
+(you should know how) and let's create some test files. Type in this command
+and ebter the values &quot;a&quot;, &quot;c&quot;, &quot;e&quot; for file1.tmp
+like this. Use the Ctrl-d key combination to finish inputting these values:</P>
+
+<P><B><TT>cat &gt; file1.tmp<BR>
+a<BR>
+c<BR>
+e<BR>
+Ctrl-d</TT></B></P>
+
+<P><B><TT>cat &gt; file2.tmp<BR>
+a<BR>
+b<BR>
+c<BR>
+d<BR>
+Ctrl-d</TT></B></P>
+
+<P>Now let's do a straight join without know anything about how <B>join</B>
+works:</P>
+
+<P><B><TT>join file1.tmp file2.tmp</TT></B></P>
+
+<P>We see &quot;a&quot; and &quot;c&quot; listed. These were the ones common
+to each file. But what we are interested in are the ones that do not match.
+Let's say file1 contains out sas programs and file2 contains our logs then
+we want to list out &quot;b&quot; and &quot;d&quot; because they are not
+matched with sas programs. The way to do it is like this. Try it out yourself:</P>
+
+<P><B><TT>join -v2 file1.tmp file2.tmp</TT></B></P>
+
+<P>The <B>-v</B> option limits output to unpairable lines. This is what
+we want. But we only want those unpairable lines in the second file so
+we use the option <B>-v2</B> to specify that we only want the unpairable
+lines in file 2 (file2.tmp). So in a sense these will be the log file that
+are unpaired with sas programs. It would be useful to put the &quot;.log&quot;
+back on the end of these items so try this command instead:</P>
+
+<P><B><TT>join -v2 file1.tmp file2.tmp | awk '{print $0 &quot;.log&quot;}'</TT></B></P>
+
+<P>We have put the extension &quot;.log&quot; back on the mismatched items.</P>
+
+<P>Now we are ready to create this list of mismatched log and lst entries.
+Let's call our output file badlog.tmp for mismatched logs and badlst.tmp
+for mismatched lst files. First we will write the mismatched log entries
+to the output file like this:</P>
+
+<P><B><TT>join -v2 saslist.tmp loglist.tmp | awk '{print $0 &quot;.log&quot;}'
+&gt; badlog.tmp</TT></B></P>
+
+<P>Now we will do the same for the lst files but now adding the &quot;.lst&quot;
+extension like this:</P>
+
+<P><B><TT>join -v2 saslist.tmp lstlist.tmp | awk '{print $0 &quot;.lst&quot;}'
+&gt; badlst.tmp</TT></B></P>
+
+<P>Now we have two temporary files containing a list of files we might
+like to delete. We can combine them and sort them and then feed them into
+the <B>delsome</B> utility so the user can delete them if they choose.
+We can do this like this:</P>
+
+<P><B><TT>cat badlog.tmp &gt; bad.tmp<BR>
+cat badlst.tmp &gt;&gt; bad.tmp<BR>
+sort bad.tmp | delsome</TT></B></P>
+
+<P>That is the idea, anyway. The trouble is that we are now located in
+our home directory and the files are not there. This really needs to be
+a script so we don't have to type all this in. But it is important for
+you to know about how it works. So here is the script and you are welcome
+to try it out after you have copied and pasted it into your script library
+and called it <B>dirtidy</B>. If you think you do not have any unmatched
+log and list files in your programs directory then create some especially
+so you can delete them with this utility.</P>
+
+<PRE>
+<B>#!/bin/sh
+# Script     : dirtidy
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 29 July 2003
+# Contact    : roland@rashleigh-berry.fsnet.co.uk
+# Purpose    : To identify widowed .lst and .log files in a directory and prompt
+#              for deletion.
+# SubScripts : delsome
+# Notes      : This script requires no parameters. You must make the directory
+#              you want to tidy the current directory before invoking this script
+# Usage      : dirtidy
+# 
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+# N/A  (none) 
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+# 
+#================================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#================================================================================
+
+ls *.sas | sed 's/\.sas$//g' | sort &gt; $HOME/saslist.tmp
+ls *.log | sed 's/\.log$//g' | sort &gt; $HOME/loglist.tmp
+ls *.lst | sed 's/\.lst$//g' | sort &gt; $HOME/lstlist.tmp
+
+join -v2 $HOME/saslist.tmp $HOME/loglist.tmp | awk '{print $0 &quot;.log&quot;}' &gt; $HOME/badlog.tmp
+join -v2 $HOME/saslist.tmp $HOME/lstlist.tmp | awk '{print $0 &quot;.lst&quot;}' &gt; $HOME/badlst.tmp
+
+cat $HOME/badlog.tmp &gt; $HOME/bad.tmp
+cat $HOME/badlst.tmp &gt;&gt; $HOME/bad.tmp
+
+cat $HOME/bad.tmp | sort | delsome
+
+rm -f $HOME/saslist.tmp $HOME/loglist.tmp $HOME/lstlst.tmp \
+$HOME/badlog.tmp $HOME/badlst.tmp $HOME/bad.tmp</B>
+
+</PRE>
+
+<CENTER><P>Go back to the home <A HREF="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</A>.</P></CENTER>
+
+<CENTER><P>E-mail the macro and web site <A HREF="mailto:roland@rashleigh-berry.fsnet.co.uk">author</A>.</P></CENTER>
+
+<CENTER><P><BR>
+<BR>
+<BR>
+</P></CENTER>
+
+</BODY>
+</HTML>

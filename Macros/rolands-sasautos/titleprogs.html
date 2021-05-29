@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>whosgot</TITLE>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+   <META NAME="Author" CONTENT="Roland Rashleigh-Berry">
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.01Gold (Win95; I) [Netscape]">
+   <META NAME="Description" CONTENT="SAS tips and techniques by Roland Rashleigh-Berry">
+   <META NAME="KeyWords" CONTENT="sas tips techniques">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#C0C0C0" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+
+<H1 ALIGN=CENTER>titleprogs</H1>
+
+<P><B>[last updated - 31 July 2003]</B></P>
+
+<P>You have to write this one yourself. Use <B>sasunixskeleton</B> to create
+a script called <B>titleprogs</B> and then edit it. What you need is a
+list of unique program name in your titles dataset written to standard
+output in sorted order. <B>Don't put the &quot;.sas&quot; entension</B>
+on the end of these program names. If your actual program names are lowercase
+then this list should be lowercase as well. I later aim to match these
+entries up with the actual programs in your program folders. You should
+be able to run this from any directory that has your protocol and study
+in the path name. Only you will know where your titles dataset is located
+so you should be able to specify its location. You will maybe need to know
+how to strip the protocol and study identity from your directory path as
+I covered in this <A HREF="sed&awk.html">tutorial</A>. I am going to use
+the output from this script in my next script. The next script will compare
+the program list that is output from this script to the programs you have
+in your programs folders for that protocol and study. Happy scripting !</P>
+
+<CENTER><P>Go back to the home <A HREF="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</A>.</P></CENTER>
+
+<CENTER><P>E-mail the macro and web site <A HREF="mailto:roland@rashleigh-berry.fsnet.co.uk">author</A>.</P></CENTER>
+
+<CENTER><P><BR>
+<BR>
+<BR>
+</P></CENTER>
+
+</BODY>
+</HTML>

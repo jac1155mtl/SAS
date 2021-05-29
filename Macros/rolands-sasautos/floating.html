@@ -1,0 +1,193 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>Roland's SAS tips and techniques</TITLE>
+   <META NAME="Author" CONTENT="Roland Rashleigh-Berry">
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.01Gold (Win95; I) [Netscape]">
+   <META NAME="Description" CONTENT="SAS tips and techniques by Roland Rashleigh-Berry">
+   <META NAME="KeyWords" CONTENT="sas floating point number accuracy">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#C0C0C0" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+
+<H1 ALIGN=CENTER>Floating-point Number Accuracy</H1>
+
+<P><B>[This site is not connected with the SAS Institute]</B></P>
+
+<P><B>[last updated - 06 January 2003]</B></P>
+
+<H2>The VAX to Unix puzzle</H2>
+
+<P>You transfer SAS&nbsp;data from a VAX to a Unix platform. You know full
+well you have visits with a numeric session number of 2.1. You are looking
+at the data and you select on the data with &quot;where sess=2.1&quot;.
+Nothing there. You cancel the where clause, look at your data again and
+you see observations with sess=2.1. What on Earth is going on?</P>
+
+<P>The answer lies in the way numeric values are stored on a computer.
+In the case of floating point numbers, the values are rarely stored exactly.
+They are a very close approximation instead. And the problem is that on
+different platforms you get different approximations. If you had done the
+same &quot;where sess=2.1&quot; on the VAX then you would have seen the
+observations you know are there. But after it has moved to Unix then they
+are changed very slightly and the equality no longer holds. On the VAX,
+the literal &quot;2.1&quot; gets converted into its numeric form and it
+matches with the &quot;2.1&quot; held in the &quot;sess&quot; variable.
+Again, they are not exactly 2.1. They are approximations. But they are
+the <B>same</B> approximations in this case. But when the data gets transferred
+over onto Unix, the 2.1 in the sess variable turns into something slightly
+different than the literal &quot;2.1&quot; does when converted to numeric
+form.</P>
+
+<P>This is just the start of your problems. If you test equalities, even
+just on the one platform, then you can get surprised by these inaccuracies.
+This will be taken up in the next section. But staying with the VAX to
+Unix transfer of data - what is the best way to handle this situation?</P>
+
+<P>Suggested solutions will vary. I personally consider the numeric inaccuracy
+you get when SAS&nbsp;data moves platforms as a SAS problem. If the equality
+works on the VAX then it should work on Unix, in my opinion. Yes, the numbers
+will not be exact - but they should be inexact by the same amount. If SAS&nbsp;data
+is transferable from one platform to another, then to me, it should behave
+the same on each platform. The way I got round this problem was to round
+every single numeric field in every dataset to the tenth decimal place.
+Now this is naughty in one sense since if you had a representation of pi
+(sorry, no symbol) then you would have introduced an inaccuracy by rounding
+to the tenth decimal place. But since the data was Clinical data and since
+each number represented a field that the investigator had to fill in that
+had limited decimal places then rounding to the tenth place could not possibly
+adversely affect the accuracy of the values. So I did this and it worked
+fine. It was very easy to do as well since I wrote a macro to do this which
+you can see a version of <A HREF="round.sas">here</A>. </P>
+
+<H2>The problem with equalities</H2>
+
+<P>if you are able, then copy this piece of code and run it under SAS:</P>
+
+<P><TT>data _null_;<BR>
+&nbsp;&nbsp;x=7.3;<BR>
+&nbsp;&nbsp;x=x+0.1;<BR>
+&nbsp;&nbsp;put x=;<BR>
+&nbsp;&nbsp;if x EQ 7.4 then put &quot;equals 7.4&quot;;<BR>
+&nbsp;&nbsp;else put &quot;not equal to 7.4&quot;;<BR>
+run;</TT></P>
+
+<P>What you will find if you do, is that &quot;x&quot; displays as 7.4,
+but when the equality is tested, it will be found that the equality is
+not met. Try another number like start with 7.2, add 0.1, and test the
+equality with 7.3 and the equality will be met. So if we arrive at a number
+through a mathematical process then we should not expect equalities to
+hold on every occasion. This is an irritation more than anything else.
+You could always round the result to the tenth decimal place (like I did
+to data transferred from VAX to Unix) and then you would never have a problem
+doing the above sort of test. Take a look at the log of the same code I
+have made some additions to:</P>
+
+<P><TT>73 data _null_;<BR>
+74 y=7.4;<BR>
+75 put y= y=hex16.;<BR>
+76 x=7.3;<BR>
+77 x=x+0.1;<BR>
+78 put x= x=hex16.;<BR>
+79 if x EQ 7.4 then put &quot;equals 7.4&quot;;<BR>
+80 else put &quot;not equal to 7.4&quot;;<BR>
+81 x=round(x,0.0000000001);<BR>
+82 put x= x=hex16.;<BR>
+83 if x EQ 7.4 then put &quot;equals 7.4&quot;;<BR>
+84 else put &quot;not equal to 7.4&quot;;<BR>
+85 run;</TT></P>
+
+<P><TT>y=7.4 y=401D99999999999A<BR>
+x=7.4 x=401D999999999999<BR>
+not equal to 7.4<BR>
+x=7.4 x=401D99999999999A<BR>
+equals 7.4</TT><BR>
+</P>
+
+<P>If you study the above you will see that the 7.4 in the &quot;y&quot;
+variable, when displayed also in hex, is different to the 7.4 in the &quot;x&quot;
+variable after 0.1 is added to 7.3. The &quot;A&quot; at the end equates
+to binary &quot;1010&quot; whereas the &quot;9&quot; at the end equates
+to binary &quot;1001&quot;. When you test for an equality, the computer
+is doing a direct comparison of these effective binary digits and the equality
+will be found not to hold. But if you look later on in the code you will
+see that I have rounded the value in &quot;x&quot; to the tenth decimal
+place and the equality will now hold since the value in &quot;x&quot; gets
+&quot;corrected&quot; by this rounding.</P>
+
+<P>So how do we get round this problem? Well, you could either round to
+the tenth decimal place and then do the test or you could test for equality
+and apply whatever rounding you desired like this &quot;if round(x,0.1)
+EQ 7.4&quot;. But both these methods have limitations. In the case of rounding
+to the tenth decimal place then that will be no good for extremely large
+numbers and in the case of rounding to one decimal place then if x=7.37
+then it will equate with 7.4 using the above test. Do we really want that?
+I wouldn't have thought so. So we have come up with two solutions and both
+of them have problems. Perhaps it is time to look at numbers at the other
+extreme to see if we can generate a few new ideas.</P>
+
+<H2>Big numbers have problems as well</H2>
+
+<P>Take a look at the following log of code I have run:</P>
+
+<P><TT>102 data _null_;<BR>
+103 x=123456789012345678;<BR>
+104 put x=18.;<BR>
+105 x=123456789012345678901;<BR>
+106 put x=21.;<BR>
+107 run;</TT></P>
+
+<P><TT>x=123456789012345680<BR>
+x=123456789012345683968</TT></P>
+
+<P>You will see that the first &quot;x&quot; is out by 2 since it ends
+with &quot;80&quot; instead of the original &quot;78&quot;. The second
+&quot;x&quot; is out by 5067 since it ends with &quot;83968&quot; instead
+of the original &quot;78901&quot;. There is no point trying to get round
+this by rounding to the tenth decimal place since these are whole numbers
+in any case and large ones at that. </P>
+
+<P>If you were to express the numbers as exponentials then you will see
+that the problem seems to creep in after the 15th decimal place. But if
+two numbers match to 15 decimal places then maybe we should consider them
+as equal, to all intents and purposes. Is there maybe another way we could
+test for equality that took this into account such that we could use it
+on small numbers like 7.4 and large numbers like the above?</P>
+
+<H2>The %equals macro</H2>
+
+<P>There is a way to compare numbers for equality that will work for both
+small and large numbers. I have incorporated code I found on the SAS Technical
+Support site (in their macro <A HREF="http://www.sas.com/service/techsup/unotes/SN/003/003510.html">%fuzzcomp</A>)
+into the macro %equals, after making a change. It maybe needs a bit more
+&quot;tuning&quot;.</P>
+
+<P><TT>174 data _null_;<BR>
+175 x=7.3;<BR>
+176 x=x+0.1;<BR>
+177 if %equals(x,7.4) then put &quot;equals&quot;;<BR>
+178 else put &quot;not equal&quot;;<BR>
+179 x=123456789012345678;<BR>
+180 if %equals(x,123456789012345678) then put &quot;equals&quot;;<BR>
+181 else put &quot;not equal&quot;;<BR>
+182 x=123456789012345678901;<BR>
+183 if %equals(x,123456789012345678901) then put &quot;equals&quot;;<BR>
+184 else put &quot;not equal&quot;;<BR>
+185 run;</TT></P>
+
+<P><TT>equals<BR>
+equals<BR>
+equals</TT></P>
+
+<P>I invite people to play around with the values in the macro. To &quot;tune&quot;
+it, in a sense. I am fairly happy with the way it works currently but I
+am sure it could be improved. The idea is to use the macro universally
+to test for equality (or very near equality). Perhaps it could be adopted
+as the &quot;standard&quot; for testing equality. You can view the macro
+<A HREF="equals.sas">here</A>.</P>
+
+<CENTER><P>Go back to the home <A HREF="index.html">page</A>.</P></CENTER>
+
+<CENTER><P>E-mail the macro and web site <A HREF="mailto:roland@rashleigh-berry.fsnet.co.uk">author</A>.</P></CENTER>
+
+</BODY>
+</HTML>

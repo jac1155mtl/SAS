@@ -1,0 +1,34 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+<META NAME="Generator" CONTENT="Microsoft Word 97">
+<TITLE>Roland's SAS tips and techniques</TITLE>
+<META NAME="keywords" CONTENT="sas tips techniques">
+<META NAME="Description" CONTENT="SAS tips and techniques by Roland Rashleigh-Berry">
+<META NAME="Template" CONTENT="C:\PROGRAM FILES\MSOFFICE\OFFICE\html.dot">
+</HEAD>
+<BODY TEXT="#000000" LINK="#0000ff" VLINK="#800080" BGCOLOR="#c0c0c0" ALINK="#FF0000">
+
+<P><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN"></P>
+<H1 ALIGN="CENTER">Deleting datasets more than a month old</H1>
+<B><P>[This site is not connected with the SAS Institute]</P>
+<P>[last updated - 29 August 2003]</P>
+</B><H2>CRDATE</H2>
+<P>Because you do not see this field in your SAS&nbsp;datasets, SAS&nbsp;programmers tend to forget that it is available for them to use. CRDATE is a datetime stamp for when a dataset is created. There is another datetime stamp called MODATE for when the dataset was last modified. CRDATE is very useful when it comes to managing a library of datasets that get updated on a regular basis, such as once a week, where you have to roll off old data. You can obtain the value of this variable from the <B>sashelp.vtable</B> view or the <B>dictionary.tables</B> SQL view. </P>
+<P>In the following code, datasets in a library called SASLIB will be identified if the creation date is more than 27 days older than the date of the SAS job and will be deleted.</P>
+<B><TT><P>%let lastmonth=;</P>
+<P>proc sql;<BR>
+&nbsp;&nbsp;select memname into :lastmonth separated by ' ' <BR>
+&nbsp;&nbsp;from dictionary.tables <BR>
+&nbsp;&nbsp;where libname='SASLIB' and today()-datepart(crdate) &gt; 27; <BR>
+quit;<BR>
+run;</P>
+<P>proc datasets nolist lib=SASLIB; <BR>
+&nbsp;&nbsp;delete &amp;lastmonth; <BR>
+run; <BR>
+quit;</P>
+</B></TT><H2>CRDATE/CRDTE and MODATE/MODTE</H2>
+<P>Just to confuse matters, SAS have got two forms of spelling for these two variables. If you use the <B>attrn</B> function to give you numeric information about a dataset then instead of MODATE you use MODTE and instead of CRDATE you use CRDTE. I have two macros for extracting this information using the attrn function called <A HREF="modte.sas">modte</A> and <A HREF="crdte.sas">crdte</A>. But you would probably be better off just extracting this information from <B>dictionary.tables</B> like I did in the code above.</P>
+<P ALIGN="CENTER">Go back to the home <A HREF="../SASMAC~1/index.html">page</A>.</P>
+<P ALIGN="CENTER">E-mail the macro and web site <A HREF="mailto:roland@rashleigh-berry.fsnet.co.uk">author</A>.</P></BODY>
+</HTML>

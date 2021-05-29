@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>whosgot</TITLE>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+   <META NAME="Author" CONTENT="Roland Rashleigh-Berry">
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.01Gold (Win95; I) [Netscape]">
+   <META NAME="Description" CONTENT="SAS tips and techniques by Roland Rashleigh-Berry">
+   <META NAME="KeyWords" CONTENT="sas tips techniques">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#C0C0C0" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+
+<H1 ALIGN=CENTER>intitlesnoprogs</H1>
+
+<P><B>[last updated - 31 July 2003]</B></P>
+
+<P>This is a script that needs a bit more work to make sure it works in
+your environment. If you have studied the previous tips then you will easily
+be able to amend this code. It assumes you have created the <B>titleprogs</B>
+script as it uses it.</P>
+
+<B><PRE>#!/bin/sh
+# Script     : intitlesnoprogs
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 31 July 2003
+# Contact    : roland@rashleigh-berry.fsnet.co.uk
+# Purpose    : To display what programs in the titles dataset are not in the
+#              programs directory.
+# SubScripts : titleprogs
+# Notes      : Assumes the titleprogs script has been written. You will need to
+#              amend this script to ensure it is searching for program names
+#              from the right location.
+# Usage      : intitlesnoprogs
+# 
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+# N/A  (none)
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+# 
+#================================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#================================================================================
+
+# You must have written the titleprogs script. This shoudl be a list of unique
+# program names with no extension that will match the case of the actual program
+# names in the directories.
+
+titleprogs | awk '{print $0 &quot;.sas&quot;}' &gt; $HOME/tprogs.tmp
+
+
+# I assume you have a root directory set up in an environment variable RD
+# and that the protocol follows this and the study follows that. I will extract
+# these and make that the current directory and search for all sas programs.
+
+protocol=`pwd | sed &quot;s%^$RD%%&quot; | awk -F/ '{print $1}'`
+
+study=`pwd | sed &quot;s%^$RD%%&quot; | awk -F/ '{print $2}'`
+
+cd $RD/$protocol/$study
+
+find . -name '*.sas' | sed 's%.*/%%' | sort -u &gt; $HOME/progs.tmp
+
+join -v1 $HOME/tprogs.tmp $HOME/progs.tmp
+
+rm -f $HOME/tprogs.tmp $HOME/progs.tmp
+
+</PRE></B>
+
+<CENTER><P>Go back to the home <A HREF="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</A>.</P></CENTER>
+
+<CENTER><P>E-mail the macro and web site <A HREF="mailto:roland@rashleigh-berry.fsnet.co.uk">author</A>.</P></CENTER>
+
+<CENTER><P><BR>
+<BR>
+<BR>
+</P></CENTER>
+
+</BODY>
+</HTML>

@@ -1,0 +1,193 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>Roland's SAS tips and techniques</TITLE>
+   <META NAME="Author" CONTENT="Roland Rashleigh-Berry">
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.01Gold (Win95; I) [Netscape]">
+   <META NAME="Description" CONTENT="SAS tips and techniques by Roland Rashleigh-Berry">
+   <META NAME="KeyWords" CONTENT="sas macros, Roland Rashleigh-Berry, sas tips, sas techniques">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#C0C0C0" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+
+<H1 ALIGN=CENTER>SAS Code Documentation</H1>
+
+<P><B>[This site is not connected with the SAS Institute]</B></P>
+
+<P><B>(Last updated: 03 March 2003)</B></P>
+
+<H2>Introduction</H2>
+
+<P>I would like to impress upon you my view that the proper documentation
+of code is just as important as your skills in coding. In my view, you
+can only count yourself as a good SAS programmer if you can write code
+of such clear worth that some of it gets used by others. And in order for
+it to get used by others, both in the near future and later, then it is
+important that the future users can clearly understand what the purpose
+of your code is and how they should use it. And your code should be clear
+and documented appropriately such that others programmers can maintain
+it.</P>
+
+<H2>Standard Code Headers</H2>
+
+<P>Your code header is extremely important. It should state the name of
+your program or macro, who wrote it and when. It should clearly and briefly
+state its function. If the code is to go through various versions, then
+the version number should be present. It should have further explanatory
+notes, if required. It should have usage notes so that people know how
+to apply your code. Where code gets amended and perhaps later versions
+released, a history of these amendments should also be documented in the
+header. And, of course, if you are writing many such programs then it would
+be helpful if the header of your code was consistent in style. So this
+means you need to adopt a standard code header.</P>
+
+<P>If you look at all my SAS programs on this web site you will see that
+the style of the header is consistent. In fact every program I write either
+starts with just the header or is an amended version of another code member
+that originally started with the standard header. In fact, I did not write
+a single piece of code on this web site without first designing the code
+header and being happy with its design. It took me over a day to write
+the original header and make changes until I was happy with it. And most
+of the macros I have on this web site were written in a much shorter time.
+The original header I used before I even started coding any of the macros
+on this web site is shown below.</P>
+
+<P><B><TT>/*<BR>
+/ Program&nbsp;&nbsp;&nbsp;:&nbsp;<BR>
+/ Version &nbsp;&nbsp;: 1.0 <BR>
+/ Author &nbsp;&nbsp;&nbsp;: Roland Rashleigh-Berry <BR>
+/ Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : October 2002 <BR>
+/ Contact &nbsp;&nbsp;: roland@rashleigh-berry.fsnet.co.uk <BR>
+/ Purpose&nbsp;&nbsp; : <BR>
+/ SubMacros : none <BR>
+/ Notes &nbsp;&nbsp;&nbsp;&nbsp;: <BR>
+/ Usage &nbsp;&nbsp;&nbsp;&nbsp;: <BR>
+/ <BR>
+/================================================================================
+<BR>
+/ PARAMETERS: <BR>
+/-------name------- -------------------------description-------------------------
+<BR>
+/ <BR>
+/ <BR>
+/ <BR>
+/ <BR>
+/================================================================================
+<BR>
+/ AMENDMENT HISTORY: <BR>
+/ init --date-- mod-id ----------------------description-------------------------
+<BR>
+/ <BR>
+/================================================================================
+<BR>
+/ This is public domain software. No guarantee as to suitability or accuracy
+is <BR>
+/ given or implied. User uses this code entirely at their own risk. <BR>
+/===============================================================================*/</TT></B></P>
+
+<P>Note that the header has slots for putting in the program name, its
+purpose and has room for notes and usage examples. Since most of the code
+on this site is macro code and macros have parameters then there is room
+to list these and put a description. I even have blank spaces in all the
+right places so that the text I type in will align correctly. If you've
+got a good header like this and you always start your program by editing
+the header then you are documenting right from the beginning which is the
+best time to start.</P>
+
+<P>Note that unlike many program headers you will see where in the workplace,
+there is no rightmost ending character. Over the years I have found that
+the benefits it gives in terms of clarity are very small and these end
+characters have to be realigned when you type in the text which is time
+consuming. Anything that hampers you from producing good documentation
+without adding at least more than compensatory benefit is best avoided.
+Hence no rightmost character.</P>
+
+<P>Also note that the header is in sections. If the header gets too long
+it can be hard to read unless there are sections. Click on <A HREF="npctcalc.sas">npctcalc</A>
+and you will see what I mean.</P>
+
+<P>Your code will get changed from time to time. Maybe not by you. So that
+is why the &quot;amendment history&quot; section is there. If code has
+changed from what it was then it is important to detail what changes have
+been made, by whom and preferably when as well. And if the code member
+is very long then it might be important to identify <B>where</B> the code
+has been changed. This is something most people forget. The &quot;mod-id&quot;
+is for when you want to flag in your code the place where you changed it
+so that people can find this mod-id using the editor search. I might use
+the mod-id <B>RRB001</B> if I were making my first amendment to a long
+program and I could put it in the code in a comment like this <B>/* RRB001
+*/</B>. But if the code member were short then I might not bother with
+a mod-id. I didn't bother using one <A HREF="varlen.sas">here</A>, for
+example.</P>
+
+<H2>In-line Code Documentation</H2>
+
+<P>Now we come to documenting the code itself. If the processing falls
+logically into sections and your code is long then it makes sense to label
+those sections. And label them with an eye-catching banner so you can see
+at a glance what code belongs in what section. If you click on <A HREF="npctcalc.sas">npctcalc</A>
+again you will see how I have done this. I tend to use <B>/* */</B> style
+comments because you can have unbalanced quotes in them or whatever you
+like. I have had problems using <B>* ;</B> style comments with unbalanced
+quotes in macros so I avoid that style altogether. It is a matter of personal
+choice.</P>
+
+<P>Once you have your program split into logical sections that are clearly
+labelled, your code will be much easier to follow. In fact it might be
+possible for other programmers to follow your code without any further
+in-line documentation provided to use variable names that make the purpose
+of your code clear. But a small amount of further documentation helps.
+Certainly, if some clever thought is going into your code then you should
+document at that place what your plan or what your thinking is. If you
+have a &quot;brainwave&quot; while you are coding and use a non-obvious
+method to arrive at the desired result then don't expect that brainwave
+to return to you when you revisit the code at a later date. You need to
+write it down so you know what the thinking was at the time.</P>
+
+<H2>Coding style and Indentation</H2>
+
+<P>I'll end this section by talking about code indentation and coding style.
+Since there is no clear &quot;right&quot; and &quot;wrong&quot; way to
+write code and indent it, I will describe what I do and why. </P>
+
+<UL>
+<H3>How much to indent: </H3>
+
+<P>I tend to write very compact code because I like to keep my lines to
+about 80 characters long or less. For me, the code is more readable that
+way. But in limiting the line length I want to use up all the columns I
+can so I code tight. I also indent code two spaces. Many people indent
+three spaces. Some of my routines can have many indentations and I find
+two spaces gives clarity and doesn't rob me of too many column positions
+for my code. I think people who code tight like I do tend to use two space
+indentations. </P>
+
+<H3>Indenting macro code:</H3>
+
+<P>Some people always indent code if it is within a macro. I don't. For
+me, the macro declaration falls in the area of the code header. When I
+start coding proper, I want to be able to use the first column rather than
+skip two columns on every line. Some of my code lines get long so having
+the first two columns helps me.</P>
+
+<H3>Case of SAS&nbsp;keywords:</H3>
+
+<P>I have seen cases where SAS keywords are religiously typed in uppercase.
+I don't do this. It takes too long. And, for me, it does not add clarity,
+which should be an important consideration for the reasons you adopt a
+style and invest work into it. If you look in the SAS documentation at
+the examples then you will see that the people who write for the SAS Institute
+don't do this either. Enough said.</P>
+
+<H3>do's and matching end's:</H3>
+
+<P>I always put the &quot;end;&quot; that matches my &quot;do&quot; directly
+underneath the start of the line with the &quot;do&quot; on. It is much
+easier to spot it that way and also to see where you have omitted it.</P>
+</UL>
+
+<CENTER><P>Go back to the home <A HREF="index.html">page</A>.</P></CENTER>
+
+<CENTER><P>E-mail the macro and web site <A HREF="mailto:roland@rashleigh-berry.fsnet.co.uk">author</A>.</P></CENTER>
+
+</BODY>
+</HTML>

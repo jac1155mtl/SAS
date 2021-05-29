@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>Roland's SAS tips and techniques</TITLE>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+   <META NAME="Generator" CONTENT="Microsoft Word 97">
+   <META NAME="keywords" CONTENT="sas tips techniques">
+   <META NAME="Description" CONTENT="SAS tips and techniques by Roland Rashleigh-Berry">
+   <META NAME="Template" CONTENT="C:\PROGRAM FILES\MSOFFICE\OFFICE\html.dot">
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.01Gold (Win95; I) [Netscape]">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#C0C0C0" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+
+<H1 ALIGN=CENTER>Quoting quoted text</H1>
+
+<P><B>[This site is not connected with the SAS Institute]</B></P>
+
+<P><B>[last updated - 03 September 2003]</B></P>
+
+<P>Sometimes, doing advanced progranmming, you may want to generate SAS
+code or macro statements that contain the contents of a character variable
+or perhaps the label of a variable and you need to put it in quotes. <B>Always
+bear in mind that a string you are quoting may itself contain quotes.</B>
+The following short code segment and its log will show you how to code
+for this for both generated SAS code and macro code.</P>
+
+<P>Firstly, here is the pure code submitted:</P>
+
+<B><PRE>
+data test;
+  str='Larry''s cat''s "meow" sounded more like a ''woof''';
+  put str=;
+  call symput('str',str);
+  call execute('data _null_;str2='''||trim(tranwrd(str,"'","''"))||''';put str2=;run;');
+run;
+%put >>>> str=%str(%')%sysfunc(tranwrd(&str,%str(%'),%str(%'%')))%str(%');
+</PRE></B>
+
+<P>And here is the log output:</P>
+
+
+<B><PRE>
+23   data test;
+24     str='Larry''s cat''s "meow" sounded more like a ''woof''';
+25     put str=;
+26     call symput('str',str);
+27     call execute('data _null_;str2='''||trim(tranwrd(str,"'","''"))||''';put str2=;run;');
+
+28   run;
+
+str=Larry's cat's "meow" sounded more like a 'woof'
+NOTE: The data set WORK.TEST has 1 observations and 1 variables.
+NOTE: DATA statement used:
+      real time           0.05 seconds
+
+
+NOTE: CALL EXECUTE generated line.
+1   + data _null_;str2='Larry''s cat''s "meow" sounded more like a ''woof''';put str2=;run;
+
+str2=Larry's cat's "meow" sounded more like a 'woof'
+NOTE: DATA statement used:
+      real time           0.00 seconds
+
+
+29   %put >>>> str=%str(%')%sysfunc(tranwrd(&str,%str(%'),%str(%'%')))%str(%');
+
+>>>> str='Larry''s cat''s "meow" sounded more like a ''woof'''
+
+</PRE></B>
+
+
+<CENTER><P>Go back to the home <A HREF="../SASMAC~1/index.html">page</A>.</P></CENTER>
+
+<CENTER><P>E-mail the macro and web site <A HREF="mailto:roland@rashleigh-berry.fsnet.co.uk">author</A>.</P></CENTER>
+
+</BODY>
+</HTML>

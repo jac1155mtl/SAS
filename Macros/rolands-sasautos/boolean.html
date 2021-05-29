@@ -1,0 +1,33 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+<META NAME="Generator" CONTENT="Microsoft Word 97">
+<TITLE>Roland's SAS tips and techniques</TITLE>
+<META NAME="keywords" CONTENT="data _null_ report stacking">
+<META NAME="Description" CONTENT="SAS tips and techniques by Roland Rashleigh-Berry">
+<META NAME="Template" CONTENT="C:\PROGRAM FILES\MSOFFICE\OFFICE\html.dot">
+</HEAD>
+<BODY TEXT="#000000" LINK="#0000ff" VLINK="#800080" BGCOLOR="#c0c0c0" ALINK="#FF0000">
+
+<P><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN"></P>
+<H1 ALIGN="CENTER">Using Boolean expressions in calculations</H1>
+<B><P>[This site is not connected with the SAS Institute]</P>
+<P>[last updated - 28 August 2003]</P>
+</B><P>A Boolean expression will return a 0 or 1 respectively if something is false or true. It can sometimes be useful to use these as part of a calculation. An obvious example is in finding out the length of a character string. You should be aware that if a character variable has been set to a space or a null then the length function will return the value 1 and not 0. But what if we wanted it to return a length of 0 in the case of a space or null to distinguish it from a true single character? It is very easy to do this using a Boolean expression as part of a calculation. </P>
+<B><FONT COLOR="#000080"><TT><P>data</FONT> <FONT COLOR="#0000ff">_null_</FONT>;<BR>
+&nbsp;&nbsp;str=<FONT COLOR="#800080">' '</FONT>;<BR>
+&nbsp;&nbsp;len=length(str)*(str ne <FONT COLOR="#800080">' '</FONT>);<BR>
+<FONT COLOR="#0000ff">&nbsp;&nbsp;put</FONT> len=;<BR>
+<FONT COLOR="#000080">run</FONT>;</P>
+</B></TT><P>In the above case you can see that I have the expression <TT>"str ne ' '"</TT> in brackets and I am multiplying it by the length of the string. In the case where str has been set to a space or a null then the expression is false and so it resolves to the value 0 (for "false") rather than 1 (for "true") and if we multiply a value by zero then we get zero. So although the length function is returning the value 1 when str is set to a space it gets multiplied by zero and so len is set to the value 0 which is what we want.</P>
+<P>The above case is multiplication by a Boolean expression. There are other cases where we might want to add or subtract the results of a Boolean expression. I do this within the macro I wrote to calculate <A HREF="age.sas">age</A>. Here is the line of code from within the macro:</P>
+<B><TT><P>year(&amp;date)-year(&amp;dob)-1+((month(&amp;date)&gt;month(&amp;dob)) <BR>
+or ((month(&amp;date)=month(&amp;dob)) and (day(&amp;date)&gt;=day(&amp;dob))))</P>
+</B></TT><P>The above looks quite complex as the Boolean expression is long. The Boolean expression itself is this:</P>
+<B><TT><P>((month(&amp;date)&gt;month(&amp;dob)) <BR>
+or ((month(&amp;date)=month(&amp;dob)) and (day(&amp;date)&gt;=day(&amp;dob))))</P>
+</B></TT><P>It will return a 1 (for "true") if the month of the date is greater than the month of the date of birth OR the months are the same but the day of the month is greater than or equal to the day of birth. So in the calculation of the age in years it is first assuming that the date in the year is not after or on a person's birthday but then it is testing for this condition and if true then it adds the value for "true" (the value 1) to the number of years elapsed. And this gives us exactly what we want.</P>
+<P>Opportunities for using this technique are various and can crop up in sometimes unexpected circumstances. But if you are aware that these Boolean expressions can be used as part of a calculation then you can sometimes make your code both shorter and easier to understand.</P>
+<P ALIGN="CENTER">Go back to the home <A HREF="../SASMAC~1/index.html">page</A>.</P>
+<P ALIGN="CENTER">E-mail the macro and web site <A HREF="mailto:roland@rashleigh-berry.fsnet.co.uk">author</A>.</P></BODY>
+</HTML>

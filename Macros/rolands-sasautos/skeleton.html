@@ -1,0 +1,190 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>whosgot</TITLE>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+   <META NAME="Author" CONTENT="Roland Rashleigh-Berry">
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.01Gold (Win95; I) [Netscape]">
+   <META NAME="Description" CONTENT="SAS tips and techniques by Roland Rashleigh-Berry">
+   <META NAME="KeyWords" CONTENT="sas tips techniques">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#C0C0C0" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+
+<H1 ALIGN=CENTER>sasunixskeleton</H1>
+
+<P><B>[last updated - 30 July 2003]</B></P>
+
+<P>Unless you are an experienced Unix script writer or you have gone through
+all the Unix tips and tutorials in the first section of this <A HREF="unixtips.html">page</A>
+then I would guess that at this stage of your Unix knowledge, you can see
+how useful it would be if you could run SAS inside a script and get it
+to talk to other Unix utilities but there is also no way you could write
+a script yourself. That is why I wrote <B>sasunixskeleton</B>. It writes
+a script for you and all you have to bother about is your SAS code and
+a few very simple things. First of all, here it is. You will need to paste
+it into your script library that you should have set up by now. Don't even
+bother to try to understand what is in it. When you get onto the Unix tips
+proper and go through all the examples I have there and do the practical
+exercises then I assure you that you will be able to understand it. But
+don't waste time now.</P>
+
+<PRE>
+<B>#!/bin/sh
+# Script     : sasunixskeleton
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 30 July 2003
+# Contact    : roland@rashleigh-berry.fsnet.co.uk
+# Purpose    : To create a skeleton script that runs SAS
+# SubScripts : none
+# Notes      : This utility generates a script to run SAS. It handles the Unix
+#              side so you can concentrate on your SAS code. When the script is
+#              generated you only need amend it where the word EDIT appears. You
+#              should search for it. It will appear at the top where a usage
+#              message it put out of the user does not suppl enough parameters
+#              (if no parameters are allowed then you can delete this section).
+# Usage      : sasunixskeleton
+#              sasunixskeleton myscript
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+#  1   (optional) name of script
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+# 
+#================================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#================================================================================
+
+
+if [ $# -lt 1 ]
+then
+  echo -n &quot;Enter script name: &quot;
+  read progname
+else
+  progname=$1
+fi
+
+
+if [ -f $progname ]
+then
+  echo &quot;$progname already exists in this directory. Please check on it and delete&quot; 1&gt;&amp;2
+  echo &quot;it if you do not need it. This utility will not overwrite it and will exit.&quot; 1&gt;&amp;2
+  exit
+fi
+
+
+echo -n &quot;Enter purpose of script: &quot;
+read purpose
+
+
+outfile=\$HOME/${progname}.tmp
+
+
+cat &gt; $progname &lt;&lt; FINISH
+#!/bin/sh
+# Script     : $progname
+# Version    : 1.0
+# Author     : EDIT
+# Date       : EDIT
+# Contact    : EDIT
+# Purpose    : $purpose 
+# SubScripts : none
+# Notes      : EDIT
+# Usage      : $progname       EDIT
+# 
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+#  EDIT EDIT EDIT
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+# 
+#================================================================================
+
+# Put out a usage message if not enough parameters supplied
+if [ \$# -lt 2 ] ; then
+  echo &quot;Usage: $progname ............EDIT EDIT&quot; 1&gt;&amp;2
+  exit 1
+fi
+
+# check on the existence of a sas program in the home directory
+if [ -f \$HOME/${progname}.sas ] ; then
+  echo &quot;SAS program $progname already exists in your home directory. You need to check&quot; 1&gt;&amp;2
+  echo &quot;if you need it and delete it if not. This utility will not overwrite it and&quot; 1&gt;&amp;2
+  echo &quot;will now exit.&quot; 1&gt;&amp;2
+  exit 1
+fi
+
+# Write SAS code out to a temporary file
+cat &gt; \$HOME/${progname}.sas &lt;&lt; END
+options validvarname=any nofmterr;
+libname here './' access=readonly;
+filename _outfile &quot;\$HOME/${progname}.tmp&quot;;
+
+EDIT EDIT EDIT EDIT
+
+Put your code here. Use \$1 to resolve the first entered parameter.
+Use \$2 to resolve the second entered parameter.
+
+\$'s get treated like the &amp;'s in front of macro variables by scripts.
+It will try to resolve a Unix variable if you use one in a format.
+To get round it you have to use a slash in front of the dollar like
+this &quot;\\$&quot; .
+
+Your final output should be written to _outfile. Do not change its
+name. You can either reroute print output to it using a proc printto
+like this:
+
+proc printto print=_outfile;
+run;
+
+or you could use a data _null_ step like the following to put the
+contents of a dataset out to the file like this:
+
+data _null_;
+  file _outfile notitle noprint;
+  set xxxxx;
+  put @1 xxxx;
+run;
+END
+
+
+# Run the SAS code
+sas -log &quot;\$HOME&quot; -sysin &quot;\$HOME/${progname}.sas&quot;
+
+
+# Delete the temporary SAS code and optionally the log
+rm -f \$HOME/${progname}.sas # \$HOME/${progname}.log 
+
+
+# If output file exists then cat it and delete it
+if [ -f $outfile ]
+then
+  cat $outfile
+  rm -f $outfile
+fi
+FINISH
+
+chmod +x $progname</B>
+
+</PRE>
+
+<P>So that's the script. On the next page I will show you how to use it
+to create a very simple utility to do summaries for you. Click on this
+<A HREF="summary.html">link</A>.</P>
+
+<CENTER><P>Go back to the home <A HREF="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</A>.</P></CENTER>
+
+<CENTER><P>E-mail the macro and web site <A HREF="mailto:roland@rashleigh-berry.fsnet.co.uk">author</A>.</P></CENTER>
+
+<CENTER><P><BR>
+<BR>
+<BR>
+</P></CENTER>
+
+</BODY>
+</HTML>

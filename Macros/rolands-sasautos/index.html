@@ -1,0 +1,36 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+<META NAME="Generator" CONTENT="Microsoft Word 97">
+<TITLE>Roland's SAS Macros</TITLE>
+<META NAME="keywords" CONTENT="Roland's sas macros">
+<META NAME="Description" CONTENT="SAS macros written by Roland Rashleigh-Berry">
+<META NAME="Template" CONTENT="C:\PROGRAM FILES\MSOFFICE\OFFICE\html.dot">
+</HEAD>
+<BODY TEXT="#000000" LINK="#0000ff" VLINK="#800080" BGCOLOR="#c0c0c0" ALINK="#FF0000">
+
+<P><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN"></P>
+<H1 ALIGN="CENTER">Roland's SAS Macros</H1>
+<B><P>[This site is not connected with the SAS Institute]</P>
+<P>(Last updated: 05 September 2003 - sasautos extension macros added)</P>
+<P>[Please note that some of the code on this web site will not work under SAS version 6.xx]</P>
+</B><P>This site contains many SAS macros written by myself (Roland Rashleigh-Berry). I have donated these to the public domain and so you are free to download them, web them, use them, distribute them or whatever you like with them. You do not require my permission to do this as they are now yours as much as mine. These macros were written by myself on my own computer with no reference to anything other than SAS documentation. They have not been copied from anywhere else either in part or in whole, other than the example code that is included in the official SAS documentation.</P>
+<P>The macros you will find on this site fall into two categories, sasautos extensions and Clinical Reporting macros. The sasautos extensions are like the simple macros you find in your sasautos library. They mainly act like SAS macro functions. There are more than 90 of these and most of them are very small. Some of these are used by the major Clinical Reporting macros and so if you intend to use these you will need to download the sasautos extensions as well and place them in a library that you have added to the sasautos search path. For the Windows operating system then this can be accomplished using the following code:</P>
+<TT><P>options sasautos=(SASAUTOS, "c:\sasmacros");</P>
+</TT><P>...where "c:\sasmacros" should be changed to the name of the library in which the sasautos extensions have been stored. You could also store the Clinical Reporting macros in the same library but if you did the library will appear too cluttered. It is better to keep them separate.</P>
+<H2>sasautos extensions</H2>
+<P>Old-time SAS programmers will be familiar with the macros %left() and %trim(). These have been supplied with the sasautos library distributed with copies of SAS for many years. They behave like macro functions and yet they are actually not part of the function set. They have now been made redundant because %sysfunc calls can replace them (warning: always check that you are not limited to strings of 200 characters when you replace old macros with their %sysfunc equivalent if this could cause you a problem). But %left() and %trim() have been used for programmers for years and it is of no concern whether they are macro language functions or separate macros. You use them in the same way. There is also no rationale as to why some of these are there and some not. You might be familiar with the %words() macro that you can find of the SAS Technical Support site. Maybe you wondered why they never put that with %left() and %trim() in the sasautos library since it is obviously a useful macro and many programmers either use it or a variation on it. The point is that it is up to you to make these utilities available as you see fit.</P>
+<P>Obvious candidates for adding to the sasautos library are the very useful function calls used in SCL for extracting variable and data set information. In SCL you need to open the data set and give it a file handle before you can get this information. It is just a step beyond, therefore, to write the code to open and close the data set as part of the macro that performs the same function. I have used this principle for many of the sasautos extension macros. This is not at all efficient when you are making many of these calls because the data sets are being opened and closed multiple times, when once would have been better, but when you are developing more complex macros, such as I have done for the Clinical Reporting macros, then the convenience outweighs the efficiency issues.</P>
+<P>You can get to these sasautos extension macros and their descriptions by clicking on this <A HREF="sasautos.html">link</A>.</P>
+<H2>clinical reporting macros</H2>
+<P>The clinical reporting macros I have written so far deal with the tabulation of safety data. If you work in the pharmaceutical industry as a sas programmer you will no doubt have worked on tables that show "N"s and "PCT"s for Adverse Events and other tables that show means, medians etc.. You probably have these macros stored in some central location for "validated" macros. These macros can be very large and messy as the work they do is quite complicated. They will no doubt belong to that organization and they would not take well to your making your own copies. But since I have donated all my macros to the public domain then you are free to copy my macros and use them or amend them how you like. If nothing else, they could serve as a guide to writing your own macros. I have been writing sas macros since late 1986 so I have a lot of experience that you can benefit from. The way I write them may not be the best way it could be done, but it has suited me well for a number of years. In time, you will develop your own style and methods for writing macros but when you are beginning then it is often helpful to adopt another person's style and methods to get you started and running up to speed.</P>
+<P>The sasautos extensions will only change slowly with time. The clinical reporting macros I have written will be constantly changing as I think of enhancements and fix bugs in them. You can get to these macros by clicking on this <A HREF="clinmacros.html">link</A>.</P>
+<H2>other clinical issues</H2>
+<P>Apart from actual macros used in clinical reporting, other issues are discussed which will sometimes contain code snippets. They are to do with how you structure your reporting environment. None of it is to do with statistical analysis as I am not a statistician. You can link to this page <A HREF="clinissues.html">here</A>.</P>
+<H2>SAS tips and techniques</H2>
+<P>As I think of them, I will be adding my own sas tips and techniques to this site. You can read them by clicking on this <A HREF="sastips.html">link</A>.</P>
+<H2>Unix tutorials and shell scripts</H2>
+<P>If you have never written shell scripts before and your knowledge of Unix is limited then you are better off using this <A HREF="unix.html">link</A>.</P>
+<P>If you already have a shell script library you use and you want to hunt for more useful tips and shell scripts then go direct to this <A HREF="unixtips.html">page</A>.</P>
+<P ALIGN="CENTER">E-mail the macro and web site <A HREF="mailto:roland@rashleigh-berry.fsnet.co.uk">author</A>.</P></BODY>
+</HTML>

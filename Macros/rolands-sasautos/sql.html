@@ -1,0 +1,167 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>whosgot</TITLE>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+   <META NAME="Author" CONTENT="Roland Rashleigh-Berry">
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.01Gold (Win95; I) [Netscape]">
+   <META NAME="Description" CONTENT="SAS tips and techniques by Roland Rashleigh-Berry">
+   <META NAME="KeyWords" CONTENT="sas tips techniques">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#C0C0C0" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+
+<H1 ALIGN=CENTER>SQL vs. data steps</H1>
+
+<P><B>[last updated - 12 August 2003]</B></P>
+
+<H2>Introduction</H2>
+
+<P>I have been working in Clinical Trials since late 1996 and still the
+debate goes on about using SQL rather than using more traditional SAS data
+step processing. I remember SQL (Structured Query Language) being heralded
+as the way forward for accessing data from about 1989 onwards. That managers
+in the future would all know SQL&nbsp;as part of their job and they would
+use it to interrogate corporate databases anyway they were allowed to to
+help them make business decisions. That this would lead to corporate data
+serving the business better and businesses becoming far more efficient
+and effective as a result. Well, as for business managers learning SQL,
+then this never happened (though I am sure there are some exceptions).
+It seems to me that instead, its main use lies in getting data out of relational
+databases - especially IBM's flagship database DB2. So SQL&nbsp;has certainly
+found an important niche but not in the way that was hoped for. SQL is
+a very powerful tool but has failed to live up to its original expectations.
+It has a problem. </P>
+
+<H2>SQL and its technical complexity</H2>
+
+<P>I will give you my own reasoning behind why SQL never became the tools
+of managers. And that is because it is too technical and complex by nature.
+There is nothing wrong with its design. It is a very good design and could
+not have been implemented any better. It is just that it is doing a lot
+and doing it often all in one go. This makes sense for a Cobol program
+interrogating a relational database such as DB2. These databases are being
+updated many times per second so you have to go in and get your information
+and get out in the shortest possible time before the data gets changed.
+You let the database handle the complexity of the query. This will have
+been thoroughly tested before going into production. But the user who calls
+this Cobol program to update their screen with information or whatever
+will have no concept of the SQL going on behind the scenes. And as for
+the managers using SQL to make business decisions, then they had better
+be careful with their SQL queries. If they get it wrong then the information
+they are presented with could also be wrong and they could make a wrong
+business decision as a result. SQL is far too technical and complex to
+be an ad-hoc tool unless those using it are highly competent with SQL.</P>
+
+<H2>What SQL&nbsp;can do that data steps can't do</H2>
+
+<P>You can do some things with SQL that you just can not do using data
+steps in an easy fashion. If you try to do it with data steps then you
+will create a mess that nobody except the original programmer can understand.
+And sometimes, when you are clinical reporting, you will need these features
+that SQL can do easily. Consider merging on ranges of values. For example,
+suppose you have a dataset with dose start and stop dates in. You also
+have an AE&nbsp;dataset with an onset date in. You want to know what dose
+the subject was on when they had their AE. How would you do that with data
+steps? You can do it with SQL rather easily. In fact one of the macros
+on my web site does exactly that. It is called <A HREF="dosemerge.sas">%dosemerge</A>.
+Here is another example. You need to merge a count of events on top of
+a zero count of all possible events for all treatment groups. So let's
+say you create a dataset with all events in and you have a dataset with
+the different treatment arms in then you can do this with using a pointer
+for the treatment dataset and outputting a value for each event and each
+treatment group. But instead of just two values you may have more and this
+starts to become messy with a data step. It is easier and better to use
+SQL. I have a macro on my web site that does this called <A HREF="zerogrid.sas">%zerogrid</A>.
+So you see there are occasions where you will end up using SQL when writing
+clinical reporting programs.</P>
+
+<H2>Risks of SQL in Clinical Reporting</H2>
+
+<P>The inherent complexity of SQL creates a risk if used in ad-hoc clinical
+reporting programs. All these programs will go through some sort of QC.
+Some of these programs will just go though a code review as part of the
+QC process. Some will be independently programmed. But if you have an SQL-heavy
+program being code-reviewed by a programmer who is not used to SQL (and
+maybe doesn't want to let on) then that most important part of the program
+will be passed over with just a cursory glance. So if your programmers
+are not used to SQL then maybe it is better not to use it in the first
+place.</P>
+
+<H2>The &quot;all or nothing&quot; approach</H2>
+
+<P>Let's think abou the <B>&quot;all&quot;</B> approach. If all your programmers
+know SQL well then writing clinical reporting programs in SQL will not
+be a problem. And to know it well you would have to use SQL nearly every
+day and so to achieve that level of usage you might as well write all your
+dats stpe-type code using SQL and have done with it. I mean to the extent
+of never having a data step in your code where an SQL&nbsp;step could do
+the job instead. This would take a bit of initial training for every programmer.
+This could be expensive but if you had internal training then the costs
+could be kept down. A problem can arise whereby a pharmaceutical company
+hires contractors to make up for surges in work demand (as most do) and
+the contractors do not know SQL. You might have to select only those who
+had good SQL experience, though, and it may be difficult to identify those
+with this skill. You would probably have to give them an SQL&nbsp;test
+as part of the selection process. This is an achievable and do-able thing
+and you could go all the way over to the SQL way of doing things. And,
+to my way of thinking, there is no halfway house.</P>
+
+<P>On the other hand you could use the <B>&quot;nothing&quot;</B> approach.
+Yes, you need to use SQL sometimes, as in the two examples I cited above,
+but you <B>needn't see any SQL</B>. You can hide it, instead, like I have
+hidden it in the two macros <A HREF="dosemerge.sas">%dosemerge</A> and
+<A HREF="zerogrid.sas">%zerogrid</A>. If you identify when you should use
+SQL then it can always be written into a macro that you call. This macro
+could be thoroughly checked and thus &quot;validated&quot; so that you
+know it produces correct results and the programmers could forget about
+the SQL in it and just call it. And since they will be &quot;validated&quot;
+macros then the output could be relied upon and require no further checking.
+So if not all your programmers are happy with SQL then I don't think it
+does any good having SQL programmers mixing with non-SQL programmers and
+exchanging code. You could, instead, hide the SQL in macros and then have
+no SQL in your clinical reporting programs whatsoever. And to my way of
+thinking, again, there is no halfway house.</P>
+
+<H2>My recommendation</H2>
+
+<P>I've only decided this today after all the years I have worked doing
+clinical reporting. And that is to adopt the &quot;all or nothing&quot;
+approach. If use of SQL is well advanced in your company then go the whole
+way and even ban use of data steps. There is a downside to this, however.
+At least with data step merges you can add code to them to run diagnostics
+where matches are expected and not found. Not so with SQL. It is much harder
+to QC SQL-heavy programs. Another downside is that trainee programmers
+can not be expected to program with SQL from Day One. They will need further
+training and until then their efforts might be better confined to QC programming
+and ad-hoc tasks. Maybe not contractors either unless they have been carefully
+selected. But if you are not beyond the half-way stage using SQL then I
+recommend you drop use of SQL altogether except in utility macros that
+have been written and validated to do those chores that SQL does best.
+There is a downside to this as well. Coding can become lengthier. But a
+lot of the coding could be to do with creating work datasets and sorting
+them in order before merging them. But if you are well organised then all
+your intermediate datasets you report from will all be in the same order
+(by &quot;subject&quot; or whatever variable you use to uniquely identify
+those enlisted into the study) and so you can do direct merges with these
+datasets (you can sort whole libraries in desired order if you use my macro
+<A HREF="supasort.sas">%supasort</A>). This will allow your trainees to
+be productive straight away and your contractors should have no problems
+if you tell them they are not allowed to use SQL and must instead call
+standard macros when its functionality is required.</P>
+
+<P>It is important to know what SQL can do for you and to have utility
+macros that call SQL that can do these tasks that SQL does best. But my
+recommendation for any site where this issue has not been decided is to
+<B>NOT use SQL</B> inline in clinical reporting programs.</P>
+
+<CENTER><P>Go back to the home <A HREF="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</A>.</P></CENTER>
+
+<CENTER><P>E-mail the macro and web site <A HREF="mailto:roland@rashleigh-berry.fsnet.co.uk">author</A>.</P></CENTER>
+
+<CENTER><P><BR>
+<BR>
+<BR>
+</P></CENTER>
+
+</BODY>
+</HTML>

@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>whosgot</TITLE>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+   <META NAME="Author" CONTENT="Roland Rashleigh-Berry">
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.01Gold (Win95; I) [Netscape]">
+   <META NAME="Description" CONTENT="SAS tips and techniques by Roland Rashleigh-Berry">
+   <META NAME="KeyWords" CONTENT="sas tips techniques">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#C0C0C0" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+
+<H1 ALIGN=CENTER>ddiff</H1>
+
+<P><B>[last updated - 29 July 2003]</B></P>
+
+<P>There is a file comparison utility on Unix called <B>diff</B>. This
+is an extremely useful utility if you are a Clinical SAS&nbsp;programmer
+for when you want to compare table or listing output. It is a simple matter
+to compare one output with another using this utility. You can look up
+how to do this. But it becomes even more useful when you can compare an
+old set of outputs with a new set of outputs. Suppose you have downloaded
+new data and you want to know what changes resulted in the tables or listings.
+It would be great if you could move all the old outputs to a subdirectory
+and then rerun and compare identically named outputs in the subdirectory
+with those in the parent directory. Of course, when you do a new run, there
+will be a line on each page saying who ran it and when. So there will be
+a difference on every page that you are not interested in. It would be
+better if that difference were ignored and just the actual results were
+compared.</P>
+
+<P>This is easy to do once you understand how to handle loops in scripts
+and &quot;pattern matching&quot;. You can loop through the files you have
+in your subdirectory and compare them with those in the parent directory
+and use what you know about pattern matching to mask the unimportant differences.
+If a utility is useful on one file then it can be made to work on many
+files with little effort except a bit of script writing. And if you have
+studied all the examples up to this point and done the exercises then you
+will have come to the conclusion that script writing is not difficult.
+But you won't have seen an example yet of one useful utility being made
+to work on many files and the resulting extra power at your disposal. This
+is where you will see a very practical and useful application of this.</P>
+
+<P>This utility is called <B>ddiff</B>, rather than <B>diff</B>, because
+it compares whole directories. It is <B>d</B>irectory <B>diff</B>erence
+rather than just the <B>diff</B>erence between two files. The user makes
+the subdirectory the current directory and types in the file pattern of
+outputs they want to compare with in the parent directory. Temporary copies
+will be made in the home directory where superficial information such as
+run date will be removed and a comparison between like-named files can
+be done. Output, as always, will go to the terminal window, and it is up
+to the user to redirect the output.</P>
+
+<P>But here we have to know pattern matching well. In the example below,
+I am assuming people use my <B>pagexofy</B> utility to add &quot;Page x
+of Y&quot; labels to output and that all the extra transient information
+such as date and time and who ran it is on that line. I am going to mask
+that line using sed to make a substitution and will explain the pattern
+I have used. But for now, here is the utility:</P>
+
+<PRE>
+<B>#!/bin/sh
+# Script     : ddiff
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 29 July 2003
+# Contact    : roland@rashleigh-berry.fsnet.co.uk
+# Purpose    : To compare all the outputs in a subdirectory with identically
+#              named outputs in a parent directory. 
+# SubScripts : none
+# Notes      : Refer to documentation on diff. Note that this utility has 
+#              pattern matching and substitution in it to mask lines that will
+#              always change for each run. You need to amend this for your own
+#              standard outputs.
+# Usage      : ddiff *.lst
+# 
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+#  1   file or list of files to compare
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+# 
+#================================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#================================================================================
+
+if [ $# -lt 1 ] ; then
+  echo &quot;Usage: ddiff t*.lst&quot; 1&gt;&amp;2
+  exit 1
+fi
+
+for file in &quot;$@&quot; ; do
+  echo ; echo ; echo
+  echo '========================================================================='
+  echo 'Comparing ' $file ': &lt; = lower directory &gt; = upper directory'
+  echo '========================================================================='
+  sed 's/.*Page .* of .*//'    $file &gt; $HOME/file1.tmp
+  sed 's/.*Page .* of .*//' ../$file &gt; $HOME/file2.tmp
+  diff -b $HOME/file1.tmp $HOME/file2.tmp 
+done
+
+rm -f $HOME/file1.tmp $HOME/file2.tmp</B>
+
+</PRE>
+
+<P>Now to explain the pattern matching in the sed calls. <B><TT>&quot;.*Page
+.* of .*&quot;</TT></B> will match any number of characters greater than
+zero up to the word &quot;Page&quot; and then a space and one character
+at least and then a space and then &quot;of&quot; and then a space and
+then one or more characters. It will substitute that whole line with nothing.
+I am sure I am going to match my lines with &quot;Page x of Y&quot; on
+and blank it out so that these lines will not be compared. If your changeable
+line in outputs is different then you will have to amend this utility to
+suit.</P>
+
+<CENTER><P>Go back to the home <A HREF="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</A>.</P></CENTER>
+
+<CENTER><P>E-mail the macro and web site <A HREF="mailto:roland@rashleigh-berry.fsnet.co.uk">author</A>.</P></CENTER>
+
+<CENTER><P><BR>
+<BR>
+<BR>
+</P></CENTER>
+
+</BODY>
+</HTML>

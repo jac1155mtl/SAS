@@ -1,0 +1,56 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>whosgot</TITLE>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+   <META NAME="Author" CONTENT="Roland Rashleigh-Berry">
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.01Gold (Win95; I) [Netscape]">
+   <META NAME="Description" CONTENT="SAS tips and techniques by Roland Rashleigh-Berry">
+   <META NAME="KeyWords" CONTENT="sas tips techniques">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#C0C0C0" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+
+<H1 ALIGN=CENTER>symbolic links</H1>
+
+<P><B>[last updated - 04 August 2003]</B></P>
+
+<P>If you can store all your SAS macros in one library then all well and
+good. But chances are you have a central macro library and next on the
+search path is a project macro library. And because of your setup then
+you can only point to the central library, your project library and no
+other. It could be that your department has developed some macros that
+are good for more than one project. You could make copies of these macros
+but instead of making copies of macros it is better to create a <B>symbolic
+link</B> from your project macro library to where the macro is stored.
+This way, the macro appears to be in your library and acts like it is but
+it isn't. By using symbolic links then only one copy of the macro needs
+to exist. This is a good thing since any updates to it will be automatically
+reflected in the other links. On the other hand, you had better make sure
+that backups exist and that you are aware that any changes you make to
+the code will affect other people in other project areas.</P>
+
+<P>The way you create a symbolic link is as follows. Make your project
+directory the current directory then type in:</P>
+
+<P><B><TT>ln -s /full/path/name/of/source/aaa.sas aaa.sas</TT></B></P>
+
+<P>..where the first entry after the -s option is the fully specified location
+of the original macro plus its name. The last entry is just the plain macro
+name which will be the same as the original macro except this time it is
+the name of the entry you are putting in your local project directory.</P>
+
+<P>Note that you can edit the macro from any location so long as you have
+the right permissions. But if you delete the symbolic link then it does
+not delete the original macro. It just removes your link to it.</P>
+
+<CENTER><P>Go back to the home <A HREF="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</A>.</P></CENTER>
+
+<CENTER><P>E-mail the macro and web site <A HREF="mailto:roland@rashleigh-berry.fsnet.co.uk">author</A>.</P></CENTER>
+
+<CENTER><P><BR>
+<BR>
+<BR>
+</P></CENTER>
+
+</BODY>
+</HTML>

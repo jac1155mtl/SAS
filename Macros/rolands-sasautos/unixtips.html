@@ -1,0 +1,151 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>Roland's SAS tips and techniques</TITLE>
+   <META NAME="Author" CONTENT="Roland Rashleigh-Berry">
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.01Gold (Win95; I) [Netscape]">
+   <META NAME="Description" CONTENT="SAS tips and techniques by Roland Rashleigh-Berry">
+   <META NAME="KeyWords" CONTENT="sas tips techniques">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#C0C0C0" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+
+<H1 ALIGN=CENTER>Unix tips for Clinical SAS Programmers</H1>
+
+<P><B>[last updated - 06 August 2003]</B></P>
+
+<H2>Introduction</H2>
+
+<P>Note the title of this page. These are Unix tips especially for Clinical
+SAS programmers. If you are one, like me, and all you want is some useful
+shell scripts that you can use when working on Clinical trials then you
+need look no further than this page. And I'll tell you when you might need
+to use them as well. Sometimes there will be a shell script that you might
+like to put in your shell script library. Sometimes it will just be a command
+or a few combined commands that do not warrant a shell script being written.
+If there is a shell script, then I will briefly describe what it is doing
+in an understandable way. At some time in the future, I will add a link
+to the bottom of this page where you can find out more about writing shell
+scripts. But you will learn a lot from studying these examples here and
+I suggest you go through all of these before getting into the more complicated
+stuff. You are better off learning by example rather than making an academic
+exercise out of it. It is the way of thinking you need to learn more than
+anything else. Getting a feel for what should be possible and how simple
+commands, combined, make it possible.</P>
+
+<H2>&quot;Unix in a Nutshell&quot; book and &quot;man&quot;</H2>
+
+<P>You need a good book on Unix to hand, if you work on a Unix platform,
+and you want to &quot;do&quot; anything useful. And the book will only
+go so far, so you need extra help as well. I highly recommend the O'Reilly
+book &quot;Unix in a Nutshell&quot; as a concise source of Unix information.
+The book can not cover everything but you will find you have a facility
+called &quot;man&quot; at your Unix installation (mine is &quot;info&quot;
+instead on Cygwin). Suppose you want to find out more about the &quot;tr&quot;
+command (mentioned in the first tip), then at the prompt type in &quot;man
+tr&quot; and you will see more. In the following tips and scripts, I am
+going to assume you know a little something about commonly-used Unix utilities.
+But maybe you don't so a book would help but &quot;man&quot; might be enough.</P>
+
+<H2>Shell scripting tips and scripts</H2>
+
+<P>I have ordered the following tips so that they tend to build upon each
+other. For that reason I recommend you go through them sequentially. If
+I have marked any as IMPORTANT&nbsp;then you must not skip them or you
+might not be able to understand the following ones.</P>
+
+<P><TT><A HREF="piping.html">piping</A> - </TT>Tutorial on &quot;piping&quot;
+and &quot;redirection&quot; (IMPORTANT)<BR>
+<TT><A HREF="getname.html">getname</A> - </TT>Script to match a userid
+to a person's name<BR>
+<TT><A HREF="whosgot.html">whosgot</A> - </TT>Script to find out who's
+got a lock on SAS datasets or other files<BR>
+<TT><A HREF="fsv.html">fsv</A> &nbsp;&nbsp;&nbsp;- </TT>fsview a SAS dataset<BR>
+<TT><A HREF="listempty.html">listempty</A> - </TT>Script to list out all
+&quot;empty&quot; files<BR>
+<TT><A HREF="scanlogs.html">scanlogs</A> - </TT>Script to scan all the
+lines in a SAS log looking for important messages<BR>
+<TT><A HREF="rescue.html">rescue</A> - </TT>Script to &quot;rescue&quot;
+sas programs from their logs<BR>
+<TT><A HREF="antigrep.html">antigrep</A> - </TT>Script to tell you what
+files DO&nbsp;NOT contain a character string<BR>
+<TT><A HREF="pages.html">pages</A> - </TT>Script to select a specified
+page range from a list of files<BR>
+<TT><A HREF="pagexofy.html">pagexofy</A> - </TT>Script to add &quot;Page
+x of Y&quot; labels in output tables and listings<BR>
+<TT><A HREF="delsome.html">delsome</A> - </TT>Tutorial/Script on optionally
+deleting a list of files (IMPORTANT)<BR>
+<TT><A HREF="delall.html">delall</A> - </TT>Script to delete a list of
+files<BR>
+<TT><A HREF="dirtidy.html">dirtidy</A> - </TT>Tutorial/Script on spotting
+widowed <B>.log</B> and <B>.lst</B> files in a directory (IMPORTANT)<BR>
+<TT><A HREF="killjobs.html">killjobs</A> - </TT>Script to optionally kill
+Unix processes that you own<BR>
+<TT><A HREF="sed&awk.html">sed &amp; awk</A> - </TT>Tutorial on sed, awk
+and the do-it-now quotes (IMPORTANT)<BR>
+<TT><A HREF="ddiff.html">ddiff</A> - </TT>Script to compare an old set
+of outputs with new ones<BR>
+<TT><A HREF="hdr.html">hdr</A> - </TT>Script to create a standard SAS program
+header with details filled in<BR>
+<TT><A HREF="xargs.html">xargs</A> - </TT>Tutorial on passing arguments
+to Unix utilities<BR>
+<TT><A HREF="basename.html">basename</A> - </TT>Tutorial on when and when
+not to use basename</P>
+
+<H2>SAS/Unix scripts</H2>
+
+<P>These are scripts that invoke SAS. These have been developed under Cygwin
+running on a PC&nbsp;and then converted to run under Unix. As a consequence,
+there could be obvious errors in them that will cause them to fail under
+Unix. Please help the author by emailing him if you have run this on a
+full-blown Unix platform and you have found errors that cause it not to
+run.</P>
+
+<P><TT><A HREF="skeleton.html">sasunixskeleton</A> - </TT>the utility that
+writes utilites that call SAS<BR>
+<TT><A HREF="contents.html">contents</A> - </TT>List the contents in short
+form of one or more datasets or a whole library<BR>
+<TT><A HREF="contentsl.html">contentsl</A> - </TT>Long form of <B>contents<BR>
+</B><TT><A HREF="clash.html">clash</A> - </TT>Identify where differences
+exist in identically-named variables between datasets in a library<BR>
+<TT><A HREF="printalln.html">printalln</A> - </TT>Print all occurences
+of a numeric variable meeting the specified condition<BR>
+<TT><A HREF="printallc.html">printallc</A> - </TT>Same as <B>printalln</B>
+but for character variables<BR>
+<TT><A HREF="allmiss.html">allmiss</A> - </TT>Notify for all-missing variables
+in a dataset, list of datasets or a whole library<BR>
+<TT><A HREF="misscnt.html">misscnt</A> - </TT>Notify number of missing
+variable observations in a dataset, list of datasets or a whole library<BR>
+<TT><A HREF="titleprogs.html">titleprogs</A> - </TT>YOUR&nbsp;CALL. You
+need to write this yourself because I don't know your setup (IMPORTANT)<BR>
+<TT><A HREF="intitlesnoprogs.html">intitlesnoprogs</A> - </TT>YOUR&nbsp;CALL&nbsp;AGAIN.
+Searches program directories assuming you wrote <B>titleprogs</B> but will
+need more work<BR>
+<TT><A HREF="intitles.html">intitles</A> - </TT>YOUR&nbsp;CALL&nbsp;AGAIN.
+List all programs in your current directory that match with those in your
+titles dataset</P>
+
+<H2><BR>
+Other Unix tips</H2>
+
+<P><A HREF="fileperm.html">File permissions (<B>umask</B> and <B>chmod</B>)</A>
+(IMPORTANT)<BR>
+<A HREF="tr.html">Using <B>tr</B> to remove Windows carriage-returns</A>
+(IMPORTANT)<BR>
+<A HREF="symblinks.html">Symbolic links<BR>
+</A><A HREF="makefiles.html">Makefiles vs. Scripts for running SAS&nbsp;program
+suites</A><BR>
+<BR>
+<BR>
+</P>
+
+<CENTER><P>Go back to the home <A HREF="index.html">page</A>.</P></CENTER>
+
+<CENTER><P>E-mail the macro and web site <A HREF="mailto:roland@rashleigh-berry.fsnet.co.uk">author</A>.</P></CENTER>
+
+<CENTER><P><BR>
+<BR>
+<BR>
+</P></CENTER>
+
+</BODY>
+</HTML>

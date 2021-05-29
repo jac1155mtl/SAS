@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>whosgot</TITLE>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+   <META NAME="Author" CONTENT="Roland Rashleigh-Berry">
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.01Gold (Win95; I) [Netscape]">
+   <META NAME="Description" CONTENT="SAS tips and techniques by Roland Rashleigh-Berry">
+   <META NAME="KeyWords" CONTENT="sas tips techniques">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#C0C0C0" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+
+<H1 ALIGN=CENTER>basename</H1>
+
+<P><B>[last updated - 05 August 2003]</B></P>
+
+<P>The basename utility is used for stripping off path names. Try the following
+command and you will see how it works:</P>
+
+<P><B><TT>basename /aa/bb/ccc.sas</TT></B></P>
+
+<P>You will see that ccc.sas is returned which is what you want. You will
+often see it in scripts enclosed in the do-it-now quotes like this:</P>
+
+<P><B><TT>prog=`basename $file`</TT></B></P>
+
+<P>It is fine for single instances like that. But you should not come to
+the conclusion that it is the only way to strip a path name off. You can
+also do it with <B>sed</B>. Try this:</P>
+
+<P><B><TT>echo /aa/bb/ccc.sas | sed 's%.*/%%'</TT></B></P>
+
+<P>sed will do this for a stream of input like this:</P>
+
+<P><B><TT>ls -1 ./sasmacros/*.sas | sed 's%.*/%%'</TT></B></P>
+
+<P>This is the technique you should use for chopping the path names off
+lists of things. To do the same with basename you would have to use this
+command:</P>
+
+<P><B><TT>ls -1 ./sasmacros/*.sas | xargs -i{} basename {}</TT></B></P>
+
+<P>The above will work but will take many times longer to run compared
+to using sed. This is because basename's argument must follow it. What
+the above is doing is telling xargs to insert what it receives from standard
+input where it finds the &quot;{}&quot; pattern. In other words, after
+basename.</P>
+
+<P>To sum up, <B>basename</B> has its place for stripping off path names,
+but it should only be used on single items. Use <B>sed</B> for multiple
+items.</P>
+
+<CENTER><P>Go back to the home <A HREF="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</A>.</P></CENTER>
+
+<CENTER><P>E-mail the macro and web site <A HREF="mailto:roland@rashleigh-berry.fsnet.co.uk">author</A>.</P></CENTER>
+
+<CENTER><P><BR>
+<BR>
+<BR>
+</P></CENTER>
+
+</BODY>
+</HTML>

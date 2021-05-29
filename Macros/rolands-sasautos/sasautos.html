@@ -1,0 +1,407 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>sasautos extensions</TITLE>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+   <META NAME="Generator" CONTENT="Microsoft Word 97">
+   <META NAME="keywords" CONTENT="sas macros, sasautos extensions">
+   <META NAME="Description" CONTENT="SAS macros written by Roland Rashleigh-Berry">
+   <META NAME="Template" CONTENT="C:\PROGRAM FILES\MSOFFICE\OFFICE\html.dot">
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.01Gold (Win95; I) [Netscape]">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#C0C0C0" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+
+<H1 ALIGN=CENTER>sasautos extensions</H1>
+
+<P><B>[This site is not connected with the SAS Institute]</B></P>
+
+<P><B>(Last updated: 05 September 2003 - %clength, %ljustify, %optlength
+and %chompw added)</B></P>
+
+<P><B>[Please note that the code on this web site is intended to run under
+SAS version 8.1 or later]</B></P>
+
+<P><B><I>[Disclaimer: You will be able to access and download public domain
+code from this page. Although efforts have been made to test the code,
+no guarantee as to suitability or accuracy is either given or implied.
+If you use the code, you do so at your own risk. You should test this code
+yourself and thoroughly satisfy yourself that it is working correctly before
+using it in a production environment. If you find problems in the code
+then please inform the author using the contact email address in the header
+of the macro].</I></B></P>
+
+<P><B>Note that these were written on a Windows PC. If you download these
+files directly to a different platform such as Unix then you might get
+problems with the control characters at the end of the lines. You might
+be better off just copying and pasting if you are not running Windows.
+If you do copy and paste then choose the browser option to view the source
+of the macro and copy and paste that. This is because some of the macro
+variable references get translated into something else by the browser.</B></P>
+
+<P><B>All these macros have html tags as part of the header box and will
+appear as &lt;pre&gt;&lt;b&gt; in the first line. They are not part of
+the code. They just help them to display correctly when you browse them
+using web pages. You should remove these tag markers if you intend to use
+the macros, although they will not affect the code since they are part
+of the commented-out header.</B></P>
+
+<P><B>The entire set of sasautos extensions (as well as some clinical reporting
+macros) can be downloaded in zipped format by clicking on this <A HREF="sasautos.zip">link</A>.</B></P>
+
+<H2>dataset and variable information macros</H2>
+
+<P><B>Test Pack - Actual Macro - Description of function<BR>
+</B><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testattrc.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="attrc.sas">attrc</A></FONT></FONT><TT>
+- </TT>low level macro called by other macros that returns character information
+about a dataset<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testattrn.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="attrn.sas">attrn</A></FONT></FONT><TT>
+- </TT>low level macro called by other macros that returns numeric information
+about a dataset<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testattrv.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="attrv.sas">attrv</A></FONT></FONT><TT>
+- </TT>low level macro called by other macros that returns variable information<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testcrdte.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="crdte.sas">crdte</A></FONT></FONT><TT>
+- </TT>return the creation date of a dataset as a number<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testdslabel.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="dslabel.sas">dslabel</A></FONT></FONT><TT>
+- </TT>return a dataset label<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testdsall.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="dsall.sas">dsall</A></FONT></FONT><TT>
+- </TT>expands out the _all_ notation into dataset names<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testdslist.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="dslist.sas">dslist</A></FONT></FONT><TT>
+- </TT>list all datasets under a given libref<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testgetvalue.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="getvalue.sas">getvalue</A></FONT></FONT><TT>
+- </TT>returns the value of a variable<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testhasvars.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="hasvars.sas">hasvars</A></FONT></FONT><TT>
+- </TT>returns true if dataset has all variables in supplied list<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testhasvarsc.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="hasvarsc.sas">hasvarsc</A></FONT></FONT><TT>
+- </TT>returns true if dataset has all character variables in supplied
+list<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testhasvarsn.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="hasvarsn.sas">hasvarsn</A></FONT></FONT><TT>
+- </TT>returns true if dataset has all numeric variables in supplied list<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testmodte.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="modte.sas">modte</A></FONT></FONT><TT>
+- </TT>return the modification date of a dataset as a number<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testnlobs.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="nlobs.sas">nlobs</A></FONT></FONT><TT>
+- </TT>return the number of logical observations (i.e. not marked for deletion)
+in a dataset<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testnobs.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="nobs.sas">nobs</A></FONT></FONT><TT>
+- </TT>return the number of observations in a dataset<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testnvars.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="nvars.sas">nvars</A></FONT></FONT><TT>
+- </TT>return the number of variables in a dataset<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testnvarsc.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="nvarsc.sas">nvarsc</A></FONT></FONT><TT>
+- </TT>return the number of character variables in a dataset<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testnvarsn.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="nvarsn.sas">nvarsn</A></FONT></FONT><TT>
+- </TT>return the number of numeric variables in a dataset<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testvarfmt.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="varfmt.sas">varfmt</A></FONT></FONT><TT>
+- </TT>return a variable's format<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testvarinfmt.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="varinfmt.sas">varinfmt</A></FONT></FONT><TT>
+- </TT>return a variable's informat<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testvarlabel.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="varlabel.sas">varlabel</A></FONT></FONT><TT>
+- </TT>return a variable's label<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testvarlen.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="varlen.sas">varlen</A></FONT></FONT><TT>
+- </TT>return a variable's length<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testvarlist.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="varlist.sas">varlist</A></FONT></FONT><TT>
+- </TT>return a list of all variables in a dataset<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testvarlistc.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="varlistc.sas">varlistc</A></FONT></FONT><TT>
+- </TT>return a list of all character variables in a dataset<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testvarlistn.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="varlistn.sas">varlistn</A></FONT></FONT><TT>
+- </TT>return a list of all numeric variables in a dataset<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testvarnum.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="varnum.sas">varnum</A></FONT></FONT><TT>
+- </TT>return a variable's position in a dataset (or 0 if not present)<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testvartype.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="vartype.sas">vartype</A></FONT></FONT><TT>
+- </TT>return a &quot;C&quot; or &quot;N&quot; depending on the type of
+a variable</P>
+
+<H2>other function-style small utility macros</H2>
+
+<P><B>Test Pack - Actual Macro - Description of function<BR>
+</B><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testaddautos.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="addautos.sas">addautos</A></FONT></FONT><TT>
+- </TT>adds an extra library to the front or back of the sasautos search
+path<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testafter.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="after.sas">after</A></FONT></FONT><TT>
+- </TT>returns the word or quote that directly follows a target string<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testcasestrmac.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="casestrmac.sas">casestrmac</A></FONT></FONT><TT>
+- </TT>change a mixed-case version of a string to the string itself for
+a macro expression<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testchompw.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="chompw.sas">chompw</A></FONT></FONT><TT>
+- </TT>to &quot;chomp&quot; a word and optionally before and/or after words
+out of a macro string<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testcompress.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="compress.sas">compress</A></FONT></FONT><TT>
+- </TT>compress a macro string for specified characters<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testcommas.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="commas.sas">commas</A></FONT></FONT><TT>
+- </TT>delimits elements of a list with commas<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testendwith.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="endwith.sas">endwith</A></FONT></FONT><TT>
+- </TT>ensures a macro string ends with a specified character if not null<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testeqsuff.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="eqsuff.sas">eqsuff</A></FONT></FONT><TT>
+- </TT>suffix elements of a list with equal signs<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testglobexist.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="globexist.sas">globexist</A></FONT></FONT><TT>
+- </TT>test for the existence of all of one or more global macro variables<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testgloblist.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="globlist.sas">globlist</A></FONT></FONT><TT>
+- </TT>return a list of all current global macro variables in uppercase<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testleft.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="left.sas">left</A></FONT></FONT><TT>
+-&nbsp;&nbsp;</TT>left-aligns a macro variable string<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testlowcase.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="lowcase.sas">lowcase</A></FONT></FONT><TT>
+- </TT>lower-case the contents of a macro variable<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testmatch.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="match.sas">match</A></FONT></FONT><TT>
+- </TT>return elements of a list that match with those in a reference list<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testnodup.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="nodup.sas">nodup</A></FONT></FONT><TT>
+- </TT>return a list with duplicate items removed<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testnoquotes.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="noquotes.sas">noquotes</A></FONT></FONT><TT>
+- </TT>removes all quoted strings from a macro expression<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testqcompress.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="qcompress.sas">qcompress</A></FONT></FONT><TT>
+- </TT>compresses a macro variable and returns results quoted<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testqleft.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="qleft.sas">qleft</A></FONT></FONT><TT>
+- </TT>left-aligns a macro string and returns the result quoted<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testqtrim.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="qtrim.sas">qtrim</A></FONT></FONT><TT>
+- </TT>trims a macro variable string and returns the results quoted<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testquotelst.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="quotelst.sas">quotelst</A></FONT></FONT><TT>
+- </TT>quotes elements of a list<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testquotecnt.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="quotecnt.sas">quotecnt</A></FONT></FONT><TT>
+- </TT>counts quoted elements in a macro expression<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testquotescan.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="quotescan.sas">quotescan</A></FONT></FONT><TT>
+- </TT>scans for quoted elements in a macro expression<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testremove.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="remove.sas">remove</A></FONT></FONT><TT>
+- </TT>removes a target string from another string<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testrxmatch.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="rxmatch.sas">rxmatch</A></FONT></FONT><TT>
+- </TT>return matching elements of a list according to the specified RX&nbsp;pattern<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testsplitmac.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="splitmac.sas">splitmac</A></FONT></FONT><TT>
+- </TT>insert split characters into a macro string<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testtherest.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="therest.sas">therest</A></FONT></FONT><TT>
+- </TT>returns everything in a macro expression following one of the target
+characters<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testtrim.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="trim.sas">trim</A></FONT></FONT><TT>
+- &nbsp;</TT>trims a macro variable string<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testverify.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="verify.sas">verify</A></FONT></FONT><TT>
+- </TT>returns the first position in a macro string where the character
+does not match a supplied list<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testverifyb.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="verifyb.sas">verifyb</A></FONT></FONT><TT>
+- </TT>backwards equivalent of the verify macro<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testwindex.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="windex.sas">windex</A></FONT></FONT><TT>
+- </TT>return the position of a word count in a string<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testwords.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="words.sas">words</A></FONT></FONT><TT>
+- </TT>counts the number of words (strings delimited by spaces) in a list</P>
+
+<H2>other utility macros</H2>
+
+<P><B>Test Pack - Actual Macro - Description of function<BR>
+</B><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testage.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="age.sas">age</A></FONT></FONT><TT>
+- </TT>returns the age of a person at a specified date (for use in a data
+step)<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testaligndp.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="aligndp.sas">aligndp</A></FONT></FONT><TT>
+- </TT>formats numeric values into a text field aligning decimal points<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testalluniq.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="alluniq.sas">alluniq</A></FONT></FONT><TT>
+- </TT>writes all unique values of a variable in a whole library to a dataset<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testbydrop.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="bydrop.sas">bydrop</A></FONT></FONT><TT>
+- </TT>drop by-group residual observations<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testbytitle.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="bytitle.sas">bytitle</A></FONT></FONT><TT>
+- </TT>drop the last title if it is a &quot;by&quot; title and write the
+contents away<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testcasestrvar.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="casestrvar.sas">casestrvar</A></FONT></FONT><TT>
+- </TT>change a mixed-case version of a string to the string itself for
+a text variable (for use in a data step)<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testchar2num.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="char2num.sas">char2num</A></FONT></FONT><TT>
+- </TT>to &quot;effectively&quot; change numeric-containing character variables
+to numeric variables<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testchkuniq.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="chkuniq.sas">chkuniq</A></FONT></FONT><TT>
+- </TT>check for uniqueness in key variables<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testclashvars.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="clashvars.sas">clashvars</A></FONT></FONT><TT>
+- </TT>to identify where there is a clash of variable characteristics within
+a library<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testclength.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="clength.sas">clength</A></FONT></FONT><TT>
+- </TT>to create a length statement for the maximum length of identical
+character variables in multiple datasets<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testcomplibs.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="complibs.sas">complibs</A></FONT></FONT><TT>
+- </TT>compares like-named datasets in two libraries<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testdelhex.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="delhex.sas">delhex</A></FONT></FONT><TT>
+- </TT>remove a specified hex character from a flat file<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testdoallitem.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="doallitem.sas">doallitem</A></FONT></FONT><TT>
+- </TT>execute code for each item in a space-delimited list<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testdropvars.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="dropvars.sas">dropvars</A></FONT></FONT><TT>
+- </TT>drop unwanted variables in a list of datasets<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testdsattrib.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="dsattrib.sas">dsattrib</A></FONT></FONT><TT>
+- </TT>assigns the attributes of one dataset onto another dataset<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testdtscale.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="dtscale.sas">dtscale</A></FONT></FONT><TT>
+- </TT>calculates a suitable haxis date scale given a min and max date<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testduplvars.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="duplvars.sas">duplvars</A></FONT></FONT><TT>
+- </TT>identifies which variables are duplicated in a second dataset<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testequals.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="equals.sas">equals</A></FONT></FONT><TT>
+- </TT>tests for equality or very near equality (for use in a data step)<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testfixvars.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="fixvars.sas">fixvars</A></FONT></FONT><TT>
+- </TT>&quot;fixes&quot; variables throughout a library so that the label,
+format and length is the same<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testflatten.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="flatten.sas">flatten</A></FONT></FONT><TT>
+- </TT>&quot;flattens&quot; data so that there is only one observation
+per by group<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testfmts2fda.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="fmts2fda.sas">fmts2fda</A></FONT></FONT><TT>
+- </TT>creates code to create formats you use so you can send it to the
+FDA<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testhexchars.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="hexchars.sas">hexchars</A></FONT></FONT><TT>
+- </TT>displays non-printable ascii characters in a flat file as hex codes<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testjobinfo.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="jobinfo.sas">jobinfo</A></FONT></FONT><TT>
+- </TT>stores important job information in global macro variables<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testljustify.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="ljustify.sas">ljustify</A></FONT></FONT><TT>
+- </TT>left-justifies all character fields in a dataset<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testlookahead.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="lookahead.sas">lookahead</A></FONT></FONT><TT>
+- </TT>the opposite of lag(), this looks ahead in a dataset<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testltgtm1.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="ltgtm1.sas">ltgtm1</A></FONT></FONT><TT>
+- </TT>adjusts for leading &quot;&gt;&quot; and &quot;&lt;&quot; signs<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testmaxtitle.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="maxtitle.sas">maxtitle</A></FONT></FONT><TT>
+- </TT>gives the number of the maximum title and footnote<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testmisscnt.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="misscnt.sas">misscnt</A></FONT></FONT><TT>
+- </TT>identifies variables and their missing-value count<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testmissvars.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="missvars.sas">missvars</A></FONT></FONT><TT>
+- </TT>identifies variables that are all-missing<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testmkformat.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="mkformat.sas">mkformat</A></FONT></FONT><TT>
+- </TT>make a format out of a dataset coded and decoded variable<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testnodata.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="nodata.sas">nodata</A></FONT></FONT><TT>
+- </TT>produces a &quot;no data&quot; report if there are no observation
+to meet a criterion<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testnodupkey.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="nodupkey.sas">nodupkey</A></FONT></FONT><TT>
+- </TT>sorts &quot;nodupkey&quot; and lists all observations being dropped<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testnumchars.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="numchars.sas">numchars</A></FONT></FONT><TT>
+- </TT>identifies character variables that likely contain text numbers
+only<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testoptlength.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="optlength.sas">optlength</A></FONT></FONT><TT>
+- </TT>creates a length statement for character variables that take up
+less space than allotted<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testpagexofy.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="pagexofy.sas">pagexofy</A></FONT></FONT><TT>
+- </TT>puts &quot;Page x of y&quot; labels in a flat file<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testprintall.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="printall.sas">printall</A></FONT></FONT><TT>
+- </TT>prints every observation in a library that satisfies a condition
+on a variable<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testreadfile.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="readfile.sas">readfile</A></FONT></FONT><TT>
+- </TT>reads in a file and assigns the contents to a macro variable<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testreadpipe.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="readpipe.sas">readpipe</A></FONT></FONT><TT>
+- </TT>reads in the output of a System command and assigns it to a macro
+variable<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testreplhex.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="replhex.sas">replhex</A></FONT></FONT><TT>
+- </TT>replace all occurrences of a specified hex character in a flat file
+with another specified character<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testround.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="round.sas">round</A></FONT></FONT><TT>
+- </TT>round all the numeric variables in a list of datasets<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testsasindex.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="sasindex.sas">sasindex</A></FONT></FONT><TT>
+- </TT>utility to index your sas programs<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testsplitvar.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="splitvar.sas">splitvar</A></FONT></FONT><TT>
+- </TT>insert split characters into variable text (for use in a data step)<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testsubspace.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="subspace.sas">subspace</A></FONT></FONT><TT>
+- </TT>substitutes a space for a special character in a flat file<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testsupasort.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="supasort.sas">supasort</A></FONT></FONT><TT>
+- </TT>sorts a list of datasets by the specified &quot;by&quot; variables<B>
+</B>if they exist in the datasets<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testtitlelen.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="titlelen.sas">titlelen</A></FONT></FONT><TT>
+- </TT>makes a copy of sashelp.vtitle but with the original length added<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testvaxis.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="vaxis.sas">vaxis</A></FONT></FONT><TT>
+- </TT>calculates a suitable vaxis scale given a min and max value<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testyrcutoff.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="yrcutoff.sas">yrcutoff</A></FONT></FONT><TT>
+- </TT>sets the yearcutoff option to one suitable for clinical reporting<BR>
+<FONT FACE="Courier New"><FONT SIZE=-1><A HREF="testzerogrid.sas">testpack</A></FONT></FONT><TT>
+- </TT><FONT FACE="Courier New"><FONT SIZE=-1><A HREF="zerogrid.sas">zerogrid</A></FONT></FONT><TT>
+- </TT>zeroises a variable for all combinations of distinct variable values
+in multiple datasets</P>
+
+<CENTER><P>Go back to the home <A HREF="index.html">page</A>.</P></CENTER>
+
+<CENTER><P>E-mail the macro and web site <A HREF="mailto:roland@rashleigh-berry.fsnet.co.uk">author</A>.</P></CENTER>
+
+</BODY>
+</HTML>

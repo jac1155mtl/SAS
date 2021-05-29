@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>Roland's SAS tips and techniques</TITLE>
+   <META NAME="Author" CONTENT="Roland Rashleigh-Berry">
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.01Gold (Win95; I) [Netscape]">
+   <META NAME="Description" CONTENT="SAS tips and techniques by Roland Rashleigh-Berry">
+   <META NAME="KeyWords" CONTENT="sas macros, Roland Rashleigh-Berry, sas tips, sas techniques">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#C0C0C0" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+
+<H1 ALIGN=CENTER>Things I Hate about SAS software</H1>
+
+<P><B>[This site is not connected with the SAS Institute]</B></P>
+
+<P><B>[last updated - 11 January 2003]</B></P>
+
+<H2>Introduction</H2>
+
+<P>I have been using SAS since 1986. But I was programming before then.
+I used to be a Cobol programmer and Basic programmer. And since starting
+with SAS I have programmed in Modula-2. So I've &quot;been around a bit&quot;
+when it comes to computer languages. These languages differ from each other.
+You just have to put up with it. What is not so good in one language is
+better in another and vice-versa. But very rarely you can come across a
+&quot;feature&quot; in a language that is so bad that you feel justified
+in having a gripe about it.</P>
+
+<H2>How text fields are stored</H2>
+
+<P>In the following example I have allocated 100 bytes to a string. I want
+to assign the letters &quot;aaa&quot; to it followed by six spaces making
+9 characters in all and I want to be able to extract that string in a later
+data step.</P>
+
+<P><TT>1 data _null_;<BR>
+2 length str $ 100;<BR>
+3 str='aaa&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';<BR>
+4 len=vlength(str);<BR>
+5 put len=;<BR>
+6 len=length(str);<BR>
+7 put len=;<BR>
+8 run;</TT></P>
+
+<P><TT>len=100<BR>
+len=3<BR>
+NOTE: DATA statement used: real time 0.00 seconds</TT></P>
+
+<P>Note that the trailing spaces get lost. I can find out the length of
+the field using vlength(). I can find out the length of the string not
+counting trailing spaces with length(). But I do not know the length of
+the string I assigned to the variable. I would need to keep a separate
+variable for this. This is very annoying. Other languages do not work like
+that. Most have an internal logic that knows the length of your string
+and it gets stored away with the value. And when you read the value again
+you only get that length's worth of characters. Sometimes trailing spaces
+are significant. If you create footnotes then you will maybe force left-alignment
+by padding out with trailing spaces. And SAS honors them as well because
+you can left-align footnotes in this way. So SAS stores this important
+information for titles and footnotes but does not do this for text variables.
+So it is handling text variables in two different ways, it seems. And in
+the case of the titles and footnotes then they do not have the sense to
+store this length information in the sashelp.vtitle view. So if you need
+to be able to reproduce the titles and footnotes after manipulation of
+this data in the view then you can not be sure you have the alignment right.
+Those stupid, stupid, stupid people.</P>
+
+<P>To get round this problem with the titles and footnotes I had to write
+a macro to create a dummy report and read the titles and footnotes back
+in from the output and from the alignment to work out the trailing spaces
+as best as I can. I don't feel I should have had to do this. You can view
+the code for this <A HREF="titlelen.sas">here</A>.</P>
+
+</BODY>
+</HTML>

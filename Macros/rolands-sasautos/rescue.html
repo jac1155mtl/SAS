@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>whosgot</TITLE>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+   <META NAME="Author" CONTENT="Roland Rashleigh-Berry">
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.01Gold (Win95; I) [Netscape]">
+   <META NAME="Description" CONTENT="SAS tips and techniques by Roland Rashleigh-Berry">
+   <META NAME="KeyWords" CONTENT="sas tips techniques">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#C0C0C0" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+
+<H1 ALIGN=CENTER>rescue</H1>
+
+<P><B>[last updated - 27 July 2003]</B></P>
+
+<P>Have you ever deleted all the SAS programs in a directory by accident?
+I have, and with a tight deadline looming. And I didn't have any backups.
+I got back all the SAS programs from the archive and in a short enough
+time, though, so it wasn't a problem. But after that I always kept a backup
+and I also wrote a script to get back SAS code from an existing log. The
+orginal script called a SAS&nbsp;macro I had written to convert a log back
+into SAS code but I don't use that method any more. Instead I use <B>awk</B>
+to do it. I also use the extra power of the Korn shell or bash shell to
+make handling of filenames easier. Here is the script. Copy and paste it
+into a member called &quot;rescue&quot; in your shell script library.</P>
+
+<PRE><B>#!/bin/bash
+# Script     : rescue
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 27 July 2003
+# Contact    : roland@rashleigh-berry.fsnet.co.uk
+# Purpose    : To get back the source code of SAS programs from their logs
+# SubScripts : none
+# Notes      : Programs that are &quot;rescued&quot; will have their names suffixed with
+#              _rescue to they will not overwrite any good copies of programs.
+#              Note that this is a BASH shell script.
+# Usage      : rescue myprog
+#              rescue myprog1.log myprog2.log
+#              rescue l*.log
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+#  1   logs to get back the SAS programs from
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+# 
+#================================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#================================================================================
+
+if [ $# -lt 1 ] ; then
+  echo &quot;Usage: rescue a1*.log&quot; 1&gt;&amp;2
+  exit 1
+fi
+
+for filename in &quot;$@&quot; ; do
+  awk '/^[1-9][0-9]* / {if (NR &gt; 1 &amp;&amp; substr($0,11,1) != &quot;+&quot;) \
+  print substr($0,12)}' ${filename%.*}.log &gt; ${filename%.*}_rescue.sas
+done</B>
+</PRE>
+
+<P>Note the very first comment line in this program. It is asking for the
+bash shell. Instead of asking for the Bourne shell in the form <B>!/bin/sh</B>
+it is asking for the bash shell in the form <B>!/bin/bash</B> instead.
+If you don't have the bash shell or it doesn't work with the bash shell
+then you will have to change that first line to ask for the Korn shell
+in the form <B>!/bin/ksh </B></P>
+
+<P>The reason this script needs a different shell to interpret it is because
+I am doing something a bit different with the file names that have been
+entered as a parameter. I want to chop off any extension to the file names
+(whether it is there or not) and put <B>.log</B> there myself. I want the
+user to be able to just specify a program name and not bother with a <B>.log</B>
+extension if they want to without having to worry whether that is the right
+way to do it or not. Also I know the extension will be <B>.log</B> so I
+don't care what they have put it. I will force the file extensionto be
+<B>.log</B>. With the Korn shell and later the Bourne again shell (bash)
+you have more power over handling file names. Do you see the <B><TT>${filename%.*}</TT></B>
+in the code? That is saying that I want to drop the extension to the file
+name if it exists. I then give it the extension I have chosen. </P>
+
+<P>You should be familiar with the code except for the call to awk. A pattern
+is being specified to awk. That is the expression between the &quot;/&quot;s.
+It is looking for lines that begin with a numeric digit (1-9) in the first
+column. And in the second column it is looking for zero or one numeric
+digit in the range 0-9 followed by a space. Then it encounters the ending
+&quot;\&quot;. This is called &quot;pattern matching&quot; and if you ever
+get good at writing scripts then you will need to know a lot about pattern
+matching. So it only accepts lines that match this pattern at the start
+of the lines. What follows is a test for the record number being greater
+than 1 and making sure there is not a &quot;+&quot; sign in the 11th column
+and then it will write out whatever is from column 12 onwards in the input
+log file out to a file with a <B><TT>_rescue.sas </TT></B>suffix.</P>
+
+<P>Note that you can run this utility on an entire directory, if you have
+lost all the SAS&nbsp;programs, and it will regenerate all the SAS&nbsp;programs
+from the logs. Sometimes an edit of a SAS program might get so messed up
+that you will feel it would be better to get the old version back from
+the log and start all over again. You can do it with this utility.</P>
+
+<CENTER><P>Go back to the home <A HREF="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</A>.</P></CENTER>
+
+<CENTER><P>E-mail the macro and web site <A HREF="mailto:roland@rashleigh-berry.fsnet.co.uk">author</A>.</P></CENTER>
+
+<CENTER><P><BR>
+<BR>
+<BR>
+</P></CENTER>
+
+</BODY>
+</HTML>

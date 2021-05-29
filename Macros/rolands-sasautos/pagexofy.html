@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>whosgot</TITLE>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+   <META NAME="Author" CONTENT="Roland Rashleigh-Berry">
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.01Gold (Win95; I) [Netscape]">
+   <META NAME="Description" CONTENT="SAS tips and techniques by Roland Rashleigh-Berry">
+   <META NAME="KeyWords" CONTENT="sas tips techniques">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#C0C0C0" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+
+<H1 ALIGN=CENTER>pagexofy</H1>
+
+<P><B>[last updated - 28 July 2003]</B></P>
+
+<P>This is an <B>nawk</B> (new awk) implementation of the macro I wrote
+of the same name to add <B>&quot;Page x of Y&quot;</B> labels to output.
+You can view the SAS macro that does this <A HREF="pagexofy.sas">here</A>.
+You are going to see that with <B>nawk</B> it is a lot shorter and when
+you run it you will find it is a lot faster. Now a word of warning, there
+are a number of versions of awk. Nawk is one of them. There is <B>gawk</B>
+as well which is what I am using on my PC. If you are not running on a
+full-blown Unix system then you might not have nawk. You might have gawk
+or awk. And they have slightly different syntax. For gawk, when you reference
+external variables to gawk, you must enclose those variable references
+with a sequence of differing quotes as shown in the script code below for
+the gawk block. For nawk it is different - you don't need to surround the
+single quotes with double quotes.</P>
+
+<P>Whatever you choose, the utility will want access to the function gsub()
+to globally substitute ann 'FE'x (\xfe) characters with a space. I use
+this non-printable character at the end of a string using proc report so
+that when I use a column header alignment of center or right, the information
+in the columns doesn't get shifted. It is what I call a &quot;substitute
+space&quot; and I choose 'FE'x (\xfe in Unix notation) for this. So when
+I add page numbers to output I check for this character and substitute
+a space for it when I find it. This utility will do the same if it can.
+But the function gsub() that it uses to do this may not be in your implementation
+of awk/nawk/gawk. If you work on a full-blown Unix site then you will have
+nawk so it should work.</P>
+
+<P>If you can not get the gsub() to work because it is not available then
+all is not lost. If you have carefully read the Unix tips here sequentially
+then you are already in a position to be able to amend these scripts. You
+can always use the <B>tr</B> utility to substitute the 'FE'x for a space
+(\xfe in Unix notation). I've already introduced <B>tr</B> to you. Twice,
+in fact. So you should be able to amend the script to use it if you have
+to. Also, if you never use a substitute space like I do, then you can delete
+the line with the gsub() call in it and it should work.</P>
+
+<P>I'll remind you how the original SAS&nbsp;macro worked. It doesn't bother
+counting page throw characters. There is a target character (by default
+'FF'x or \xff) where you want the &quot;Page x of Y&quot; label to go so
+it assumes you have one of these per page and counts those instead. You'll
+see a few features in the following script that I have not introduced before.</P>
+
+<PRE>
+<B>#!/bin/sh
+# Script     : pagexofy
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 28 July 2003
+# Contact    : roland@rashleigh-berry.fsnet.co.uk
+# Purpose    : To add &quot;Page x of Y&quot; labels to report output
+# SubScripts : none
+# Notes      : The &quot;page x of Y&quot; label gets added where the target character
+#              'FF'x is found. In addition, if any characters 'FE'x are found
+#              the spaces will be substituted for them.
+# Usage      : pagexofy input.lst &gt; output.lst
+# 
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+#  1   input file
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+# 
+#================================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#================================================================================
+
+if [ $# -lt 1 ] ; then
+  echo &quot;Usage: pagexofy infile.lst &gt; outfile.lst&quot; 1&gt;&amp;2
+  exit 1
+fi
+
+totpages=`awk '/\xff/' $1 | wc -l`
+
+#-- This is the gawk version that I think will work when uncommented --
+#gawk 'BEGIN{page=0} \
+#{gsub(&quot;\xfe&quot;,&quot; &quot;)} \
+#{if (index($0,&quot;\xff&quot;)&gt;0) {page++ ; str=&quot;page &quot;page &quot; of &quot;'&quot;$totpages&quot;'&quot;&quot;}} \
+#{if (substr($0,1,1)==&quot;\xff&quot;) \
+# print str substr($0,length(str)+1) ; \
+#else if (substr($0,length($0),1)==&quot;\xff&quot;) \
+# print substr($0,1,length($0)-length(str)) str ; \
+#else print $0}' $1
+
+#-- This is the nawk version that I think will work when uncommented --
+nawk 'BEGIN{page=0} \
+{gsub(&quot;\xfe&quot;,&quot; &quot;)} \
+{if (index($0,&quot;\xff&quot;)&gt;0) {page++ ; str=&quot;page &quot;page &quot; of '$totpages'&quot;}} \
+{if (substr($0,1,1)==&quot;\xff&quot;) \
+ print str substr($0,length(str)+1) ; \
+else if (substr($0,length($0),1)==&quot;\xff&quot;) \
+ print substr($0,1,length($0)-length(str)) str ; \
+else print $0}' $1</B>
+
+</PRE>
+
+<P>The header and check for parameters you should know about. But the first
+line of code that follows is something I have not introduced before. Here
+it is on its own:</P>
+
+<P><B><TT>totpages=`awk '/\xff/' $1 | wc -l`</TT></B></P>
+
+<P>The first thing to note is the quotes. The quotes on the extreme left
+and right are not the single quotes you normally use. They are the strange
+quotes you have at the top left of your keyboard. I&nbsp;call them &quot;do
+it now&quot; quotes. It will execute whatever is inside it and return the
+results to the variable. Inside the quotes there is a call to awk immediately
+followed by a pattern to match. That pattern is defined as <B><TT>'/\xff/'</TT></B>
+and you can see that this pattern is enclosed in normal single quotes.
+What this is doing is selecting only those lines that have this pattern
+in it. These are the target characters for the &quot;Page x of Y&quot;
+labels. So it is selecting only those and piping it to the <B>wc</B> utility.
+This is the &quot;word count&quot; utility. But because the <B>-l</B> option
+is used with wc it counts the number of lines rather than words. So the
+number of lines with our &quot;Page x of Y&quot; target character in gets
+assigned to the variable totpages. This the total number of pages (at least
+it should be if you have put one of these target characters on each page).
+We resolve that value in our call to nawk/gawk. If you use nawk then totpages
+gets referred to as <B><TT>'$totpages'</TT></B> but if you use gawk then
+it gets referred to as <B><TT>&quot;'&quot;$totpages&quot;'&quot;</TT></B>
+. If it finds the target character at the start of a line then the &quot;Page
+x of Y&quot; label will start from that point but it the target character
+is at the end of the line then it will start earlier in the line and end
+on that character. But if that target character is not there it will just
+print out the existing line.</P>
+
+<P>Needless to say, output goes to the terminal window. It is up to you
+to redirect output to a file.</P>
+
+<CENTER><P>Go back to the home <A HREF="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</A>.</P></CENTER>
+
+<CENTER><P>E-mail the macro and web site <A HREF="mailto:roland@rashleigh-berry.fsnet.co.uk">author</A>.</P></CENTER>
+
+<CENTER><P><BR>
+<BR>
+<BR>
+</P></CENTER>
+
+</BODY>
+</HTML>

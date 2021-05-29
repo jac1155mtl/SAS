@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>whosgot</TITLE>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+   <META NAME="Author" CONTENT="Roland Rashleigh-Berry">
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.01Gold (Win95; I) [Netscape]">
+   <META NAME="Description" CONTENT="SAS tips and techniques by Roland Rashleigh-Berry">
+   <META NAME="KeyWords" CONTENT="sas tips techniques">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#C0C0C0" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+
+<H1 ALIGN=CENTER>Using tr to delete Windows carriage returns</H1>
+
+<P><B>[last updated - 27 July 2003]</B></P>
+
+<P>This is a very important topic for Clinical SAS&nbsp;programmers on
+a Unix platform. The sad thing is that most Clinical SAS programmers are
+not aware of the problem in this area - much less how to solve it.</P>
+
+<P>A recent development is CROs sending statistical reporting teams information
+in exported Excel spreadsheets. For a start-off, they shouldn't be doing
+this. All data that a reporting team uses should come from their own Data
+Management department. These CROs should be sending this information to
+you <B><I>via</I></B> your Data Management department since that department
+has the facilities for storing this data for the required length of time
+and know the regulations surrounding the handling of data. So my first
+recommendation is <B>do not accept any Clinical trials data from any other
+source other than your own Data Management department</B>. But the problem
+is here and now and things are going wrong. I will tell you what is going
+wrong and how to solve it. But in the short-term future you should change
+policy so that you only accept data via your own Data Management department.</P>
+
+<P>The problem is that some CROs do not have a SAS licence. And who can
+blame them - it is that expensive? So they export data out of their database
+to an Excel spreadsheet and send it off as an exported Excel spreadsheet.
+It will be a file with a <B>.csv</B> extension. But this is a <B>Windows
+file</B>. It is not a Unix file. Both Windows and Unix use ascii characters
+but the files are not the same. Windows is based on an old operating system
+called DOS (Disk Operating System). If you had a file then you would often
+be printing off copies. The dot matrix printers in those days were not
+very sophisticated. So at the end of each line in the text file would be
+two carriage control characters to help the dot matrix printer work properly.
+The first character would be a carriage return character so that the print
+head would return to the start of the line. The next carriage control character
+was a line feed so the the paper roller would advance the paper by one
+line. So at the end of every line in a DOS flat file there would be a carriage
+return character followed by a line feed character. And this is true for
+all Windows files today, since Windows runs DOS underneath it. But for
+Unix, the carriage return character is not used. There is just a line feed
+character at the end of the line. The result is that when you read a Windows
+file into Unix you are left with carriage return characters at the end
+of the lines. And when you read these <B>.csv</B> files into SAS it will
+honor the carriage return character as being a real character and will
+add it to the end of a variable string, for example, if that occurs at
+the end of a line. <B>YOU&nbsp;CAN'T&nbsp;SEE&nbsp;THESE CARRIAGE&nbsp;RETURN&nbsp;CHARACTERS.
+THEY&nbsp;ARE&nbsp;INVISIBLE</B>. But they might be there at the end of
+a SAS&nbsp;text variable without your being aware of it. I have seen the
+confusion it can cause when these carriage return characters end up in
+SAS&nbsp;datasets. This is something you should take great pains to avoid.</P>
+
+<P>What you have to do is to delete these carriage returns from the <B>.csv</B>
+file. They all have them. If you display the file then you probably will
+not see them. But you can display then using <B>cat</B> and set an option
+<B>-v</B> like this:</P>
+
+<P><B><TT>cat -v myfile.cs</TT></B>v</P>
+
+<P>...and then you will see them at the end of the line as <B>^M</B> (Cntl-M)</P>
+
+<P>It is <B>important</B> that you remove these characters before you read
+these <B>.csv</B> files into SAS. You can use the <B>tr</B> utility to
+do this. First convince yourself they are there by using <B>cat -v</B>.
+Then delete them using <B>tr</B> like this:</P>
+
+<P><B><TT>tr -d '\r' &lt; infile.csv &gt; outfile.csv</TT></B></P>
+
+<P>Then when you have done that, run <B>cat -v</B> on the output file to
+convince yourself they are gone. Note that the input file name and output
+file name have to be different. You can not make the same file both input
+and output. Do this to every <B>.csv</B> file you get and make sure these
+carriage return characters have been removed before reading them into SAS.</P>
+
+<P>Also note that if a programmer works on their PC&nbsp;at home and uploads
+the programs to Unix when they return to work, then the same problem occurs.
+And this can cause problems when you edit the programs because the editors
+get confused by these characters and display things that are not there
+or don't display things that are there. You end up editing lines to fix
+these problems but you are actually making matters worse. You have to look
+out for this.</P>
+
+<P>On a final note, you might have to convert a Unix file to a DOS/Windows
+file sometimes. You can do it like this:</P>
+
+<P><B><TT>sed 's/$/\r/' unix.txt &gt; dos.txt</TT></B></P>
+
+<CENTER><P>Go back to the home <A HREF="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</A>.</P></CENTER>
+
+<CENTER><P>E-mail the macro and web site <A HREF="mailto:roland@rashleigh-berry.fsnet.co.uk">author</A>.</P></CENTER>
+
+<CENTER><P><BR>
+<BR>
+<BR>
+</P></CENTER>
+
+</BODY>
+</HTML>

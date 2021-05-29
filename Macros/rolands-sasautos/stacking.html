@@ -1,0 +1,248 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>Roland's SAS tips and techniques</TITLE>
+   <META NAME="Author" CONTENT="Roland Rashleigh-Berry">
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.01Gold (Win95; I) [Netscape]">
+   <META NAME="Description" CONTENT="SAS tips and techniques by Roland Rashleigh-Berry">
+   <META NAME="KeyWords" CONTENT="data _null_ report stacking">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#C0C0C0" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+
+<H1 ALIGN=CENTER>&quot;stacked&quot; column reports using data _null_</H1>
+
+<P><B>[This site is not connected with the SAS Institute]</B></P>
+
+<P><B>[last updated - 15 January 2003]</B></P>
+
+<H2>Just when you were getting good with &quot;proc report&quot;</H2>
+
+<P>It took you a long time to get good with &quot;proc report&quot;, I
+bet. Using those order variables, using order=internal so things came out
+in a sensible order Clever use of &quot;order noprint&quot;. And then there
+were those &quot;group&quot; variables that you had to define before an
+across variable. And you learn the magic tricks to get your report to &quot;flatten&quot;.
+Now you are good at it and maybe you haven't touched those messy &quot;data
+_null_&quot; reports in years. </P>
+
+<P>If that describes you, and you are a Clinical SAS programmer, then have
+I got bad news for you. <B>data _null_</B> is making a comeback and with
+a vengeance. Some very nasty data _null_ reports will be landing in your
+lap any day now. They may look like proc report output. But when you try
+to code them using proc report you will find yourself getting into difficulty.
+And the more you try to make it work, the more complicated and messy it
+will become. And when you finally get the report out somebody says &quot;Oh,
+it isn't quite right, it needs changing so that it does this&quot;. So
+you go back to it and amend it some more. Your input dataset is now going
+through thousands of lines of code so that proc report will display it
+in the way you want. It gets so complicated that even you don't understand
+what it is doing any more. And that's bad because you are the person who
+wrote it. In the end you just hope the output is correct. And you hope
+you are miles away, working for a different company, before it goes wrong.</P>
+
+<P>But why this vision of doom and gloom? Well it has to do with the FDA
+guideline of using 12 point fonts for tables for electronic submissions.
+This restricts the number of columns and lines you can fit on a page. And
+on top of that, they want a one inch margin left around the page. This
+restricts it even further. So now, if you use a 12 point mono-spaced font,
+you are limited to 90 columns across the page and only about 43 lines on
+a page, even after you have used a method to cram the lines closer together.
+And because the space is restricted, there isn't the room for separate
+columns across the page for some of the items. And because the Clinical
+people in your company are used to seeing certain things on a report, and
+because there is now a lack of space, the standard templates get redesigned.
+Values that used to be shown in separate columns get moved. They get stacked
+on top of each other. Investigator maybe goes under subject number. Age,
+race, sex and weight go in the same column. So when you see this template,
+you get fooled into thinking proc report can do it because it looks very
+much like proc report output as it was proc report output originally. So
+you set out to code it using proc report. And who knows - that <B>one</B>
+template page could well have been done using proc report. But don't assume
+from that, that you can use the code to produce an entire report.</P>
+
+<H2>What &quot;proc report&quot; won't do for you</H2>
+
+<P>You could define every field in proc report as &quot;display&quot;,
+then so long as you had arranged your input dataset to give you what you
+want then it would display it for you. But if you expect proc report to
+do what it normally does but slightly differently, then you are going to
+be disappointed. You might want proc report to flow a string of values
+into a column for you. That's no problem. You set the option to &quot;flow&quot;
+in your column definition, you define the split character as one of the
+procedure options and you have these split characters in all the right
+places in your input field. Proc report will flow it for you. But when
+it flows a column it makes the whole row &quot;fatter&quot;. It will not
+flow into space that other data lines don't use. So the following data
+line will occur <B><I>after</I></B> where the column has flowed to. If
+you are flowing four items like age/race/sex/weight then that will leave
+a gap of three lines before the next data item is displayed. It's no good
+hoping you can set some option so that it will intelligently use space
+and avoid leaving gaps. It won't. It never will. And because you have a
+four-high stacked identity variable then proc report wouldn't start that
+on the last line on a page, would it? That would look stupid after all.
+Would it do such a thing? Yes, it will. Proc report cares nothing about
+the problems the FDA have visited upon you. It will just carry on working
+in the same old way. So if you want your reports to look &quot;just so&quot;
+you have a choice between doing massive manipulation of your dataset going
+into proc report and just using proc report as a proc print to display
+the values - or - you go back to using data _null_ reports. And what might
+have taken you five minutes to do on a wide page with proc report now takes
+you maybe five hours to code. Maybe much, much longer because your data
+_null_ reporting skills have gone rusty. And there are a lot of young programmers
+in the industry. Maybe you have never produced a data _null_ report in
+your life.</P>
+
+<H2>The worst reporting scenario</H2>
+
+<P>I am going to show you how to code a data _null_ report covering the
+worst scenario I can think of. It will have age/race/sex/weight stacked
+in a single column. And since this is an identifying &quot;order&quot;
+variable then the whole column will have to be repeated on each new page.
+And if we are near the foot of the page then it would be silly to start
+the group so it will be put on the following page instead. And on the right
+of age/race/sex/weight we will have a long parameter description grouping
+one of more values. And this long parameter will sometimes not fit into
+the column and so it will have to be &quot;flowed&quot; manually into the
+line below it. It will be the worst reporting scenario you are ever likely
+to be faced with. But seeing the code and having it as reference should
+allow you to tackle any report of any degree of complexity in the future.
+What I won't cover in this section is how you get data _null_ reports to
+interface with #byval and #byvar entries in the title lines. I have already
+written this up fully on this <A HREF="datanull.html">page</A>. I want
+to keep the code free of that so you have more chance of following it.
+But if you have never come across a data _null_ report then maybe that
+page could act as a gentle introduction to the subject. </P>
+
+<H2>The code</H2>
+
+<P>This is my latest attempt at the code to do a stacked-column report.
+Horrible, isn't it?</P>
+
+<PRE>options ls=90 ps=40;
+title1 'First title';
+title3 'Third title';
+title5 'Fifth title';
+footnote1 'First footnote';
+footnote3 'Third footnote';
+
+
+         /*--------------------------------------------------*
+                        Generate the dummy data
+          *--------------------------------------------------*/
+
+data test;
+  length sex $ 6 param $ 80 race $ 10;
+  subj=1001;invid=10001;age=21;race='Asian';sex='Male';weight=60;
+  param='AA This is a very long parameter and you will have to flow it';
+  value=11;output;
+  param='BB This is a short parameter';
+  value=21;output;
+  value=22;output;
+  param='CC This is a very long parameter and you will have to flow it';
+  do value=30 to 38;
+    output;
+  end;
+
+  subj=2001;invid=20001;age=32;race='White';sex='Female';weight=55;
+  param='AA This is a very long parameter and you will have to flow it';
+  value=51;output;
+  param='BB This is a short parameter';
+  value=61;output;
+  value=62;output;
+  param='CC This is a very long parameter and you will have to flow it';
+  do value=70 to 78;
+    output;
+  end;
+
+  subj=3001;invid=30001;age=42;race='Black';sex='Female';weight=65;
+  param='AA This is a very long parameter and you will have to flow it';
+  value=51;output;
+  param='BB This is a short parameter';
+  value=61;output;
+run;
+
+         /*--------------------------------------------------*
+                          Produce the report
+          *--------------------------------------------------*/
+
+data _null_;
+  length tempstr $ 200;
+  retain ls 0 startcol 0 repwidth 60 count 0;
+  file print titles footnotes header=header linesleft=ll;
+  set test end=last;
+  by subj param;
+  if _n_=1 then do;
+    ls=getoption('ls');
+    startcol=floor((ls-repwidth)/2)+1;
+  end;
+  if ll&lt;2 then put _page_;
+  if first.subj then do;
+    count=0;
+    if ll&lt;5 then put _page_;
+  end;
+  count=count+1;
+  %splitvar(param,38,split='*');
+  link flow;
+  if first.param or count=1 then do;
+    tempstr=scan(param,1,'*');
+    put @startcol+18 tempstr @startcol+57 value 4.;
+    i=2;
+    do while(scan(param,i,'*') NE ' ');
+      count=count+1;
+      link flow;
+      tempstr=scan(param,i,'*');
+      put @startcol+18 tempstr;
+      i=i+1;
+    end;
+  end;
+  else put @startcol+57 value 4.;
+  if last.param then do;
+    count=count+1;
+    link flow;
+    if not last or count&lt;5 then put;
+  end;
+  if last.subj then link lastsubj;
+return;
+
+header:
+  put;
+  put @startcol '           age/';
+  put @startcol '          race/';
+  put @startcol 'subject/   sex/';
+  put @startcol 'invid.   weight   Lab parameter                          value';
+  put @startcol '--------------------------------------------------------------';
+  if _n_ ne 1 then count=0;
+return;
+
+flow:
+  if count=1 then put @startcol subj 6. '/' @startcol+8 age 2. ' yrs/' @;
+  else if count=2 then put @startcol invid 6. @startcol+8 race $char6. +(-1) '/' @;
+  else if count=3 then put @startcol+8 sex $char6.  '/' @;
+  else if count=4 then put @startcol+8 weight 3. ' kg' @;
+return;
+
+lastsubj:
+  if count&lt;4 then do;
+    do count=(count+1) to 4;
+      link flow;
+      put;
+    end;
+    if not last then put;
+  end;
+return;
+
+run;
+</PRE>
+
+<P>There is a link to the output file <A HREF="datanull2.txt">here</A>.</P>
+
+<P>If you have looked at the above code and it all makes sense, then maybe
+you are ready to look at the code with full titles handling added. To do
+this click <A HREF="fullmonty.sas">here</A>.</P>
+
+<CENTER><P>Go back to the home <A HREF="index.html">page</A>.</P></CENTER>
+
+<CENTER><P>E-mail the macro and web site <A HREF="mailto:roland@rashleigh-berry.fsnet.co.uk">author</A>.</P></CENTER>
+
+</BODY>
+</HTML>

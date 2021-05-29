@@ -1,0 +1,285 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>whosgot</TITLE>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+   <META NAME="Author" CONTENT="Roland Rashleigh-Berry">
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.01Gold (Win95; I) [Netscape]">
+   <META NAME="Description" CONTENT="SAS tips and techniques by Roland Rashleigh-Berry">
+   <META NAME="KeyWords" CONTENT="sas tips techniques">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#C0C0C0" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+
+<H1 ALIGN=CENTER>File permissions (umask &amp; chmod)</H1>
+
+<P><B>[last updated - 03 August 2003]</B></P>
+
+<H2>Introduction</H2>
+
+<P>If you are writing SAS programs then presumably you are working as part
+of a team and there may be cases where other programmers in your team need
+to update your programs (for whatever reason). Maybe you have had to do
+this but you find you don't have &quot;write access&quot; to that person's
+program. Also, maybe other programmers have complained to you that they
+do not have write access to your programs and could you please &quot;change
+the permissions&quot; so they can. In the last case then maybe you have
+a GUI interface with Unix and you locate the file and change its file permission
+by checking on the box that allows your group (team) members to write to
+this file. It can become a nuisance if you have many programs where only
+you have write access and others need to update it. If you are away from
+your desk then time will be lost and frustration can lead to errors being
+made. But if you have a good understanding of file permissions in Unix
+and you understand about the <B>umask</B> and <B>chmod</B> functions then
+all will become easy.</P>
+
+<H2>umask</H2>
+
+<P>First I will tell you about <B>umask</B> but only enough for now. You
+will have a Unix login member somewhere that gets run when you log in.
+What this is called varies from site to site but it will be in your home
+directory as a &quot;hidden file&quot; (which you can reveal using the
+<B>ls -a</B> command). In that login member, that you are allowed to edit,
+there is usually a umask setting. It is quite often set to <B>umask 022</B>
+when a new user account is created and you might still be using that value.
+But to allow your team members to edit your program code you have to change
+it to <B>umask 002</B>. By changing the middle &quot;2&quot; to &quot;0&quot;
+you allow others in your team to edit your files. It is important to check
+on this and make this change to 002 if you find it otherwise. And all your
+team members should ensure they are using 002. This will solve the problem
+of not having write access to each others code. What the umask setting
+does is change the default permission of a file when you create it. The
+middle &quot;2&quot; says that you don't want your team members to be able
+to edit your file. When you change it to &quot;0&quot; then by default
+they can. This is the default action on creating a file. You can always
+change permissions <B><I>after</I></B> creating it if, for example, you
+really did not other team members to edit your file. You could stop them
+from even reading it, if you liked. Umask just has this effect when you
+first create a file. You'll get to understand why it is a &quot;2&quot;
+after reading the next section on <B>chmod</B>. But don't bother thinking
+about it for now. All you need to know at this stage is that you and all
+members of your team should use the setting &quot;<B>umask 002</B>&quot;
+in your login members and you will rarely have problems editing each others
+code members.</P>
+
+<H2>chmod</H2>
+
+<P>The <B>chmod</B> command is used for altering file permissions. Now
+you might be lucky and have a front end to Unix and you can just change
+permissions by clicking in the right box. But what if you had to do this
+for ALL your programs in a directory? There might be scores of them. You
+would save yourself a lot of time in this case by knowing how to use <B>chmod</B>
+to change their permissions in bulk. This is what we are going to learn
+here.</P>
+
+<P>Before we start, you have to learn that there are three sets of permissions.
+The ones that affect the <B>u</B>ser (the owner - you) , <B>g</B>roup (your
+team) and <B>o</B>thers. And there are in turn three types of access to
+choose from, <B>r</B>ead, <B>w</B>rite and e<B>x</B>ecute. Note that I
+have highlighted the letter <B>u</B>, <B>g</B> and <B>o</B> for user, group
+and others and <B>r</B>, <B>w</B>, and <B>x</B> for read, write and execute.
+That is because you can use these letters with the chmod utility if you
+wish. Usually, the chmod function is used with a three digit number. The
+first digit refers to the user, the second to the group and the third to
+others (sometimes it is a four digit number in which case the left-most
+digiit is used for something different). The actual number is a binary
+setting for the permissions where <B>x</B>=1 , <B>w</B>=2 and <B>r</B>=4.
+So if you changed a file permission like this <B>chmod 666</B> then you
+would be allowing read and write permission for yourself, your team and
+anybody else. You do not normally allow outsiders to you team to edit your
+work but you would often allow them to read it so you would set this instead
+to <B>chmod 664</B> . If this were a script library and the files had to
+be executable for them to work then <B>chmod 775</B> would allow anybody
+to read them or exeute them but only you or your team to edit them. This
+utility can be used on multiple files using a wildcard so if you wanted
+everybody in your team to be able to update your sas programs then <B>chmod
+664 *.sas</B> will do this. You will get error messages out where it matched
+files belonged to other people, since you can not change the permissions
+for other peoples files, but all your files would have their permissions
+changed. Now suppose your project had finished and you did not want anybody
+to update or delete and of the sas programs. Then <B>chmod 444</B> would
+have this effect.</P>
+
+<P>And now back to umask. Umask has three digits as well and these correspond
+to the digits in chmod. It is effectively masking settings for chmod. So
+if you have a setting <B>umask 022</B> it is masking the <B>w</B>rite attribute
+for <B>g</B>roup (your team) and <B>o</B>thers but f you have setting <B>umask
+002</B> then it only masks the <B>w</B>rite attribute for <B>o</B>thers.
+umask and chmod work together like this.</P>
+
+<H2>Viewing file permissions</H2>
+
+<P>To see the permissions that files have you use the <B>ls -l</B> command
+(the<B> -l</B> indicating <B>l</B>ong form). You will see something like
+this:</P>
+
+<P><TT>-rwxr-xr-x</TT></P>
+
+<P>..on the far left. The first position is just a &quot;-&quot; to indicate
+a file (it will be &quot;d&quot; for a directory and &quot;l&quot; for
+a link). The next three positions are the read, write execute setting for
+the user (the owner). The next three are for the group and the last three
+for others. So in the example above you see that it is a file and the user
+(owner) had read, write and execute permissions, the group has read and
+execute permissions and others have the same as the group.</P>
+
+<H2>chmod toggling</H2>
+
+<P>Instead of using chmod in the form <B>chmod nnn</B> you can toggle on
+and off the permissions using letter notation. Not all implementations
+of Unix work the same way, though. For example, you could switch on execute
+permissions for all users with <B>chmod +x</B> or alternatively toggle
+it off with <B>chmod -x</B> . You could apply this to just group and others
+like this <B>chmod go+w</B> (toggle on write for group and others). You
+could specify it like this <B>chmod go=rx</B> (group and others have rx
+access) but this is not toggling but rather setting things directly. You
+should refer to documentation for full information on this.</P>
+
+<H2>chmod calculator</H2>
+
+<P>Peter Crouch has a chmod calculator that uses Javascript on his page
+here http://javascriptkit.com/script/script2/chmodcal.shtml and it is included
+below. This could help you with the chmod numeric settings.</P>
+
+<P><SCRIPT language="JavaScript">// Chmod calculator. This is useful when setting permissions on cgi files using FTP
+// Copyright Peter Crouch 2000. All rights reserved.
+// Visit http://www.perlbay.com for other thing written by me
+//Visit http://javascriptkit.com for this script and more
+
+function calculator(user, number){
+// Owner
+if (user == "owner" && number == "4"){var box = eval("document.chmod.owner4")}
+if (user == "owner" && number == "2"){var box = eval("document.chmod.owner2")}
+if (user == "owner" && number == "1"){var box = eval("document.chmod.owner1")}
+// Group
+if (user == "group" && number == "4"){var box = eval("document.chmod.group4")}
+if (user == "group" && number == "2"){var box = eval("document.chmod.group2")}
+if (user == "group" && number == "1"){var box = eval("document.chmod.group1")}
+// Other
+if (user == "other" && number == "4"){var box = eval("document.chmod.other4")}
+if (user == "other" && number == "2"){var box = eval("document.chmod.other2")}
+if (user == "other" && number == "1"){var box = eval("document.chmod.other1")}
+if (box.checked == true){
+if (user == "owner"){
+document.chmod.h_owner.value += ("+number")
+var a= (document.chmod.h_owner.value)
+var b= eval(a)
+document.chmod.h_owner.value=b
+document.chmod.t_owner.value=b
+}if (user == "group"){
+document.chmod.h_group.value += ("+number")
+var a= (document.chmod.h_group.value)
+var b= eval(a)
+document.chmod.h_group.value=b
+document.chmod.t_group.value=b
+}if (user == "other"){
+document.chmod.h_other.value += ("+number")
+var a= (document.chmod.h_other.value)
+var b= eval(a)
+document.chmod.h_other.value=b
+document.chmod.t_other.value=b
+}
+}
+if (box.checked == false){
+if (user == "owner"){
+if (document.chmod.h_owner.value == ""){
+document.chmod.t_owner.value=""
+}else {
+var a=(document.chmod.h_owner.value);
+b=a-(number);
+c=eval(b);
+document.chmod.h_owner.value=c
+document.chmod.t_owner.value=c
+}}if (user == "group"){
+if (document.chmod.h_group.value == ""){
+document.chmod.t_group.value=""
+}else {
+var a=(document.chmod.h_group.value);
+b=a-(number);
+c=eval(b);
+document.chmod.h_group.value=c
+document.chmod.t_group.value=c
+}}if (user == "other"){
+if (document.chmod.h_other.value == ""){
+document.chmod.t_other.value=""
+}else {
+var a=(document.chmod.h_other.value);
+b=a-(number);
+c=eval(b);
+document.chmod.h_other.value=c
+document.chmod.t_other.value=c
+}}
+}}</SCRIPT><FORM name="chmod"><INPUT name="h_owner" type="hidden" value=""><INPUT name="h_group" type="hidden" value=""><INPUT name="h_other" type="hidden" value=""></P>
+
+<TABLE CELLPADDING=5 BGCOLOR="#000000" >
+<TR bgcolor="#ffffff">
+<TD colspan="4"><B><FONT FACE="verdana"><FONT SIZE=+0>Chmod</FONT></FONT></B></TD>
+</TR>
+
+<TR bgcolor="#ffffff" align="center">
+<TD><B><FONT FACE="verdana"><FONT SIZE=-1>Permission</FONT></FONT></B></TD>
+
+<TD><B><FONT FACE="verdana"><FONT SIZE=-1>Owner</FONT></FONT></B></TD>
+
+<TD><B><FONT FACE="verdana"><FONT SIZE=-1>Group</FONT></FONT></B></TD>
+
+<TD><B><FONT FACE="verdana"><FONT SIZE=-1>Other</FONT></FONT></B></TD>
+</TR>
+
+<TR bgcolor="#ffffff" align="center">
+<TD><B><FONT FACE="verdana"><FONT SIZE=-1>Read</FONT></FONT></B></TD>
+
+<TD><INPUT type="checkbox" name="owner4" value="4" onclick="calculator('owner', 4)"></TD>
+
+<TD><INPUT type="checkbox" name="group4" value="4" onclick="calculator('group', 4)"></TD>
+
+<TD><INPUT type="checkbox" name="other4" value="4" onclick="calculator('other', 4)"></TD>
+</TR>
+
+<TR bgcolor="#ffffff" align="center">
+<TD><B><FONT FACE="verdana"><FONT SIZE=-1>Write</FONT></FONT></B></TD>
+
+<TD><INPUT type="checkbox" name="owner2" value="2" onclick="calculator('owner', 2)"></TD>
+
+<TD><INPUT type="checkbox" name="group2" value="2" onclick="calculator('group', 2)"></TD>
+
+<TD><INPUT type="checkbox" name="other2" value="2" onclick="calculator('other', 2)"></TD>
+</TR>
+
+<TR bgcolor="#ffffff" align="center">
+<TD><B><FONT FACE="verdana"><FONT SIZE=-1>Execute</FONT></FONT></B></TD>
+
+<TD><INPUT type="checkbox" name="owner1" value="1" onclick="calculator('owner', 1)"></TD>
+
+<TD><INPUT type="checkbox" name="group1" value="1" onclick="calculator('group', 1)"></TD>
+
+<TD><INPUT type="checkbox" name="other1" value="1" onclick="calculator('other', 1)"></TD>
+</TR>
+
+<TR bgcolor="#ffffff" align="center">
+<TD></TD>
+
+<TD><INPUT type="text" name="t_owner" value="" size="1"></TD>
+
+<TD><INPUT type="text" name="t_group" value="" size="1"></TD>
+
+<TD><INPUT type="text" name="t_other" value="" size="1"></TD>
+</TR>
+</TABLE>
+
+<P></FORM></P>
+
+<P><FONT SIZE=-2><FONT FACE="arial">This free script provided by<BR>
+</FONT><FONT FACE="arial, helvetica"><A HREF="http://javascriptkit.com">JavaScript
+Kit</A></FONT></FONT></P>
+
+<CENTER><P>Go back to the home <A HREF="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</A>.</P></CENTER>
+
+<CENTER><P>E-mail the macro and web site <A HREF="mailto:roland@rashleigh-berry.fsnet.co.uk">author</A>.</P></CENTER>
+
+<CENTER><P><BR>
+<BR>
+<BR>
+</P></CENTER>
+
+</BODY>
+</HTML>

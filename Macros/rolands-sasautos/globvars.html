@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>Roland's SAS tips and techniques</TITLE>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+   <META NAME="Generator" CONTENT="Microsoft Word 97">
+   <META NAME="keywords" CONTENT="sas tips techniques">
+   <META NAME="Description" CONTENT="SAS tips and techniques by Roland Rashleigh-Berry">
+   <META NAME="Template" CONTENT="C:\PROGRAM FILES\MSOFFICE\OFFICE\html.dot">
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.01Gold (Win95; I) [Netscape]">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#C0C0C0" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+
+<H1 ALIGN=CENTER>Testing for the existence of a global macro variable</H1>
+
+<P><B>[This site is not connected with the SAS Institute]</B></P>
+
+<P><B>[last updated - 01 September 2003]</B></P>
+
+<H2>Declaring it %global</H2>
+
+<P>I mention this on my <A HREF="macrotips.html">macro tips</A> page but
+I thought I would expand on it here. Let us say you want to do a bit of
+processing but it will be different if a global macro variable has been
+set. So you want to check on whether it exists or not. If you try to resolve
+its value and it has not been set up then you will get an error message
+and you want to avoid that. There is a quick and dirty way to do this and
+I will tell you about it before going on to more complex methods. That
+is - declare the macro variable as global like this - <B>%global globvar;</B>
+. Nearly every SAS&nbsp;programmer I know of makes the mistake in thinking
+that if you declare a macro variable as global then you will destroy the
+contents of that variable. This is not the case. Declaring a macro variable
+as global <B><I>promotes</I></B> that variable to be global if it was not
+before. The contents of that variable are not affected. So all you have
+to do is to declare it global and test its contents. If it has a value
+then it must have been set up somewhere and so it must exist. I use this
+technique a lot. It is quick and dirty but it does the job. But maybe you
+need a better solution.</P>
+
+<H2>sashelp.vmacro &amp; dictionary.macros</H2>
+
+<P>Information about what macro variables have been set up can be found
+in the <B>sashelp.vmacro</B> view and the <B>dictionary.macros</B> SQL
+view so you can use these views to find out if the global macro variable
+already exists. There is a <B>&quot;scope&quot;</B> variable which will
+be set to <B>&quot;GLOBAL&quot;</B> for global macro variables and the
+name of the variable will be in uppercase and in the <B>&quot;name&quot;</B>
+field. Because getting to this information may not be convenient I wrote
+a function-style macro to return a list of global macro variables called
+<A HREF="globlist.sas">globlist</A> and one to check for the existence
+of all of one or more global macro variable called <A HREF="globexist.sas">globexist</A>.
+These macros do not contain any procedural or data step boundaries so it
+can be used in macro code in the form:</P>
+
+<P><B><TT>%if %globexist(globvar) %then .....</TT></B></P>
+
+<P>...and I assume the above is the most convenient form for finding out
+whether a global macro variable exists. No quick and dirty trick as in
+the previous section is used. The macro effectively reads the sashelp.vmacro
+view using SCL code called from a macro. Although it is opening, reading
+and then closing a SAS view, it is not using a data step to do this nor
+a procedural step.</P>
+
+<H2>%symdel</H2>
+
+<P>At some stage you might want to delete all your global macro variables.
+You can do this with the %symdel command and if you combine it with the
+%globlist macro then it becomes a very simple matter. Look at the log below.</P>
+
+<P><B><TT>1 %let test1=1; <BR>
+2 %let test2=2; <BR>
+3 %put _global_; <BR>
+GLOBAL TEST1 1 <BR>
+GLOBAL TEST2 2 <BR>
+4 %symdel %globlist; <BR>
+5 %let test3=3; <BR>
+6 %put _global_; <BR>
+GLOBAL TEST3 3 </TT></B></P>
+
+<P>You will see in the log that I set up two (effectively) global macro
+variables <B>test1</B> and <B>test2</B> and then displayed them using the
+<B>%put _global_</B> command. (Note that if these macro variables exist
+in open code then they are treated like global macro variables and recognized
+by SAS macro code as such. There is no need to declare then as global).
+I then use <B>%symdel %globlist</B> to delete these global macro variables.
+Then I create a third global macro variable called <B>test3</B>. So when
+I display these global macro variables using the <B>%put _global_</B> statement
+you will see that only <B>test3</B> is left. </P>
+
+<P>Note that %symdel only acts on global macro variables. Also you should
+note that (for some strange reason) if you use %symdel in the form:</P>
+
+<P><B><TT>%symdel &amp;var;</TT></B></P>
+
+<P>...inside a macro then you might get a syntax error but it will work
+outside a macro in that form without a problem. This is a known bug and
+there is a fix for it which you can read about <A HREF="http://support.sas.com/techsup/unotes/SN/005/005975.html">here</A>.</P>
+
+<CENTER><P>Go back to the home <A HREF="../SASMAC~1/index.html">page</A>.</P></CENTER>
+
+<CENTER><P>E-mail the macro and web site <A HREF="mailto:roland@rashleigh-berry.fsnet.co.uk">author</A>.</P></CENTER>
+
+</BODY>
+</HTML>

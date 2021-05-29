@@ -1,0 +1,391 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>clinical reporting sas macros</TITLE>
+   <META NAME="Author" CONTENT="Roland Rashleigh-Berry">
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.01Gold (Win95; I) [Netscape]">
+   <META NAME="Description" CONTENT="SAS macros written by Roland Rashleigh-Berry">
+   <META NAME="KeyWords" CONTENT="clinical reporting sas macros">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#C0C0C0" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+
+<H1 ALIGN=CENTER>Clinical reporting sas macros</H1>
+
+<P><B>[This site is not connected with the SAS Institute]</B></P>
+
+<P><B>(Last updated: 17 August 2003 - time-to-event link added)</B></P>
+
+<P><B><I>[Disclaimer: You will be able to access and download public domain
+code from this page. Although efforts have been made to test the code,
+no guarantee as to suitability or accuracy is either given or implied.
+If you use the code, you do so at your own risk. You should test this code
+yourself and thoroughly satisfy yourself that it is working correctly before
+using it in a production environment. If you find problems in the code
+then please inform the author using the contact email address in the header
+of the macro].</I></B></P>
+
+<P><B>Note that these were written on a Windows PC. If you download these
+files directly to a different platform such as Unix then you might get
+problems with the control characters at the end of the lines. You might
+be better off just copying and pasting if you are not running Windows.
+If you do copy and paste then choose the browser option to look at the
+&quot;source&quot; of the page and copy and paste that. This is because
+html translates some of the macro references into something else.</B></P>
+
+<P><B>All these macros have html tags as part of the header box and will
+appear as &lt;pre&gt;&lt;b&gt; in the first line. They are not part of
+the code. They just help them to display correctly when you browse them
+using web pages. You should remove these tag markers if you intend to use
+the macros, although they will not affect the code since they are part
+of the commented-out header.</B></P>
+
+<P>The entire set of clinical reporting macros and the sasautos macro they
+call can be downloaded by clicking on this <A HREF="sasautos.zip">link</A>.</P>
+
+<H2>Introduction</H2>
+
+<P>These macros are very much &quot;under development&quot; and more will
+be added as time goes by. They are not stable like the sasautos extensions.
+If you are interested in these macros then check back every week or so.
+Even if there are no extra macros listed on this mage then existing ones
+could have changed. Some of these macros are very complex, but a full description
+as well as usage notes will be in the header of each macro. Note that most
+of these macros call the sasautos extension macros I wrote. If you use
+these macros you will need to download them and add them to your sasautos
+search path. You can get access to these macros by clicking on this <A HREF="sasautos.html">link</A>.</P>
+
+<P>My aim is to help you to understand how a Clinical Reporting system
+hangs together and to give you enough example code so that you can design
+and build your own. Since I am not a statistician, I will be concentrating
+on Safety reporting. Included will be features such as a Titles and Footnotes
+handling. </P>
+
+<P>And remember - this is public domain code. I have donated it all to
+the public domain so it is now as much your code as mine. It is <B>FREE
+!! </B>You don't need my permission to download it or use it. Do what you
+like with it. If you are really enterprising, you could use this code to
+help set up a Biostats department for a CRO start-up. You could become
+a <B>millionaire</B> and not give me a penny.</P>
+
+<H2>popfmt</H2>
+
+<P>This macro is for putting a population total of the form (N=nnn) at
+the end of a string. You supply it with an existing format that maps treatment
+arm codes to a short description and you give it a population dataset that
+you can subset on the population you are interested in. It then creates
+a new format with the (N=nnn) string at the end. By default, the output
+format it creates will be the same name as the input format but with an
+&quot;n&quot; at the end of the format name. Since population totals are
+useful for other purposes it creates a dataset named &quot;popfmt&quot;
+that you can use after the call to this macro.</P>
+
+<P>To view this macro, click on this <A HREF="popfmt.sas">link</A>. To
+see its test pack click here <A HREF="testpopfmt.sas">testpack</A>.</P>
+
+<H2>npctcalc</H2>
+
+<P>This is for calculating &quot;n&quot; and &quot;pct&quot; for AE&nbsp;tables.
+&quot;n&quot; will be the number of subjects having an adverse event and
+&quot;pct&quot; will be the percentage of the total/level/population depending
+on the option you choose. The macro aetab, the one that actually outputs
+the report, will call it. I thought it would be a good idea to keep this
+as a separate macro so that you could still make use of it if your reporting
+style for this table was completely different to what I'll be doing in
+the aetab macro.</P>
+
+<P>This is finished but requires further testing and may be changed. You
+can view the current version <A HREF="npctcalc.sas">here</A>.</P>
+
+<H2>npcttab</H2>
+
+<P>I was going to call this macro &quot;aetab&quot;, but then I thought
+better of it. It is the macro that will call npctcalc and then create the
+table. It has three styles out output. Style 1 is with the level1 and level2
+categories in seperate columns. Style 2 is with the level1 and level2 categories
+sharing a column but with level2 categories indented for clarity. Style
+3 is where level1 categories are not shown at all and it is just a list
+of level2 categories. So I think it will be better if shell macros are
+written for AE reporting such that aetab1 will be for style 1, aetab2 for
+style 2 and aetab3 for style 3. And these shell macros could have many
+parameters defaulting so that maybe the user just has to specify the dataset
+they want tabulating and not much else. I think it is easier to remember
+them that way because the style numbers reflect increasing compression
+of the table.</P>
+
+<P>I also decided to put in the facility to &quot;flatten&quot; the table.
+That is combine the &quot;n&quot; and &quot;pct&quot; into a single string
+in a transposed variable. This will be optional, of course. I notice for
+electronic submissions that the tables are becoming very small and having
+this option can save a line in the report since there will be no &quot;n&quot;
+and &quot;pct&quot; column headers. Instead the &quot;n&quot; and &quot;pct&quot;
+will be obvious from the form of it such as &quot;43 (65%)&quot;.</P>
+
+<P>I have finished this macro but I will have to put it through a lot of
+testing. You can take a look at the latest version by clicking <A HREF="npcttab.sas">here</A>.To
+see its test pack click here <A HREF="testnpcttab.sas">testpack</A>.</P>
+
+<P>You can view the output styles by clicking on the following links. They
+link to .LST files. Style=1 <A HREF="npct1.txt">ordinary</A>, <A HREF="npct1f.txt">flattened</A>.
+Style=2 <A HREF="npct2.txt">ordinary</A>, <A HREF="npct2f.txt">flattened</A>.
+Style=3 <A HREF="npct3.txt">ordinary</A>, <A HREF="npct3f.txt">flattened</A>.</P>
+
+<H2>sumtab</H2>
+
+<P>This produces summary statistics for numeric variables showing things
+such as mean, min, max, median etc. and counts with percentages for categorical
+variables which are either character or numeric mapped by a non-numeric
+format.</P>
+
+<P>I have completed this macro but done very little testing on it. There
+are bound to be problems. I would be extremely grateful if somebody could
+do some extensive testing of it and feed back the problems encountered.
+This would save me a great deal of time. I&nbsp;am going to take a break
+from it to work on the titles and footnotes system before going back to
+it to do more testing. You can view this macro by clicking <A HREF="sumtab.sas">here</A>.
+To view its test pack click here <A HREF="testsumtab.sas">testpack</A>.</P>
+
+<P>You can view the output styles by clicking on the following links. They
+link to .LST files. Style=1 with no grouping variable <A HREF="sumtab1.txt">ordinary</A>,
+<A HREF="sumtab1f.txt">flattened</A>. Style=1 with a grouping variable
+<A HREF="sumtabg1.txt">ordinary</A>, <A HREF="sumtabg1f.txt">flattened</A>.
+Style=2 with a grouping variable <A HREF="sumtabg2.txt">ordinary</A>, <A HREF="sumtabg2f.txt">flattened</A>.</P>
+
+<H2>A Titles and Footnotes System and the &quot;project&quot; macro</H2>
+
+<P>It seems to be common practice to keep titles and footnotes separate
+from program code. I don't know why. I can't think of any problem it is
+trying to avoid, nor can I think of any advantage it offers that can not
+be achieved in other ways. I've seen this implemented using a flat file
+and also using a spreadsheet. The sas dataset created from it is often
+in the form of having all ten titles and all ten footnotes present as variables
+which seems to be wasteful of space. I don't know why people do not use
+a variation on the structure obvious from the vtitles view in the sashelp
+folder. The choice is an arbitrary one and I now have to make this choice
+since I am only going to write a single system. On the basis of it then
+other systems can be designed. But I will explain why I am doing it in
+the way I have chosen.</P>
+
+<P>Firstly I am opting to use a flat file to contain the titles and footnotes
+rather than a spreadsheet. The reason for this is for line length purposes.
+The clinical reports produced by the macros I have written use good old-fashioned
+fixed width characters throughout. At least I can keep alignment regular
+in columns of data this way. So the titles and footnotes will be the same.
+And because they are fixed width then I want to be sure that the footnotes
+(especially) will not flow over more than one line and also that I am using
+the space effectively in each line since space might be at a premium. And
+because of this I need to use a ruler to indicate column positions and
+this is very easily done using a flat file. So flat file it is. Also I
+will center the titles by default and always have footnotes left-aligned.</P>
+
+<P>Secondly, I have decided that the form of the titles and footnotes dataset
+should conform closely to that used by sas itself in its vtitles view.
+The reason being that if it has served sas well for all these years then
+I regard this as the &quot;standard&quot; form for titles and footnotes
+and so I will adhere to that standard since I can't think of any reason
+not to.</P>
+
+<P>So these titles and footnotes for all the programs in a suite will be
+written to a sas dataset having something like the structure of the vtitles
+view but with extra variables where needed like a variable containing the
+program name. But we have to bear in mind that we will probably be adding
+other titles and perhaps an extra footnote as well that we do not want
+in this dataset. You may have the top title containing project or protocol
+information. Maybe on the extreme right it will display a page number or
+a date. The extra bottom footnote might contain a full program and path
+name plus the user-id who ran it and perhaps a date and time and maybe
+the page number is on the extreme right instead of in a title line. And
+if we think about this situation then another consideration arises. And
+that is, if we use positions on the extreme right of title or footnotes
+lines then we need to know how long our lines are going to be. And we can
+only be sure of this when the actual report is produced. Also, more than
+one report might be created in one program and it is possible that they
+will have different line lengths. So it makes sense to create the extra
+titles and footnotes, which might use this rightmost position, only after
+the line size has been specified. So to recap, because extra titles or
+footnotes might use a rightmost position we can not generate the titles
+and footnotes statements until after the line size has been specified.
+So we will have to store these pieces on information somewhere until we
+can construct these titles and footnotes and the obvious way to hold information
+like this is in global macro variables.</P>
+
+<P>Now this is a side note to you to follow through the reasoning in this
+section until you fully understand it. We will arrive at a structure for
+our reporting system driven by our requirements. But don't worry about
+getting lost. There will soon be light at the end of the tunnel. So let
+us return to where we left off with our global macro variables.</P>
+
+<P>Now the trouble with global macro variables is that we do not want them
+overwritten by the programmer. So we want to set things up in a way where
+this will not happen. If we have a list of reserved global macro variable
+names then the programmer has to keep referring to this list whenever they
+need to set up a global macro variable. This is not convenient. So it is
+better to have a reserved <I>form</I> of the global macro variable instead.
+Each of our special global macro variables could start with a &quot;ZZ&quot;,
+for example, and so all global macro variables starting &quot;ZZ&quot;
+could be reserved for use with our system of macros. I am going to use
+something similar to this. All global macro variables that both start and
+end with an underscore are going to be reserved. It looks clearer that
+way rather than having a two letter start since it is easier to distinguish
+one variable name from another.</P>
+
+<P>It makes sense to gather all the bits of information we need and store
+them in our special global macro variables at the start of the program.
+It also makes sense to have a &quot;project&quot; macro tailored for our
+project that we can amend as we please. But what parameters should it have,
+if any? Well, we might like to pass it the population we will be reporting
+on. Also, we might have more than one treatment group variable so we should
+have a parameter for that. And we will need a treatment format parameter
+to go with that. So that is three parameter for a start. We might need
+more. And the first thing we might want to do inside the project macro
+is to call a macro that gathers important job information (I have written
+a utility macro called <A HREF="jobinfo.sas">%jobinfo</A> that does this).
+The next thing to do inside the project macro might be to create a population
+dataset based on the population passed. Maybe set up a string like &quot;%let
+_poptlt_=Population: Intent-to-Treat&quot; if the value pop=itt is passed
+to the macro. There could be many more things we want this macro to do.
+You could set up _tmtvar_ to contain the name of the treatment group variable.
+_tmtfmt_ to it's format. _fmtout_ to a generated format. And all these
+things could be used within the program code since they will be global
+macro variables. How about using &quot;if &amp;_popgrp_&quot; in your code
+where _popgrp_ is set to a numeric population variable that has the value
+&quot;1&quot; or &quot;0&quot;? The more thought you put into this then
+the more useful your project macro will be and the more generic your code
+can be. But that raises one more point. The programmers have got to be
+told somehow what global macro variables have been set up and what they
+contain. The best place for this is to write a message to the log.</P>
+
+<P>We have reached the light at the end of the tunnel. Here is a recap.
+</P>
+
+<P>1) We will need to add extra titles and footnotes to the ones we have
+stored away.<BR>
+2) We may use the rightmost position in the extra titles and footnotes
+so we should not generate titles and footnotes statements until after the
+line size is known.<BR>
+3) Because we need to store pieces of information then we should store
+them in global macro variables.<BR>
+4) Because we do not want our global macro variables overwritten we should
+store them in a reserved form - namely starting and ending with an underscore.<BR>
+5) We should have a project macro that does this work.<BR>
+6) The project macro should call a macro named <A HREF="jobinfo.sas">%jobinfo</A>
+that gathers important job information.<BR>
+7) The project macro should at least have three parameters for the population
+to use, the treatment variable (defaulted to the usual) and the treatment
+variable format (defaulted to the usual).<BR>
+8) The project macro should create a temporary population dataset for other
+macros to use based on the population passed to it.<BR>
+9) The project macro should create other global macro variables to help
+program code be more generic.<BR>
+10) The list of global macro variables set up and their contents should
+be written in a clear message in the log so the programmers know about
+it.</P>
+
+<P>In the above you can see how a structure can form out of a careful and
+thorough process of thought and following through the consequences. In
+this case we have the skeleton for an entire Clinical Reporting system.
+Add to that the two major reporting macros, npcttab and sumtab, and we
+have a sound foundation for a fully fleshed-out reporting system.</P>
+
+<H2>The Titles and Footnotes Flatfile</H2>
+
+<P>I want to allow the user to add comments and especially a ruler line
+in the titles and footnotes flat file. Where it picks up information will
+be governed by special label lines that end in a colon. The following monospaced
+section is a template for this flat file and should be self-explanatory.
+The same file without html tags exists <A HREF="titles.txt">here</A>.</P>
+
+<P><TT>* This is the titles and footnotes template flat file <BR>
+* that will be read in by the <A HREF="mktitles.sas">%mktitles</A> macro.</TT></P>
+
+<P><TT>* You can write what you like as comments outside a program:/end:
+block <BR>
+* and it will be ignored. Also you can do the same after the program: <BR>
+* line or suffix: line and it will be ignored. The program identity <BR>
+* must follow program: and be on the same line. The same for suffix: <BR>
+* But titles and footnotes must be on the lines following the titles: <BR>
+* and footnotes: label. You can make copies of the ruler line and <BR>
+* place this at allowed places for comments as shown below to help you
+<BR>
+* get the lengths of these correct.</TT></P>
+
+<P><TT>(It makes no difference if you start comments with an asterisk but
+<BR>
+obviously you must not start a comment line with program:, seq: etc.)</TT></P>
+
+<P><TT>program: &lt;put your program name here&gt; <BR>
+seq: &lt;put your sequence number here if required&gt; <BR>
+---------1---------2---------3---------4---------5---------6---------7---------8---------9---------0---------1---------2--<BR>
+titles: <BR>
+Put your first title here. This one will be centered which is standard
+for titles <BR>
+&nbsp;This second title will be aligned one space from the left <BR>
+footnotes: <BR>
+This is the first footnote. All footnotes will be left aligned. <BR>
+&nbsp;This is the second footnote and will be aligned one space from the
+left. <BR>
+end: <BR>
+---------1---------2---------3---------4---------5---------6---------7---------8---------9---------0---------1---------2--</TT></P>
+
+<P><TT>program: <BR>
+seq: <BR>
+titles:<BR>
+footnotes:<BR>
+end:</TT></P>
+
+<H2>Titles and Footnotes macros</H2>
+
+<P><TT><A HREF="mktitles.sas">mktitles</A> - </TT>Creates titles and footnotes
+dataset from the titles flat file<BR>
+<TT><A HREF="titlegen.sas">titlegen</A> - </TT>Generates the titles and
+footnotes statements from a titles dataset<BR>
+<TT><A HREF="stdfoot.sas">stdfoot</A> - </TT>Generate a standard footer<BR>
+<TT><A HREF="titles.sas">titles</A> - </TT>Creates all required titles
+and footnotes (including special titles and standard footnote) and generates
+them</P>
+
+<H2>Merging with a dose</H2>
+
+<P>This is not a clinical reporting macro but rather a clinical utility
+macro. It is to allow you to merge in a dose to match a date in an adverse
+event dataset. But I need to explain the thinking behind it so that you
+know what you are getting. Suppose you have a dataset with dose changes
+in it. You would typically have a start date and end date and the dose
+level for the subjects. However, the dose dataset may need &quot;fixing&quot;
+to ensure there were no date gaps. And when you come to merge with a set
+of dates then there may be multiple observations due to a start date being
+the same as a stop date in the previous record. In the case of an overlap,
+one approach would be to change the stop dates so that they did not overlap
+the following start date. Another approach would be to allow duplicates
+but take the lowest non-zero dose, representing the worst case (in other
+words a smaller dose bringing on the AE rather than a larger dose). It
+all depends on the standards agreed so I wrote this macro to be flexible
+so that you can specify how it handles gaps and overlaps. You should not
+use this macro blindly. You need to think about how you want it to work
+and only use it the way you are supposed to. I would actually recommend
+you use an altered version of the macro that enforces site standards, if
+rigid standards exist, rather than allow the users to choose its action
+via the parameter settings. </P>
+
+<P>You can view this macro by clicking <A HREF="dosemerge.sas">here</A>.
+The test pack is available here <A HREF="testdosemerge.sas">testpack</A>.</P>
+
+<H2>LOCF (Last Observation Carried Forward) Processing</H2>
+
+<P>This is a lengthy section and so has its own page. You can access it
+by clicking <A HREF="locf.html">here</A>.</P>
+
+<H2>Time-to-event processing</H2>
+
+<P>The way you should organise your data for time-to-event processing is
+discussed <A HREF="t2event.html">here</A>.</P>
+
+<CENTER><P>Go back to the home <A HREF="index.html">page</A>.</P></CENTER>
+
+<CENTER><P>E-mail the macro and web site <A HREF="mailto:roland@rashleigh-berry.fsnet.co.uk">author</A>.</P></CENTER>
+
+<P><BR>
+<BR>
+</P>
+
+</BODY>
+</HTML>

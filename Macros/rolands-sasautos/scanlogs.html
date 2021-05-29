@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>whosgot</TITLE>
+   <META NAME="Author" CONTENT="Roland Rashleigh-Berry">
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.01Gold (Win95; I) [Netscape]">
+   <META NAME="Description" CONTENT="SAS tips and techniques by Roland Rashleigh-Berry">
+   <META NAME="KeyWords" CONTENT="sas tips techniques">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#C0C0C0" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+
+<H1 ALIGN=CENTER>scanlogs</H1>
+
+<P><B>[last updated - 27 July 2003]</B></P>
+
+<P>Scanning SAS logs for important messages is a very neglected thing in
+the QC process. Maybe this is because there is not an easy-to-use utility
+to do this. Well I have written one and it uses <B>awk</B> which you can
+think of as a better version of <B>grep</B> that is also a lot more complicated.
+</P>
+
+<PRE>
+<B>#!/bin/sh
+# Script     : scanlogs
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 27 July 2003
+# Contact    : roland@rashleigh-berry.fsnet.co.uk
+# Purpose    : To scan SAS logs for important warnings, notes and errors 
+# SubScripts : none
+# Notes      : This is an important QC tool to ensure your SAS programs have run
+#              correctly.
+# Usage      : scanlogs *.log
+# 
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+#  1   logs to scan
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+# 
+#================================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#================================================================================
+
+if [ $# -lt 1 ]
+then
+  echo &quot;Usage: scanlogs *.log&quot; 1&gt;&amp;2
+  exit 1
+fi
+
+while [ $# -gt 0 ]
+do
+awk '{if ( ( index($0,&quot;ERROR&quot;) == 1 \
+|| index($0,&quot;WARNING&quot;) == 1 \
+|| index($0,&quot;MERGE statement&quot;) &gt; 0  \
+|| index($0,&quot;W.D format&quot;) &gt; 0  \
+|| index($0,&quot;truncated &quot;) &gt; 0  \
+|| index($0,&quot; 0 observations and &quot;) &gt; 0  \
+|| index($0,&quot;outside the axis range&quot;) &gt; 0  \
+|| index($0,&quot;NOTE: Invalid&quot;) == 1 \
+|| index($0,&quot;uninitialized&quot;) &gt; 0 ) \
+&amp;&amp; index($0,&quot;Errors printed on&quot;) == 0 \
+&amp;&amp; index($0,&quot;scheduled to expire on&quot;) == 0 \
+&amp;&amp; index($0,&quot;product with which&quot;) == 0 \
+&amp;&amp; index($0,&quot;representative to have&quot;) == 0 )
+{printf &quot;%-30s %-80s\n&quot;,&quot;'$1'&quot;,$0}}' $1
+shift
+done</B>
+</PRE>
+
+<P>You should be familiar with everything that precedes the call to <B>awk</B>
+if you have studied the previous examples. For a start-off, look at all
+the lines that end with a &quot;\&quot;. I mentioned before that shell
+interpreters expect one statement per line. But when a statement has to
+go over one line then you have got to use a continuation character which
+is the &quot;\&quot; that I have used. Note that for awk, testing for equality
+is done with a double equals symbol. &quot;Or&quot; is a double &quot;|&quot;
+symbol and &quot;and&quot; is a double &quot;&amp;&quot; symbol. It is
+testing for important message lines but ignoring lines that are not helpful,
+especially licence expiry warnings. If these conditions are met the it
+uses the <B>printf</B> statement to print out <B>formatted</B> values.
+The first 30 spaces it uses for the file name it is working on and the
+next 80 spaces it uses for the whole line in the log file. Note that <B>awk</B>
+refers to the entire input line as $0. $1 would be the first field in that
+line but we don't want to display that. We DO, however, want to display
+the file name that is also referred to as $1. To make this distinction,
+note the file name is referred to as <B><TT>&quot;'$1'&quot;</TT></B> to
+indicate that it is a variable outside awk and not and internal awk variable.
+</P>
+
+<CENTER><P>Go back to the home <A HREF="../SASMAC~1/index.html">page</A>.</P></CENTER>
+
+<CENTER><P>E-mail the macro and web site <A HREF="mailto:roland@rashleigh-berry.fsnet.co.uk">author</A>.</P></CENTER>
+
+<CENTER><P><BR>
+<BR>
+<BR>
+</P></CENTER>
+
+</BODY>
+</HTML>

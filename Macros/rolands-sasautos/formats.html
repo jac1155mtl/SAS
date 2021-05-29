@@ -1,0 +1,140 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+<META NAME="Generator" CONTENT="Microsoft Word 97">
+<TITLE>whosgot</TITLE>
+<META NAME="keywords" CONTENT="sas tips techniques">
+<META NAME="Description" CONTENT="SAS tips and techniques by Roland Rashleigh-Berry">
+<META NAME="Template" CONTENT="C:\PROGRAM FILES\MSOFFICE\OFFICE\html.dot">
+</HEAD>
+<BODY TEXT="#000000" LINK="#0000ff" VLINK="#800080" BGCOLOR="#c0c0c0" ALINK="#FF0000">
+
+<P><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN"></P>
+<H1 ALIGN="CENTER">Fun with formats</H1>
+<B><P>[last updated - 25 August 2003]</P>
+</B><H2>Why your format name can't end with a number</H2>
+<P>I bet you've been caught out by this naming limitation before. You want your format name to end with a number, because maybe that will match your variable name you are formatting, but you get a syntax error. You may wonder why this limitation is there. I'll tell you the reason. That is because if you create a format you can then use a number at the end to specify its length. That is what the number at the end is for. To specify the length and that is why a number at the end can not be part of the name of the format.</P>
+<P>In the following log you will see I created a format named "sex" and then show the effect of putting a number at the end when using the format.</P>
+<B><PRE>1    proc format;
+2      value $sex
+3      'M'='Male'
+4      'F'='Female'
+5      ;
+NOTE: Format $SEX has been output.
+6    run;
+
+NOTE: PROCEDURE FORMAT used:
+      real time           0.04 seconds
+
+7
+8    data _null_;
+9      str='F';
+10     put str= str=$sex. str=$sex10. str=$sex3.;
+11   run;
+
+str=F str=Female str=Female str=Fem
+NOTE: DATA statement used:
+      real time           0.50 seconds</PRE>
+</B><P>You see that $sex3. limits the formatted value to three characters? Maybe did not realize that your user-defined formats could be used with a number at the end to modify the length but now you can see that you can do this and that is why your format name is not allowed to end with a number.</P>
+<H2>Using other formats in user-defined formats</H2>
+<P>You can use other formats in your user-defined formats by assigning "other" to be acted upon by a format. You can even use a user-defined format in this way. Here is an example where the format <B>z3.</B> is assigned to <B>other</B>.</P>
+<B><PRE>14   proc format;
+15     value mynum
+16     1='one'
+17     2='two'
+18     other=[z3.]
+19     ;
+NOTE: Format MYNUM has been output.
+20   run;
+
+NOTE: PROCEDURE FORMAT used:
+      real time           0.00 seconds
+
+21
+22   data _null_;
+23     do i=1 to 4;
+24       put i=mynum.;
+25     end;
+26   run;
+
+i=one
+i=two
+i=003
+i=004
+NOTE: DATA statement used:
+      real time           0.10 seconds</PRE>
+</B><P>You might use this method to "fix" an existing format. Suppose you wanted to change the formatted value of one or two lab parameters to a slightly different name then you could "fix" the ones you wanted to and just let the "other" ones be acted upon by the format. Here is an example of using a format named $labparm and fixing two parameter codes.</P>
+<B><PRE>41   proc format;
+48     value $myparm
+49     'CR'='Creatanine'
+50     'WB'='White blood cells'
+51     other=[$labparm30.]
+52     ;
+NOTE: Format $MYPARM has been output.
+53   run;
+
+NOTE: PROCEDURE FORMAT used:
+      real time           0.00 seconds
+
+54
+55   data _null_;
+56     length str $ 3;
+57     do str='WB', 'POT', 'CR', 'RB';
+58       put str=$myparm.;
+59     end;
+60   run;
+
+str=White blood cells
+str=Potassium
+str=Creatanine
+str=Red blood cells
+NOTE: DATA statement used:
+      real time           0.00 seconds</PRE>
+</B><P>Note that when you use a format as part of a format then you are supposed to supply a length to the end of that format. In the above case I used a length of 30. If you omit the format then you get an ugly message in your log saying it will default to 40 so you should always supply a length.</P>
+<H2>Pictures</H2>
+<P>"Pictures" are created using proc format just like formats are. They are very useful for formatting out your data. They are especially useful for formatting percentage values where you might have a lower limit on a probability or an upper limit on a probability. For example, if you percentage is less than 0.1% but higher than zero percent then you might want to display it as "&lt;0.1%". Similarly, if you percentage is above 99% but not 100% then you might want to display it as "&gt;99%". At these upper and lower limits the numbers shown are text and not real values, whereas for other values in-between they are real values. The best way to understand it is to see one of these percentage pictures that I have used in one of my clinical reporting macros.</P>
+<B><PRE>proc format
+  picture pctfmt (round)
+  0        = '(  0%)' (noedit)
+  0&lt;-&lt;1    = '( &lt;1%)' (noedit)
+  1-&lt;9.5   = '9%)' (prefix='(  ')
+  9.5-99   = '99%)' (prefix='( ')
+  99&lt;-&lt;100 = '(&gt;99%)' (noedit)
+  100      = '(100%)' (noedit)
+  ;
+run;</PRE>
+</B><P>You can see that this is defined as a picture and not a format. If you look at four of the entries then you can see I have specified "(noedit)" against them. That means the numeric values inside should not be changed. For the two where I have <B>not</B> used "(noedit)" the "9"s will get replaced by actaul numbers. Since I want numbers to be rounded in this case then I have to specify the "(round)" option against the name of the picture itself. I want all these values to be 6 characters in width since I am going to put them in a column in a report and want them to be all aligned the same way. This is easy with the "(noedit)" values since what you see is what you get. But for the other I have to use a prefix to give the correct left bracket and number of spaces. You will see that where only one digit is displayed I prefix with a bracket and two spaces and where two digits are displayed I prefix with a bracket and one space. Here is some log output using the picture so you can see how it is working.</P>
+<B><PRE>36   data _null_;
+37     pct=.9;put pct=pctfmt.;
+38     pct=1;put pct=pctfmt.;
+39     pct=1.49;put pct=pctfmt.;
+40     pct=1.5;put pct=pctfmt.;
+41     pct=8.7;put pct=pctfmt.;
+42     pct=10.5;put pct=pctfmt.;
+43     pct=33.9;put pct=pctfmt.;
+44     pct=98.4;put pct=pctfmt.;
+45     pct=99;put pct=pctfmt.;
+46     pct=99.7;put pct=pctfmt.;
+47     pct=100;put pct=pctfmt.;
+48   run;
+
+pct=( &lt;1%)
+pct=(  1%)
+pct=(  1%)
+pct=(  2%)
+pct=(  9%)
+pct=( 11%)
+pct=( 34%)
+pct=( 98%)
+pct=( 99%)
+pct=(&gt;99%)
+pct=(100%)
+NOTE: DATA statement used:
+      real time           0.05 seconds</PRE>
+</B><P>Hopefully you can see that the rounding is working correctly and that all the formatted values are the same width.</P>
+<P ALIGN="CENTER">Go back to the home <A HREF="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</A>.</P>
+<P ALIGN="CENTER">E-mail the macro and web site <A HREF="mailto:roland@rashleigh-berry.fsnet.co.uk">author</A>.</P>
+<P ALIGN="CENTER"><BR>
+<BR>
+</P></BODY>
+</HTML>

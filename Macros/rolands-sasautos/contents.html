@@ -1,0 +1,151 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>whosgot</TITLE>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+   <META NAME="Author" CONTENT="Roland Rashleigh-Berry">
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.01Gold (Win95; I) [Netscape]">
+   <META NAME="Description" CONTENT="SAS tips and techniques by Roland Rashleigh-Berry">
+   <META NAME="KeyWords" CONTENT="sas tips techniques">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#C0C0C0" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+
+<H1 ALIGN=CENTER>contents</H1>
+
+<P><B>[last updated - 30 July 2003]</B></P>
+
+<P>Make your data directory your current directory to run <B>contents</B>.
+It will list your dataset and its variables and labels. You can use this
+to check whether you have added all the labels to a dataset. You can list
+a few datasets if you want to. If you invoke it without parameters then
+it will run on the whole library. You might like to pipe the output to
+grep to search for variable names to find out what datasets they are in.</P>
+
+<PRE><B>
+#!/bin/sh
+# Script     : contents
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 30 July 2003
+# Contact    : roland@rashleigh-berry.fsnet.co.uk
+# Purpose    : To list the contents (in short form) of one or more datasets or a 
+#              whole library
+# SubScripts : none
+# Notes      : Must be run with data directory as current directory
+# Usage      : contents demog
+#              contents demog elig
+#              contents
+# 
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+#  1   one or more datasets (optional - will work on whole library by default)
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+# 
+#================================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#================================================================================
+
+if [ -f $HOME/contents.sas ]
+then
+  echo "You will need to back up your SAS program CONTENTS.SAS in your home" 1>&2
+  echo "directory and maybe its log file as this utility will overwrite it " 1>&2
+  exit 1
+fi
+
+
+# Delete the output file if it already exists
+rm -f $HOME/contents.tmp 2> /dev/null
+
+
+if [ $# -lt 1 ]
+then
+
+###### no datasets specified so do for the whole library #####
+
+# Write SAS code out to a temporary file
+cat > $HOME/contents.sas << FINISH
+options validvarname=any nofmterr;
+libname here './' access=readonly;
+filename _outfile '$HOME/contents.tmp';
+proc contents noprint data=here._all_ out=contents;
+data _null_;
+  file _outfile notitle noprint;
+  set contents;
+  put @1 memname @10 name @22 label;
+run;
+FINISH
+
+
+# Run the SAS code
+sas -log "$HOME" -sysin "$HOME/contents.sas"
+
+
+# Delete the temporary SAS code and optionally the log
+rm -f $HOME/contents.sas # $HOME/contents.log 
+
+
+# If output file exists then cat it and delete it
+if [ -f $HOME/contents.tmp ]
+then
+  cat $HOME/contents.tmp
+  rm -f $HOME/contents.tmp
+fi
+
+
+else
+
+########### one or more dataset specified so do for each #########
+
+for dataset in "$@" ; do
+
+
+# Write SAS code out to a temporary file
+cat > $HOME/contents.sas << FINISH
+options validvarname=any nofmterr;
+libname here './' access=readonly;
+filename _outfile '$HOME/contents.tmp';
+proc contents noprint data=here.$dataset out=contents;
+data _null_;
+  file _outfile notitle noprint;
+  set contents;
+  put @1 memname @10 name @22 label;
+run;
+FINISH
+
+
+# Run the SAS code
+sas -log "$HOME" -sysin "$HOME/contents.sas"
+
+
+# Delete the temporary SAS code and optionally the log
+rm -f $HOME/contents.sas # $HOME/contents.log 
+
+
+# If output file exists then cat it and delete it
+if [ -f $HOME/contents.tmp ]
+then
+  cat $HOME/contents.tmp
+  rm -f $HOME/contents.tmp
+fi
+
+done
+
+fi
+
+</PRE></B>
+
+<CENTER><P>Go back to the home <A HREF="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</A>.</P></CENTER>
+
+<CENTER><P>E-mail the macro and web site <A HREF="mailto:roland@rashleigh-berry.fsnet.co.uk">author</A>.</P></CENTER>
+
+<CENTER><P><BR>
+<BR>
+<BR>
+</P></CENTER>
+
+</BODY>
+</HTML>

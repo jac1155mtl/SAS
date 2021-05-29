@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>whosgot</TITLE>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+   <META NAME="Author" CONTENT="Roland Rashleigh-Berry">
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.01Gold (Win95; I) [Netscape]">
+   <META NAME="Description" CONTENT="SAS tips and techniques by Roland Rashleigh-Berry">
+   <META NAME="KeyWords" CONTENT="sas tips techniques">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#C0C0C0" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+
+<H1 ALIGN=CENTER>whosgot</H1>
+
+<P><B>[last updated - 27 July 2003]</B></P>
+
+<P>Who's got your SAS&nbsp;dataset? It'll be one of the QC'ers. You need
+to generate a fresh set of datasets but you can't because the programs
+fails and says that somebody else is holding a lock on one of your datasets.
+You've got to find out who they are and ask them to free up your dataset.
+I bet they're at lunch or in a meeting.</P>
+
+<P>Assuming you work on a full-blown Unix platform then finding out who
+is holding a lock on a file you want to update is easy to do. There is
+a utility program called <B>fuser</B> in the<B> /usr/sbin/</B> directory
+you can use. The script to do this is very simple. It wil list out each
+file you want to check on and the userids of those holding locks. And if
+the identity of the person is not obvious from the userid then you can
+use the getname script on this web site to find out their names. </P>
+
+<P>Here is the script code. Copy ans paste it into a member called whosgot
+in your shell script library. There are a few features of the script that
+you might not be aware of so it will be explained.</P>
+
+<PRE><B>#!/bin/sh
+# Script     : whosgot
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 27 July 2003
+# Contact    : roland@rashleigh-berry.fsnet.co.uk
+# Purpose    : To list users who have locks on files 
+# SubScripts : none
+# Notes      : You can not pipe the output from this to other utilities. This 
+#              will show userids holding locks on files. You can then use the
+#              &quot;getname&quot; script to match user-ids to names of people.
+# Usage      : whosgot demog.sas7bdat
+#              whosgot *.sas*
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+#  1   File or list of files to check for locks held
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+# 
+#================================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#================================================================================
+
+if [ $# -lt 1 ] ; then
+  echo &quot;Usage: whosgot *.sas*&quot; 1&gt;&amp;2
+  exit 1
+fi
+
+for filename in &quot;$@&quot; ; do
+  /usr/sbin/fuser -u $filename
+done
+
+echo &quot;Use \&quot;getname userid\&quot; to identify the names of any listed userids holding locks&quot;
+ </B>
+</PRE>
+
+<P>As I mentioned for the getname script, everything following a hash is
+a comment so you can see that all the header lines are comment lines. The
+first line is special because the !/bin/sh defines the location of the
+shell you want to use to interpret this script. Hopefully you knew that
+already. At the start of the code the number of supplied parameters is
+checked. If they are less than one then it implies the user needs help
+with this utility so a message is written out to standard error (using
+1&gt;&amp;2 to redirect standard output to standard error) and the script
+exits with a return code of 1 to warn that something small went wrong.
+Next comes the &quot;do loop&quot;. &quot;Do&quot; loops are very useful
+and they come in different forms. This is one of them. $@ is a list of
+all your input parameters. If you invoked the utility like this <B><TT>&quot;whosgot
+*.sas*&quot;</TT></B> then the script doesn't see <B><TT>&quot;*.sas*&quot;</TT></B>
+any more. You have something called a &quot;command interpreter&quot; that
+expands out <B><TT>*.sas*</TT></B> into all the file names in that directory
+that fit the bill. So what the script gets is this expanded-out list of
+files. So what the script sees might be <B><TT>&quot;ae.sas7bdat demog.sas7bdat
+elig.sas7bdat&quot;</TT></B> etc. The line that says <B><TT>'for filename
+in &quot;$@&quot;'</TT></B> is going to take each entry in the list in
+turn and assign it to the variable filename and will perform whatever code
+is defined between the &quot;do&quot; and &quot;done&quot; on it. So each
+filename will get <B>/usr/sbin/fuser</B> called to check for locks held.</P>
+
+<P>The <B>/usr/sbin/fuser</B> utility is what I call a &quot;badly behaved&quot;
+utility. You can't pipe its contents out to other utilities otherwise I
+might have liked to only list the files with locks against them and only
+listed those with a person's full name next to them. But it didn't work
+because when I pipe the output the userids are no longer there. Maybe this
+will be fixed at a later date but for now it will have to stay as it is.</P>
+
+<CENTER><P>Go back to the home <A HREF="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</A>.</P></CENTER>
+
+<CENTER><P>E-mail the macro and web site <A HREF="mailto:roland@rashleigh-berry.fsnet.co.uk">author</A>.</P></CENTER>
+
+<CENTER><P><BR>
+<BR>
+<BR>
+</P></CENTER>
+
+</BODY>
+</HTML>

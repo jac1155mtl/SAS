@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>Roland's SAS tips and techniques</TITLE>
+   <META NAME="Author" CONTENT="Roland Rashleigh-Berry">
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.01Gold (Win95; I) [Netscape]">
+   <META NAME="Description" CONTENT="SAS tips and techniques by Roland Rashleigh-Berry">
+   <META NAME="KeyWords" CONTENT="sas macros, Roland Rashleigh-Berry, sas tips, sas techniques">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#C0C0C0" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+
+<H1 ALIGN=CENTER>Before you Start with SAS and Unix</H1>
+
+<P><B>[last updated - 21 July 2003]</B></P>
+
+<H2>Introduction</H2>
+
+<P>The first hurdle to overcome is nothing to do with SAS. It is purely
+to do with making sure your Unix environment will recognise a library you
+will set up containing your scripts. In some cases you may have a second
+hurdle to jump so that your Unix system can run SAS at all.</P>
+
+<P>The first thing I'd like you to try out is typing in the command <B>hw</B>
+in Unix. Hopefully you will get a message saying something like <B>&quot;command
+not found&quot;</B>. Now, in your script library I want you to create a
+member called <B>hw</B> (with <B>no</B> file extension) with the single
+line <B>echo &quot;Hello World&quot;</B> in it. If you are working on Unix
+then it is easy to create a file with no extension. If you are working
+on a Windows platform you might have difficulty leaving off this file extension.
+You might have to go into DOS and go to the directory and list the files
+there using <B>dir</B> and if you see that your file has an extension then
+rename it something like <B>ren hw.txt hw</B> .</P>
+
+<H2>echo $PATH</H2>
+
+<P>In Unix, the search path for finding executable programs and scripts
+is assigned to a system environment variable called <B>PATH</B> (uppercase
+as all system environment variables are supposed to be). As you are a SAS
+programmer you can think of it as a sort of format search path. You can
+see what has been set up to this variable by typing in the command <B>echo
+$PATH</B>. I&nbsp;want you to do this and note that the entries are separated
+by a colon. Also you need to note if there is anything odd about the entries.
+If you are working on a Unix platform proper then there is unlikely to
+be anything odd. But I am working on cygwin Linux and I see that instead
+of the <B>C </B>drive being referred to as <B>C:/ </B>it is being referred
+to as <B>cygdrive/c/ </B>so I will have to do the same.</P>
+
+<H2>.bashrc, .bashrc.own, .bash_login, etc. etc. etc. </H2>
+
+<P>In most Unix installations, you have you own personal directory. If
+you type in the command <B>&quot;cd $HOME&quot;</B> or <B>&quot;cd ~&quot;</B>
+you should get to it. The command means someting like &quot;make my home
+area the current directory&quot;. You might have a GUI interface for your
+Unix platform. You might not. But you hopefully have an editor you can
+use to edit the files in your home directory. Here I can give you very
+little help. Your first mission, should you decide to accept it, is to
+either create or make an edit to that member of yours that gets called
+by Unix when it starts you up. What you are going to do is add your scripts
+library to the search path so that when you invoke a member of that library
+it can be found. Like I say, this varies from installation to installation.
+You will have to ask somebody in the know at your site. There's not a lot
+I can do to help you. Most Unix installations have a <B>.bashrc.own</B>
+file that you can put your own commands in. But this may only be read when
+you start up a new Unix session rather than when you log in. You need the
+member that takes effect when you log in. It might be <B>.bashrc.login</B>.
+It might be <B>.bash.login.own</B>. I am using cygwin Linux and found out
+that in my <B>/home/Default</B> folder I needed to create a member called
+<B>.bash_login</B> to do this. Also, note that these files begin with a
+period. They are hidden files. If you list for them using the Unix <B>ls</B>
+command then they will not be listed. You have to use <B>ls -a</B> to list
+these hidden files. When you find out what this correct member should be
+called and create it, if it doesn't exist, then I want you to add a line
+at the end that puts your script library at the end of the search path.
+Since I have cygwin and have stored my script library on the <B>C:</B>
+drive rather than in the cygwin area then I created a member called <B>.bash_login</B>
+and added the line <B>PATH=$PATH:/cygdrive/c/shellscripts</B> . What this
+line is doing is resolving the contents of PATH as it now stands using
+the &quot;$&quot; in front (very much like you would resolve a global macro
+variable in SAS with a &quot;&amp;&quot; in front), adding a &quot;:&quot;
+as a separator and then following it with my script library.</P>
+
+<H2>Getting &quot;hw&quot; to work</H2>
+
+<P>What you are aiming for is getting the command <B>hw</B> to be recognised
+as a script in your library and generating the message &quot;Hello World&quot;
+at the terminal. This has to take effect directly after you have logged
+on. You will have to log out of Unix and log back in before trying this
+since you have edited the member that gets read when you log in.</P>
+
+<H2>Getting SAS to work</H2>
+
+<P>If you are running Unix on a Unix system proper then I assume that if
+you type in the command <B>sas</B> then SAS will start up. You should try
+this or perhaps you use <B>sas8</B> or some other form to invoke SAS. Since
+I run cygwin Linux then SAS in not installed in the are so I had to add
+the SAS executable location to my PATH as well as adding the shell scripts
+library to my path like this:</P>
+
+<P><B><TT>PATH=$PATH:/cygdrive/c/progra~1/sasins~1/sas/v8:/cygdrive/c/shellscripts</TT></B></P>
+
+<P>If you use cygwin or something like on on your PC&nbsp;then note that
+I had to refer to the long filenames using the tilde notation.</P>
+
+<H2>The next stage</H2>
+
+<P>Like I said, this page has nothing to do with SAS. It is just setting
+up your Unix environment so that it can find your scripts as soon as you
+have logged on and can give the &quot;Hello World&quot; message when you
+type in the <B>hw</B> command. I've given you all the help I can and the
+rest you will have to achieve on your own. Once you have achieved this
+(and only then) you are ready to move onto the next <A HREF="sasunix.html">stage</A>.</P>
+
+<CENTER><P>E-mail the macro and web site <A HREF="mailto:roland@rashleigh-berry.fsnet.co.uk">author</A>.</P></CENTER>
+
+</BODY>
+</HTML>

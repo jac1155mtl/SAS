@@ -1,0 +1,181 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>whosgot</TITLE>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+   <META NAME="Author" CONTENT="Roland Rashleigh-Berry">
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.01Gold (Win95; I) [Netscape]">
+   <META NAME="Description" CONTENT="SAS tips and techniques by Roland Rashleigh-Berry">
+   <META NAME="KeyWords" CONTENT="sas tips techniques">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#C0C0C0" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+
+<H1 ALIGN=CENTER>misscnt</H1>
+
+<P><B>[last updated - 31 July 2003]</B></P>
+
+<P>Displays a list of variables with one or more missing values and their
+missing value count. Useful for QC purposes.. Note that the SAS code within
+it requires some of the sasautos extensions macros on this web site.</P>
+
+<B><PRE>
+#!/bin/sh
+# Script     : misscnt
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 31 July 2003
+# Contact    : roland@rashleigh-berry.fsnet.co.uk
+# Purpose    : Display a count of variables and their number of missing 
+#              observations 
+# SubScripts : none
+# Notes      : Uses some of the sasautox extensions macros.
+# Usage      : misscnt ds1 ds2
+#              misscnt
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+#  1   (optional) Dataset or list of dataset for analysis. Defaults to the 
+#      whole library.
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+# 
+#================================================================================
+
+# check on the existence of a sas program in the home directory
+if [ -f $HOME/misscnt.sas ] ; then
+  echo "SAS program misscnt already exists in your home directory. You need to check" 1>&2
+  echo "if you need it and delete it if not. This utility will not overwrite it and" 1>&2
+  echo "will now exit." 1>&2
+  exit 1
+fi
+
+
+
+if [ $# -eq 0 ] ; then
+
+############ no parameters specified so do for whole library ############
+
+# Write SAS code out to a temporary file
+cat > $HOME/misscnt.sas << END
+options validvarname=any nofmterr;
+libname here './' access=readonly;
+filename _outfile "$HOME/misscnt.tmp";
+%dslist(here)
+
+%macro doit;
+  %do i=1 %to %words(&_dslist_);
+    %let memname=%scan(&_dslist_,&i,%str( ));
+    %misscnt(here.&memname)
+  
+    %if %length(&_miss_) %then %do;
+      data miss;
+        length memname $ 8 varname $ 20;
+        retain memname "&memname";
+        %do j=1 %to %words(%str(&_miss_));
+          varname="%scan(%str(&_miss_),&j,%str( ))";
+          output;
+        %end;
+      run;
+
+      proc append base=base data=miss;
+      run;
+    %end;
+  %end;
+
+  data _null_;
+    file _outfile notitle noprint;
+    set base;
+    put @1 memname @10 varname;
+  run;
+%mend doit;
+
+%doit
+END
+
+
+# Run the SAS code
+sas -log "$HOME" -sysin "$HOME/misscnt.sas"
+
+
+# Delete the temporary SAS code and optionally the log
+rm -f $HOME/misscnt.sas # $HOME/misscnt.log 
+
+
+# If output file exists then cat it and delete it
+if [ -f $HOME/misscnt.tmp ]
+then
+  cat $HOME/misscnt.tmp
+  rm -f $HOME/misscnt.tmp
+fi
+
+
+else
+
+
+for dataset in "$@" ; do
+
+########## do for individual specified datasets ##########
+cat > $HOME/misscnt.sas << END
+options validvarname=any nofmterr;
+libname here './' access=readonly;
+filename _outfile "$HOME/misscnt.tmp";
+
+%macro doit;
+  %misscnt(here.$dataset)
+  
+  %if %length(&_miss_) %then %do;
+    data miss;
+      length memname $ 8 varname $ 20;
+      retain memname "&memname";
+      %do j=1 %to %words(%str(&_miss_));
+        varname="%scan(%str(&_miss_),&j,%str( ))";
+        output;
+      %end;
+    run;
+  %end;
+%mend doit;
+
+%doit
+
+data _null_;
+  file _outfile notitle noprint;
+  set miss;
+  put @1 "%upcase($dataset)" @10 varname;
+run;
+
+END
+
+
+# Run the SAS code
+sas -log "$HOME" -sysin "$HOME/misscnt.sas"
+
+
+# Delete the temporary SAS code and optionally the log
+rm -f $HOME/misscnt.sas # $HOME/misscnt.log 
+
+
+# If output file exists then cat it and delete it
+if [ -f $HOME/misscnt.tmp ]
+then
+  cat $HOME/misscnt.tmp
+  rm -f $HOME/misscnt.tmp
+fi
+
+done
+
+fi
+
+</PRE></B>
+
+<CENTER><P>Go back to the home <A HREF="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</A>.</P></CENTER>
+
+<CENTER><P>E-mail the macro and web site <A HREF="mailto:roland@rashleigh-berry.fsnet.co.uk">author</A>.</P></CENTER>
+
+<CENTER><P><BR>
+<BR>
+<BR>
+</P></CENTER>
+
+</BODY>
+</HTML>

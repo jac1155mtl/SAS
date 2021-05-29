@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>whosgot</TITLE>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+   <META NAME="Author" CONTENT="Roland Rashleigh-Berry">
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.01Gold (Win95; I) [Netscape]">
+   <META NAME="Description" CONTENT="SAS tips and techniques by Roland Rashleigh-Berry">
+   <META NAME="KeyWords" CONTENT="sas tips techniques">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#C0C0C0" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+
+<H1 ALIGN=CENTER>Time-to-event processing</H1>
+
+<P><B>[last updated - 17 August 2003]</B></P>
+
+<P>The easiest way to do time-to-event processing is to &quot;flatten&quot;
+your data so that you have only one observation per &quot;by group&quot;
+(where this &quot;by group&quot; is usually a single variable such as &quot;subject&quot;).
+With your data all in one observation, also knowing how many observations
+belong to each by group, then you can use array processing to loop through
+your data. If you organise your data like that then it becomes a lot easier.
+Since multiple variables need to be flattened, I wrote a macro named <A HREF="flatten.sas">flatten</A>
+to do all the &quot;proc transposes&quot; on these variables and to count
+the number of observations per &quot;by group&quot; and add that to the
+output dataset.</P>
+
+<P>Below is an extremely simple example of code to find the date at which
+a value rose above 1000. This is far simpler than anything you will need
+to do but serves to show how the data is transformed with the flatten macro
+and to show how to loop through the data.</P>
+
+<PRE><B>data test;
+  subj=1234;
+  dt='01jan03'd;val=0;output;
+  dt='01feb03'd;val=500;output;
+  dt='01mar03'd;val=1005;output;
+  dt='01apr03'd;val=2005;output;
+  subj=2345;
+  dt='01jan03'd;val=100;output;
+  dt='01feb03'd;val=100;output;
+  dt='01mar03'd;val=100;output;
+  format dt date7.;
+run;
+
+%flatten(dsin=test,bygroup=subj,vars=dt val)
+%put ********* _maxn_=&amp;_maxn_;
+
+data t2event(keep=subj date);
+  set test;
+  array dt {*} dt:;
+  array val {*} val:;
+  put (_all_) (=);
+  do i=1 to nobs;
+    if val(i)&gt;1000 then do;
+      date=dt(i);
+      output;
+      i=nobs;
+    end;
+  end;
+  format date date7.;
+run;
+
+data _null_;
+  set t2event;
+  put (_all_) (=);
+run;</B>
+</PRE>
+
+<P>And here is some of the log output.</P>
+
+<PRE><B>426  %put ********* _maxn_=&amp;_maxn_;
+********* _maxn_=4
+
+
+
+subj=1234 nobs=4 dt1=01JAN03 dt2=01FEB03 dt3=01MAR03 dt4=01APR03 val1=0 val2=500 val3=1005 val4=2005
+subj=2345 nobs=3 dt1=01JAN03 dt2=01FEB03 dt3=01MAR03 dt4=. val1=100 val2=100 val3=100 val4=.
+NOTE: There were 2 observations read from the data set WORK.TEST.
+NOTE: The data set WORK.T2EVENT has 1 observations and 2 variables.
+NOTE: DATA statement used:
+      real time           0.05 seconds
+
+
+
+subj=1234 date=01MAR03
+NOTE: There were 1 observations read from the data set WORK.T2EVENT.
+NOTE: DATA statement used:
+      real time           0.00 seconds</B>
+
+</PRE>
+
+<P>Some notes on the code. The maximum value of the number of observations
+per by group gets written out to the global macro variable _maxn_. You
+can use this in your array statement like this:</P>
+
+<P><TT>array dt {*} dt1-dt&amp;_maxn_;</TT></P>
+
+<P>...but you usually do not need to refer to it as you can refer to a
+list of variables using a colon trailer as was done in the code.</P>
+
+<P>Note that I am using a form of &quot;put _all_&quot; that you might
+not be familiar with. I&nbsp;have used &quot;put (_all_) (=)&quot; to avoid
+putting out the automatic variables _N_ and _ERROR_. You can read more
+about this on the SAS web site <A HREF="http://support.sas.com/sassamples/quicktips/printvar.html">here</A>.</P>
+
+<CENTER><P>Go back to the home <A HREF="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</A>.</P></CENTER>
+
+<CENTER><P>E-mail the macro and web site <A HREF="mailto:roland@rashleigh-berry.fsnet.co.uk">author</A>.</P></CENTER>
+
+<CENTER><P><BR>
+<BR>
+<BR>
+</P></CENTER>
+
+</BODY>
+</HTML>

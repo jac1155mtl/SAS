@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>Roland's SAS tips and techniques</TITLE>
+   <META NAME="Author" CONTENT="Roland Rashleigh-Berry">
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.01Gold (Win95; I) [Netscape]">
+   <META NAME="Description" CONTENT="SAS tips and techniques by Roland Rashleigh-Berry">
+   <META NAME="KeyWords" CONTENT="sas macros, Roland Rashleigh-Berry, sas tips, sas techniques">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#C0C0C0" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+
+<H1 ALIGN=CENTER>Getting SAS to work with Unix</H1>
+
+<P><B>[last updated - 3</B><B>0 July 2003]</B></P>
+
+<H2>The BIG Secret</H2>
+
+<P>You have launched SAS jobs from Unix maybe thousands of times. But how
+do you get SAS&nbsp;to be Unix-like and pass on information to native Unix
+utilities? I&nbsp;bet you think you are going to learn a BIG secret here.
+I'm going to tell you that BIG secret right away. Here it is. Ready for
+it?</P>
+
+<P><B>The BIG secret is that there <I><FONT SIZE=+1>is</FONT></I> no BIG
+secret</B></P>
+
+<P>This is what I am doing with SAS to get it to talk to other Unix utilities.
+</P>
+
+<UL>
+<LI>Create a SAS program from inside a shell script that reroutes output
+to a file</LI>
+
+<LI>run it</LI>
+
+<LI>delete the sas program (and optionally the log)</LI>
+
+<LI>&quot;cat&quot; the output file to the screen (standard output)</LI>
+
+<LI>delete the output file</LI>
+</UL>
+
+<P>Now what could be simpler than that? </P>
+
+<H2>Simpler still</H2>
+
+<P>It can get simpler and I have made it simpler. Shell script syntax is
+very unforgiving. It is easy to make mistakes and the messages you get
+out when that happens are often less than helpful. So I wrote a utility
+called <B>sasunixskeleton</B> that creates utilities. Yes, you read that
+right. A utility that writes utilities. More specifically, it generates
+the script code for you so that you need not write any script code yourself.
+All you have to do is design the usage message that will be put to the
+terminal if the user invokes the utility without any parameters (in other
+words they don't know how to use the utility and want a help message) and
+get on with the business of coding the SAS code. And you can spot the places
+you do this because it says EDIT there in clear letters. You also get instructions
+on how to do this within the generated utility.</P>
+
+<H2>A good Unix book</H2>
+
+<P>Once you have generated your own scripts then you are going to get hungry
+for Unix knowledge. You are going to see that it was easy all along and
+you are going to want to come up to speed with Unix and will want to know
+more about Unix commands and utilities. But what single book is best for
+this? I'll tell you. It is that one you have sitting on your shelf at work
+that you don't bother reading. It is called <B>&quot;Unix in a Nutshell&quot;</B>
+and is published by <B>O'Reilly</B>. The book is useless if you don't know
+any Unix but once you do know some Unix then the book becomes invaluable.
+It is a concise source of all the important things you will need to know.
+As for books on writing shell scripts, then I bought a book to help me
+start out down that path as I had no guide. But it is easier to learn shell
+script writing by following other people's examples and you will find plenty
+of examples on this web site. You have no need for a separate book on this.
+</P>
+
+<H2>Think Unix - think simple</H2>
+
+<P>Native Unix utilities give you <B>simple</B> information and always
+display that information at your <B>terminal</B>. If you are going to write
+SAS utilities to work on Unix then you must do the same. It is not like
+writing a Clinical report. Remember the <B>&quot;simple&quot;</B> and <B>&quot;write
+to the terminal&quot;</B> rule. Once you write a script for somebody else
+and they wake up to the power that could be there at their fingertips then
+chances are you will asked to amend your utility to make it &quot;more
+user friendly in that it writes to a file&quot; or &quot;it would be nice
+to show this extra information as well&quot;. And you will have to refuse
+this request because it breaks the <B>&quot;simple&quot;</B> and <B>&quot;write
+to the terminal&quot;</B> rule. You can't see at this stage why this has
+to be a hard and fast rule. You will just have to take my word for it for
+now. I'll try to explain, though, but you may not have a grasp on it at
+this stage. The thing is that the real power of Unix utilities lies in
+being able to pass information from one utility to another. And in order
+for this to happen then the utilies expect other utilies to write their
+information to &quot;standard output&quot; (the terminal by default) and
+need to be able to pick up that information easily (and simply). So it
+is only by keeping it simple like this that the utilities can talk to each
+other and the full power of Unix be realised. In writing utilities such
+as these you should not be thinking &quot;How can I make it better?&quot;.
+You should be thinking &quot;How can I make it simpler?&quot;. Use &quot;better&quot;
+for Clinical reporting. Use &quot;simpler&quot; for utilities.</P>
+
+<H2>sasunixskeleton</H2>
+
+<P>It's the utlity that writes utilities that call SAS. Here it <A HREF="skeleton.html">is</A>.</P>
+
+<CENTER><P>E-mail the macro and web site <A HREF="mailto:roland@rashleigh-berry.fsnet.co.uk">author</A>.</P></CENTER>
+
+</BODY>
+</HTML>

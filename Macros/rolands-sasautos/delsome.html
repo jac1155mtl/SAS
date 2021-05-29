@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>whosgot</TITLE>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+   <META NAME="Author" CONTENT="Roland Rashleigh-Berry">
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.01Gold (Win95; I) [Netscape]">
+   <META NAME="Description" CONTENT="SAS tips and techniques by Roland Rashleigh-Berry">
+   <META NAME="KeyWords" CONTENT="sas tips techniques">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#C0C0C0" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
+
+<H1 ALIGN=CENTER>delsome</H1>
+
+<P><B>[last updated - 28 July 2003]</B></P>
+
+<P>I'll be frank, this script, <B>delsome</B>, is for educational purposes.
+And the next script, <B>dirtidy</B>, is the same. You'll probably never
+use these two scripts but you need to know the techniques used in them
+if you are ever to become proficient at writing scripts. I'll set the scene
+for this script <B>delsome</B>. You are going to feed a list of files into
+this utility as standard input. Each file will be offered in turn to the
+user to give them the opportunity of deleting each file. But here is the
+thing you need to know about. Since you have piped a list of files into
+this utility then that is automatically assumed to be standard input. But
+then you have to display each file to the user and get their response for
+optionally deleting each file so standard input has to changed back to
+being the keyboard. So at some stage you have to redirect standard input
+as coming from the keyboard, even though the utility has to accept standard
+input as that being piped into it.</P>
+
+<P>I am going to introduce a few techniques here that I have not been introduced
+before. And they are very importamt for you to learn if you are ever to
+become a script writer. So please bear with me and give this your full
+attention.</P>
+
+<PRE>
+<B>#!/bin/sh
+# Script     : delsome
+# Version    : 1.0
+# Author     : Roland Rashleigh-Berry
+# Date       : 28 July 2003
+# Contact    : roland@rashleigh-berry.fsnet.co.uk
+# Purpose    : To optionally delete files offered to the user
+# SubScripts : none
+# Notes      : THIS UTILITY MUST BE PIPED INTO with a list of files to optionally
+#              delete.
+# Usage      : ls *.log | delsome
+# 
+#================================================================================
+# PARAMETERS:
+#-pos- -------------------------------description--------------------------------
+# N/A  none (must be piped into)
+#================================================================================
+# AMENDMENT HISTORY:
+# init --date-- mod-id ----------------------description-------------------------
+# 
+#================================================================================
+# This is public domain software. No guarantee as to suitability or accuracy is
+# given or implied. User uses this code entirely at their own risk.
+#================================================================================
+
+cat &gt; $HOME/delsome.tmp
+
+#-- reset standard input to keyboard --
+exec &lt;&amp;1
+
+for file in `cat $HOME/delsome.tmp`
+do
+  echo -n &quot;Do you want to delete file $file (y/n)? &quot;
+  read resp
+  if [ &quot;$resp&quot; = &quot;y&quot; ]
+  then
+    rm -f $file
+  fi
+done
+
+rm -f $HOME/delsome.tmp</B>
+
+</PRE>
+
+<P>The first thing to note is that this script has no input parametsr.
+It has to be <B>PIPED</B> into. If you remember, the <B>tr</B> utility
+is like that. You either redirect into it or pipe into it. Now the trick
+with this utility is you have to accept piped input but then you have to
+prompt the user and ask them whether they want to delete each file in turn.
+So standard input has to come from the terminal. But since this utuility
+is piped into then it has to accept standard input from the pipe. So we
+have to tell it to change. </P>
+
+<P>The first line of code directs the piped list of files into a temporary
+file in the user's home area. The next line of code resets standard input
+to be the keyboard. And now we see a new form of a do loop. You see the
+&quot;do it now&quot; quotes (the quote with the key at the top left of
+your keyboard) surrounding the &quot;cat $HOME/delsome.tmp&quot; statement.
+That will &quot;do it now&quot; and list out what is in the delsome.tmp
+file. And then each element in that list in turn gets assigned to the variable
+&quot;file&quot; and the user will be asked if they want to delete it.
+The <B>echo -n</B> has the effect of echoing to the terminal but not throwing
+a new line so you can type in the response at the end of the line. It reads
+the response (which must either be a &quot;y&quot; or &quot;n&quot;) and
+if it is equal to a &quot;y&quot; (note that &quot;=&quot; is used here
+and not &quot;-eq&quot; since it is a string and not a number) then the
+file will be deleted using the <B>rm</B> command with the <B>-f </B>option
+(file). Right at the end, the temporary file gets deleted.</P>
+
+<P>To recap, you have learned some important techniques here. You have
+seen information stored in a temporary file in the user's home area. You
+have seen standard input reset ready to pick up user response from the
+keyboard. You have seen a new form of &quot;do&quot; loop using a file
+and using &quot;cat&quot; in do-it-now quotes to list the elements and
+so deal with them one at a time. You have seen <B>echo -n</B> used to stay
+on one line. You have seen the response read in to the variable resp and
+then tested for equality using the &quot;=&quot; symbol for strings rather
+than the &quot;-eq&quot; operator for numbers. And you have seen <B>rm</B>
+used with the <B>-f</B> option so it deleted files only. And right at the
+end you see the tidying up process deleting the temporary file.</P>
+
+<P>This is a short little script that isn't at all important, but you have
+learned a great deal.</P>
+
+<CENTER><P>Go back to the home <A HREF="http://www.datasavantconsulting.com/SASMAC~1/index.html">page</A>.</P></CENTER>
+
+<CENTER><P>E-mail the macro and web site <A HREF="mailto:roland@rashleigh-berry.fsnet.co.uk">author</A>.</P></CENTER>
+
+</BODY>
+</HTML>
