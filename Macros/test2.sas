@@ -1,3 +1,4 @@
+**REPLACE A STRING IN A MACRO VARIABLE;
 %let rule = there are a lot of words in this macro variable;
 
 data _null_;
