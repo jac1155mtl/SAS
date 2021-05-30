@@ -5,7 +5,7 @@
 %macro dtmtodtc(invar=,invar_dd,invar_mmm,invar_yyyy=,outvar=);
     %local invar invar_dd invar_mmm invar_yyyy outvar outvar_dd outvar_mmm outvar_yyyy;
   
-  *if date component variables have the same prefix as &invar., then we do not need to specify them.
+  *if date component variables have the same prefix as &invar., then we do not need to specify them;
   %if %length(&invar.) > 0 and (%length(&invar_dd.) = 0 and %length(&invar_mmm.) = 0 and %length(&invar_yyyy) = 0) %then %do;
     %let invar_dd   = &invar._dd;
     %let invar_mmm  = &invar._mmm;
