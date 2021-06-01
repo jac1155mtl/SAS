@@ -1,0 +1,104 @@
+*********************************************************************
+STUDY               : 
+
+PROGRAM             : 
+
+PURPOSE             : 
+
+INPUT               : 
+
+OUTPUT              : 
+
+PROCESSES           : 
+
+SPECIAL REQUIREMENTS:
+---------------------------------------------------------------------
+PROGRAM HISTORY     :
+
+Programmer(s)       Date(s)     Brief Description of Modifications
+-------------------+-----------+-------------------------------------
+Jo Ann Colas        DDMMMYYYY   create
+*********************************************************************;
+
+**-----------------------------------------------------------------**
+SETUP
+**-----------------------------------------------------------------**;
+%let DS        	= ;
+%let PROG       = &DS;
+
+**DATES;
+%let startDt2  = 01JAN2021;
+%let endDt2    = 01JAN2021;
+
+data _NULL_;
+	startDt = input("&startDt2.",date9.);
+    call symputx("startDt",put(startDt,YYMMDD10.));
+	call symputx("startDtSQL","'"||put(startDt,YYMMDD10.)||"'");
+	call symputx("startDtSAS","'"||put(startDt,date9.)||"'d");
+
+	endDt = input("&endDt2.",date9.);
+    call symputx("endDt",put(endDt,yymmdd10.));
+	call symputx("endDtSQL","'"||put(endDt,YYMMDD10.)||"'");
+    call symputx("endDtSAS","'"||put(endDt,date9.)||"'d");
+
+    call symputx("todayDt",put(date(),yymmdd10.));
+    call symputx("todayDt2",put(date(),date9.));
+    call symputx("todayDtSQL","'"||put(date(),yymmdd10.)||"'");
+    call symputx("todayDtSAS","'"||put(date(),date9.)||"'d");
+run;
+
+%put &=startDtSQL &=enddtSQL &=todayDtSQL;
+%put &=startDtSAS &=endDtSAS &=todayDtSAS;
+%put &=startDt &=endDt &=todayDt;
+%put &=startDt2 &=endDt2 &=todayDt2;
+
+**DIRECTORIES;
+*%let dir = ;
+
+**LIBRARIES;
+*libname in "";
+*linbmae out "";
+
+**FILES;
+*filename;
+
+*SORT ORDER;
+*%let sortfields = ;
+
+*********************************************************************
+START CODE HERE
+*********************************************************************;
+
+**-----------------------------------------------------------------**
+MACROS
+**-----------------------------------------------------------------**;
+
+**-----------------------------------------------------------------**
+FORMATS
+**-----------------------------------------------------------------**;
+
+**-----------------------------------------------------------------**
+GET DATASETS
+**-----------------------------------------------------------------**;
+
+**-----------------------------------------------------------------**
+PREPARE DATASETS
+**-----------------------------------------------------------------**;
+
+**-----------------------------------------------------------------**
+BUILD DATASET
+**-----------------------------------------------------------------**;
+**MERGE DATASETS;
+
+**DERIVE VARIABLES;
+
+**FILTER AND SORT;
+/*proc sort data = _&ds.;*/
+/*    where ;*/
+/*    by sortfields;*/
+/*run;*/
+
+**SAVE DATASET;
+/*data out.&ds.;*/
+/*   set _&ds._final;*/
+/*run;*/
