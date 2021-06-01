@@ -31,14 +31,14 @@ SETUP
 %let endDt2    = 01JAN2021;
 
 data _NULL_;
-	startDt = input("&startDt2.",date9.);
+    startDt = input("&startDt2.",date9.);
     call symputx("startDt",put(startDt,YYMMDD10.));
-	call symputx("startDtSQL","'"||put(startDt,YYMMDD10.)||"'");
-	call symputx("startDtSAS","'"||put(startDt,date9.)||"'d");
+    call symputx("startDtSQL","'"||put(startDt,YYMMDD10.)||"'");
+    call symputx("startDtSAS","'"||put(startDt,date9.)||"'d");
 
-	endDt = input("&endDt2.",date9.);
+    endDt = input("&endDt2.",date9.);
     call symputx("endDt",put(endDt,yymmdd10.));
-	call symputx("endDtSQL","'"||put(endDt,YYMMDD10.)||"'");
+    call symputx("endDtSQL","'"||put(endDt,YYMMDD10.)||"'");
     call symputx("endDtSAS","'"||put(endDt,date9.)||"'d");
 
     call symputx("todayDt",put(date(),yymmdd10.));
