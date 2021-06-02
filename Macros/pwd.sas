@@ -2,9 +2,13 @@
 MACRO NAME          : pwd
 
 PURPOSE             : Macro for returning random generic password string
-                      
-PARAMETERS          : pwdLength - length of password generated
+                      with at least 1 uppercase character, 1 lowcase character,
+                      1 digit and 1 special character
 
+PARAMETERS          : pwdLength - length of password generated
+                                  [default = 16]
+                      pwdVar    - macro variable holding the password generated
+                                  [default = password]
 RETURNS             : macro variable with random generic password string
 
 EXTERNAL MACROS     : n/a
@@ -13,88 +17,169 @@ NOTES               : run %pwd(help) for syntax help in SAS
 
 SPECIAL REQUIREMENTS: n/a
 
-EXAMPLES            : pwd(); 
-                      pwd(help);
-                      pwd(pwdLength=10);
+EXAMPLES            : %pwd(); 
+                      %pwd(help);
+                      %pwd(pwdLength=20,pwVar=tblPwd);
 ---------------------------------------------------------------------
 MACRO HISTORY       :
 
 Programmer(s)       Date(s)     Brief Description of Modifications
 -------------------+-----------+-------------------------------------
-Lars Tynelius       18DEC2007   created
+Lars Tynelius        18DEC2007  created
+Jo Ann Colas         19MAY2021  Add special characters to password string
+                                add new parameter: pwdVar = name of macro 
+                                variable that holds password generated
 *********************************************************************/;
 
-%macro pwd(help, pwdLength=8);
-  %local chars i _rc tmp _length uppChars lowChars numChars repChar;
+%put MACRO CALLED: pwd;
 
-  %if (%bquote(%upcase(&help)) eq HELP) %then %do;
-    %put NOTE: +--------------------------------------------------------------+;
-    %put NOTE: | Help for macro PWD                                           |;
-    %put NOTE: |   Macro for generating random password string containing     |;
-    %put NOTE: |   at least one digit or one char.                            |;
-    %put NOTE: |                                                              |;
-    %put NOTE: |   Parameters                                                 |;
-    %put NOTE: |     pwdLength....: Length of the password generated, def 8   |;
-    %put NOTE: |                                                              |;
-    %put NOTE: +--------------------------------------------------------------+;
-    %goto exit;
-  %end;
-  %else %if (%bquote(%upcase(&help)) ne ) %then %do;
-    %put ERROR: Your &help request is not valid. Run [macroname](help) for brief syntax help.;
-    %goto exit;
-  %end;
+%macro pwd(help,pwdLength=16,pwdVar=password);
+    %local ER ROR uppChars lowChars numChars spcChars chars charsLength 
+    uppLength lowLength numLength specLengh _rc i repChar repPos;
 
-  %let _rc = ;
+    %global &pwdVar.;
 
-  %let uppChars = ABCDEFGHIJKLMNOPQRSTUVWXYZ;
-  %let lowChars = abcdefghijklmnopqrstuvwxyz;
-  %let numChars = 0123456789;
+    %*SYNTAX HELP in SAS;
+    %if (%bquote(%upcase(&help.)) eq HELP) %then %do;
+        %put NOTE: +--------------------------------------------------------------+;
+        %put NOTE: | Help for macro PWD                                           |;
+        %put NOTE: |   Macro for generating random password string containing     |;
+        %put NOTE: |   at least one digit, one uppercase char, one lowercase      |;
+        %put NOTE: |   char and one special char.                                 |;
+        %put NOTE: |                                                              |;
+        %put NOTE: |   Parameters                                                 |;
+        %put NOTE: |     pwdLength....: Length of the password generated, def 16  |;
+        %put NOTE: |     pwdVar.......: macro var holding password, def password  |;
+        %put NOTE: |                                                              |;
+        %put NOTE: +--------------------------------------------------------------+;
+        %goto endmacro;
+    %end;
+    %else %if (%bquote(%upcase(&help.)) ne ) %then %do;
+        %put &ER.&ROR.: Your &help request is not valid. Run pwd(help) for brief syntax help.;
+        %goto endmacro;
+    %end;
+    %*CHECKING FOR REQUIRED PARAMETERS;
+	%if %length(&pwdLength.) = 0 %then %do;
+		%put &ER.&ROR.:(PWD) Parameter PWDLENGTH required;
+		%goto endmacro;
+	%end;
+    %else %if %length(&pwdLength.) = 0 %then %do;
+		%put &ER.ROR:(PWD) Parameter PWDVAR required;
+		%goto endmacro;
+	%end;
 
-  %let chars = &uppChars&lowChars&numChars;
-  %let _length = %length(&chars) + 1;
+    %*LIST OF POSSIBLE CHARACTERS TO INCLUDE;
+    %let uppChars = QWERTYUIOPASDFGHJKLZXCVBNM;
+    %let lowChars = qwertyuiopasdfghjklzxcvbnm;
+    %let numChars = 1234567890;
+    %let spcChars = !@#$%^&?_-=+*;
 
-  %do i=1 %to &pwdLength;
-    %let _rc =  &_rc%cmpres(%substr(&chars,%sysfunc(floor(%sysfunc(ranuni(0))*(&_length-1)+1)),1));
-  %end;
+    %let chars = &uppChars.&lowChars.&spcChars.&numChars.;
 
-  /* one digit must exists */
-  %if (%sysfunc(anydigit(&_rc,1)) eq 0) %then %do;
-    %let _length = %length(&numChars) + 1;
-    %let repChar = %cmpres(%substr(&numChars,%sysfunc(floor(%sysfunc(ranuni(0))*(&_length-1)+1)),1));
+    %let charsLength = %length(&chars.) + 1;
+    %let numLength   = %length(&numChars.) + 1;
+    %let uppLength   = %length(&uppChars.) + 1;
+    %let lowLength   = %length(&lowChars.) + 1;
+    %let spcLength   = %length(&spcChars.) + 1;
 
-    /* replace one of the chars make it random depending on the length */
-    %let replaceInd =  %cmpres(%sysfunc(floor(%sysfunc(ranuni(0))*((&pwdLength+1)-1)+1)));
+    %*BUILD THE PASSWORD;
+    %let _rc =;
+    %do i = 1 %to &pwdLength.;
+        %*choose a random character;
+        %let char&i. = %cmpres(%substr(&chars.,%sysfunc(floor(%sysfunc(ranuni(0))*(&charsLength.-1)+1)),1));
 
-    %do i=1 %to &pwdLength;
-      %if (&i eq &replaceInd) %then %let tmp = %cmpres(&tmp)&repChar;
-      %else %let tmp = %cmpres(&tmp)%substr(&_rc,&i,1);
+        %*add new random character;
+        %let _rc = &_rc.&&char&i.;
     %end;
 
-    %let _rc = &tmp;
-  %end;
+    %*AT LEAST ONE DIGIT MUST BE IN THE PASSWORD;
+    %if %length(%sysfunc(compress(&_rc,&numChars.))) eq &pwdLength. %then %do;
+        %put NOTE: At least one digit must be in the password;
+        %put NOTE: Adding one digit to the password;
 
-  /* one char must exists */
-  %if (%sysfunc(notdigit(&_rc,1)) eq 0) %then %do;
-    %let _length = %length(&uppChars&lowChars) + 1;
-    %let repChar = %cmpres(%substr(&uppChars&lowChars,%sysfunc(floor(%sysfunc(ranuni(0))*(&_length-1)+1)),1));
+        %*take a random number;
+        %let repChar = %cmpres(%substr(&numChars.,%sysfunc(floor(%sysfunc(ranuni(0))*(&numLength.-1)+1)),1));
+        
+        %*pick a position in the current password;
+        %let repPos = %cmpres(%sysfunc(floor(%sysfunc(ranuni(0))*((&pwdLength.+1)-1))));
 
-    /* replace one of the chars make it random depending on the length */
-    %let replaceInd =  %cmpres(%sysfunc(floor(%sysfunc(ranuni(0))*((&pwdLength+1)-1)+1)));
+        %*replace the character with the number;
+        %let char&repPos. = &repChar;
 
-    %do i=1 %to &pwdLength;
-      %if (&i eq &replaceInd) %then %let tmp = %cmpres(&tmp)&repChar;
-      %else %let tmp = %cmpres(&tmp)%substr(&_rc,&i,1);
+        %let _rc = ;
+        %do i = 1 %to &pwdLength.;
+            %let _rc = &_rc.&&char&i.;
+        %end;
     %end;
 
-    %let _rc = &tmp;
-  %end;
+    %*AT LEAST ONE LOWER CASE CHARACTER MUST BE IN THE PASSWORD;
+    %if %length(%sysfunc(compress(&_rc,&lowChars.))) eq &pwdLength. %then %do;
+        %put NOTE: At least one lower case character must be in the password;
+        %put NOTE: Adding one lower case character to the password;
 
-  &_rc
+        %*take a random number;
+        %let repChar = %cmpres(%substr(&lowChars.,%sysfunc(floor(%sysfunc(ranuni(0))*(&lowLength.-1)+1)),1));
+        
+        %*pick a position in the current password;
+        %let repPos = %cmpres(%sysfunc(floor(%sysfunc(ranuni(0))*((&pwdLength.+1)-1))));
 
-  %exit:
-%mend;
-/*%put %pwd;*/
-/*%put %pwd(pwdLength=10);*/
-/*%let pwd = %pwd;*/
-/*%pwd(help);*/
+        %*replace the character with the number;
+        %let char&repPos. = &repChar;
 
+        %let _rc = ;
+        %do i = 1 %to &pwdLength.;
+            %let _rc = &_rc.&&char&i.;
+        %end;
+    %end;
+
+    %*AT LEAST ONE UPPER CASE CHARACTER MUST BE IN THE PASSWORD;
+    %if %length(%sysfunc(compress(&_rc,&uppChars.))) eq &pwdLength. %then %do;
+        %put NOTE: At least one upper case character must be in the password;
+        %put NOTE: Adding one upper case character to the password;
+
+        %*take a random number;
+        %let repChar = %cmpres(%substr(&uppChars.,%sysfunc(floor(%sysfunc(ranuni(0))*(&uppLength.-1)+1)),1));
+        
+        %*pick a position in the current password;
+        %let repPos = %cmpres(%sysfunc(floor(%sysfunc(ranuni(0))*((&pwdLength.+1)-1))));
+
+        %*replace the character with the number;
+        %let char&repPos. = &repChar;
+
+        %let _rc = ;
+        %do i = 1 %to &pwdLength.;
+            %let _rc = &_rc.&&char&i.;
+        %end;
+    %end;
+
+    %*AT LEAST ONE SPECIAL CHARACTER MUST BE IN THE PASSWORD;
+    %if %length(%sysfunc(compress(&_rc,&spcChars.))) eq &pwdLength. %then %do;
+        %put NOTE: At least one special character must be in the password;
+        %put NOTE: Adding one special character to the password;
+
+        %*take a random number;
+        %let repChar = %cmpres(%substr(&spcChars.,%sysfunc(floor(%sysfunc(ranuni(0))*(&spcLength.-1)+1)),1));
+        
+        %*pick a position in the current password;
+        %let repPos = %cmpres(%sysfunc(floor(%sysfunc(ranuni(0))*((&pwdLength.+1)-1))));
+
+        %*replace the character with the number;
+        %let char&repPos. = &repChar;
+
+        %let _rc = ;
+        %do i = 1 %to &pwdLength.;
+            %let _rc = &_rc.&&char&i.;
+        %end;
+    %end;
+
+    %*OUTPUT PASSWORD;
+    %let &pwdVar. = &_rc.;
+
+%put --------------------EOF pwd.sas--------------------------;
+%endmacro:
+%mend pwd;
+
+/*%put %pwd(); */
+%pwd(help);
+%pwd(pwdLength=20,pwdVar=tblPwd);
+%put &=tblPwd;
