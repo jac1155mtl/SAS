@@ -179,8 +179,3 @@ Jo Ann Colas         19MAY2021  Add special characters to password string
 %put --------------------EOF pwd.sas--------------------------;
 %endmacro:
 %mend pwd;
-
-/*%put %pwd(); */
-%pwd(help);
-%pwd(pwdLength=20,pwdVar=tblPwd);
-%put &=tblPwd;
