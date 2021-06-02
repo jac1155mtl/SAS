@@ -26,6 +26,7 @@ MACRO HISTORY       :
 Programmer(s)       Date(s)     Brief Description of Modifications
 -------------------+-----------+-------------------------------------
 Lars Tynelius        18DEC2007  created
+				http://cijas.blogspot.com/2012/01/password-generator-with-sas.html
 Jo Ann Colas         19MAY2021  Add special characters to password string
                                 add new parameter: pwdVar = name of macro 
                                 variable that holds password generated
