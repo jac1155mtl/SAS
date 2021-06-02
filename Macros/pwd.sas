@@ -39,6 +39,9 @@ Jo Ann Colas         19MAY2021  Add special characters to password string
     uppLength lowLength numLength specLengh _rc i repChar repPos;
 
     %global &pwdVar.;
+    
+    %let ER = ER;
+    %let ROR = ROR;
 
     %*SYNTAX HELP in SAS;
     %if (%bquote(%upcase(&help.)) eq HELP) %then %do;
