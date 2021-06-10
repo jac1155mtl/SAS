@@ -7,6 +7,7 @@ PURPOSE             : create a macro variable that contains a list
 
 PARAMETERS          : library - library where dataset exist
                       data    - dataset containing the id values
+		      where   - condition to subset dataset
                       idvar   - variable contain the id values
                       macvar  - name of the macro variable that will contain
                                the unique id variables
@@ -62,6 +63,7 @@ Jo Ann Colas        02JUN2021   create
         %put NOTE: |   Parameters                                                 |;
         %put NOTE: |     library.: library where dataset exist                    |;
         %put NOTE: |     data....: dataset containing the id values               |;
+	%put NOTE: |     where...: condition to subset dataset	                  |;
         %put NOTE: |     idVar...: var in dataset containing the id values        |;
         %put NOTE: |     macVar..: macro var containing the unique id values      |;
         %put NOTE: |                                                              |;
@@ -171,6 +173,9 @@ Jo Ann Colas        02JUN2021   create
         into :&macvar. separated by " "
         from &library..&data.
         where strip(&idvar.) is not null
+	%if %length(&where.) > 0 %then %do;
+		and &where.
+	%end;
     ;quit; 
 %put --------------------EOF idlist.sas--------------------------;
 %endmacro:
