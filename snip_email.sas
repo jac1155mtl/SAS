@@ -26,3 +26,4 @@
         ;
     run;
 %mend email;
+%email;
