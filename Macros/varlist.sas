@@ -35,7 +35,7 @@ Jo Ann Colas        17JUN2021   create
     **-----------------------------------------------------------------**;
     %local ER ROR WAR NING data library nobs nvars list;
 
-    %global &macvar;
+    %global &macvar.;
 
     **-----------------------------------------------------------------**
 	  SYNTAX HELP IN SAS LOG
@@ -54,7 +54,7 @@ Jo Ann Colas        17JUN2021   create
         %goto endmacro;
     %end;
     %else %if (%bquote(%upcase(&help.)) ne ) %then %do;
-        %put &ER.&ROR.: (VARLIST) Your &help request is not valid. Run pwd(help) for brief syntax help.;
+        %put &ER.&ROR.: (VARLIST) Your &help. request is not valid. Run varlist(help) for brief syntax help.;
         %goto endmacro;
     %end;
 
@@ -92,7 +92,7 @@ Jo Ann Colas        17JUN2021   create
         %goto endmacro;
     %end;
 
-    %*CHECKING THAT &DATA EXIST IN &LIBRARY;
+    %*CHECKING THAT &DATA. EXIST IN &LIBRARY.;
     proc sql noprint;
     	select *
     	from dictionary.tables
@@ -106,7 +106,7 @@ Jo Ann Colas        17JUN2021   create
     %end;
 
 
-    %*CHECKING THAT &DATA HAS AT LEAST ONE VARIABLE;
+    %*CHECKING THAT &DATA. HAS AT LEAST ONE VARIABLE;
     proc sql noprint;
       select nvar
       into :nvars trimmed
@@ -116,7 +116,7 @@ Jo Ann Colas        17JUN2021   create
     ;quit;
 
     %if &nvars. = 0 %then %do;
-        %put &WAR.NING.: (VARLIST) There are no variables in the dataset &library..&data.;
+        %put &WAR.&NING.: (VARLIST) There are no variables in the dataset &library..&data.;
         %goto endmacro;
     %end;
 
