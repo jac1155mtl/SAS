@@ -1,13 +1,13 @@
 /*********************************************************************
-MACRO NAME           : 
+MACRO NAME          :
 
-PURPOSE             : 
+PURPOSE             :
 
-PARAMETERS          : 
+PARAMETERS          :
 
-RETURNS             : 
+RETURNS             :
 
-EXTERNAL MACROS     : 
+EXTERNAL MACROS     :
 
 SPECIAL REQUIREMENTS:
 
@@ -23,19 +23,40 @@ Jo Ann Colas        DDMMMYYYY   create
 %put MACRO CALLED: XXXXX;
 
 %macro XXXXX();
+    **-----------------------------------------------------------------**
+    SET SCORE OF MACRO VARIABLES
+    **-----------------------------------------------------------------**;
+    %local ER ROR WAR NING;
 
     **-----------------------------------------------------------------**
-	Checking for required parameters
+    SYNTAX HELP IN SAS LOG
     **-----------------------------------------------------------------**;
-	%local error;
-	%let error = 0;
-	%if not %length(&XXXX) %then %do;
-		%put ERROR:(MMMM) Parameter XXXX required;
-		%let error = 1;
-	%end;
-	%if &error %then %goto endmacro;
+    %if (%bquote(%upcase(&help.)) eq HELP) %then %do;
+        %put NOTE: +--------------------------------------------------------------+;
+        %put NOTE: | Help for macro XXXXX                                         |;
+        %put NOTE: |   <PURPOSE>                                                  |;
+        %put NOTE: |                                                              |;
+        %put NOTE: |   Parameters                                                 |;
+        %put NOTE: |     param1....:                                              |;
+        %put NOTE: |     param2....:                                              |;
+        %put NOTE: |                                                              |;
+        %put NOTE: +--------------------------------------------------------------+;
+        %goto endmacro;
+    %end;
+    %else %if (%bquote(%upcase(&help.)) ne ) %then %do;
+        %put &ER.&ROR.: Your &help request is not valid. Run pwd(help) for brief syntax help.;
+        %goto endmacro;
+    %end;
 
-%put --------------------EOF XXXXX.sas--------------------------;
+    **-----------------------------------------------------------------**
+    CHECKING FOR REQUIRED PARAMETERS
+    **-----------------------------------------------------------------**;
+    %if not %length(&XXXX) %then %do;
+      %put &ER.&ROR:(MMMM) Parameter XXXX required;
+      %goto endmacro;
+    %end;
+
+%put --------------------EOF varlist.sas--------------------------;
 %endmacro:
 
 %mend XXXXX;
