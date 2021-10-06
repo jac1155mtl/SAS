@@ -4,8 +4,10 @@ MACRO NAME          : checkUninVars
 PURPOSE             : Macro for checking for any unintialized variables
                       in a SAS dataset
 
-PARAMETERS          : dsn - SAS dataset
-
+PARAMETERS          : lib  - SAS library where dataset is located 
+                            (default = WORK)
+                      dsn  - SAS dataset
+                      vars - list of variables to check if initiated
 RETURNS             : message in LOG
 
 EXTERNAL MACROS     : n/a
@@ -16,8 +18,8 @@ SPECIAL REQUIREMENTS: n/a
 
 EXAMPLES            : %checkDups();
                       %checkDups(help);
-                      %checkDups(dsn=sashelp.cars,vars=make);
-                      %checkDups(dsn=sashelp.cars,vars=make model);
+                      %checkDups(lib=sashelp,dsn=cars,vars=make);
+                      %checkDups(lib=sashelp,dsn=sashelp.cars,vars=make model);
                       %checkDups(dsn=sashelp.cars,vars=make model type origin drivetrain);
 ---------------------------------------------------------------------
 MACRO HISTORY       :
@@ -30,7 +32,7 @@ Jo Ann Colas        27AUG2021   create
 %put MACRO CALLED: CHECKUNINVARS;
 
 %macro checkUninVars(help,lib=WORK,dsn=,vars=);
-    %local nobs sqlobs dsn war ning er ror library data;
+    %local nobs sqlobs dsn war ning er ror library data list;
 
     %let WAR = WAR;
     %let NING = NING;
@@ -50,9 +52,12 @@ Jo Ann Colas        27AUG2021   create
         %put NOTE: |   dataset                                                    |;
         %put NOTE: |                                                              |;
         %put NOTE: |   Parameters                                                 |;
-        %put NOTE: |     lib..........: SAS dataset (default = WORK)              |;
+        %put NOTE: |     lib..........: SAS library where dataset is located      |;
+        %put NOTE: |                    (default = WORK)                          |;
         %put NOTE: |     dsn..........: SAS dataset                               |;
-        %put NOTE: |     vars.........: SAS dataset                               |;
+        %put NOTE: |     vars.........: space delimited list of variables to      |;
+        %put NOTE: |                    check if initiated (if blank, will check  |;
+        %put NOTE  |                    all variables in dataset)                 |;
         %put NOTE: |                                                              |;
         %put NOTE: +--------------------------------------------------------------+;
         %goto endmacro;
@@ -109,7 +114,9 @@ Jo Ann Colas        27AUG2021   create
     %end;
 
     %*MAKE LIST OF UNINTIALIZED VARIABLES;
-    %else %do;
+    %else %if &nvars. > 0 %then %do;
+    
+        %*IF NO VARIABLES SPECIFIED, UPDATE &VARS. TO INCLUDE ALL VARIABLES IN &DSN.;
         %if %length(&vars) = 0 %then %do;
             proc sql noprint;
                 select upcase(name)
@@ -121,33 +128,50 @@ Jo Ann Colas        27AUG2021   create
             %put &=vars;
         %end;
 
+        %*MAKE LIST OF VARIABLES THAT ARE UNINTIALIZED;
         %let list =;
         %do i = 1 %to &nvars.;
             %let var=%scan(&vars,&i,%str( )); 
-
+            
+            %*CHECK IF VARIABLE EXISTS IN &LIB.&DSN.;
             proc sql noprint;
-                select count(*) into :nobs
-                from &lib..&dsn.
-                where &var. is not null
+                select upcase(name)
+                into :var_check trimmed
+                from sashelp.vcolumn
+                where libname = "&lib."
+                    and memname = "&dsn."
+                    and name = "&var."
             ;quit;
+            
+            %if %length(&var_check.) = 0 %then %do;
+                %put &WAR.&NING.: (CHECKUNINVARS) Variable &var. does not exist in &lib..&dsn.;                
+            %end;
+            %else %if %length*&var_check.) > 0 %then %do;
+                %*CHECK IF AT LEAST ONE ROW WITH NON-MISSING VALUE FOR &VAR.;
+                proc sql noprint;
+                    select count(*) into :nobs
+                    from &lib..&dsn.
+                    where &var. is not null
+                ;quit;
 
-            %if &nobs. = 0 %then %do;
+                %if &nobs. = 0 %then %do;
+                    %put &WAR.&NING.: (CHECKUNINVARS) Variable &var. is uninitialized in &lib..&dsn.;
+                    data _null_;
+                        newlist = catx(" ","&list.","&var.");
+                        call symput("list",newlist);
+                    run;
 
-                %put &WAR.&NING.: (CHECKUNINVARS) Variable &var. is uninitialized in &lib..&dsn.;
-                data _null_;
-                    newlist = catx(" ","&list.","&var.");
-                    call symput("list",newlist);
-                run;
-
-                %let list = %trim(&list.);
-            %end; 
+                    %let list = %trim(&list.);
+                %end; 
+             %end;
         %end;
 
+        %*OUTPUT NOTE IF ALL VARIABLES ARE INITIALIZED;
         %if %length(&list) = 0 and %length(&vars) = &nvars. %then %do;
             %put NOTE: (CHECKUNINVARS) All the variables in &lib..&dsn. are initialized;
         %end;
-        %else %if 0 < %length(&list) = &nvars. %then %do;
-            %put &WAR.&NING.: (CHECKUNINVARS) All the variables in &lib..&dsn. are uninitialized;
+        %else %if %length(&list) = 0 and %length(&vars) < &nvars. %then %do;
+            %put NOTE: (CHECKUNINVARS) The variables &vars. in &lib..&dsn. are initialized;
         %end;
     %end;
     
@@ -157,12 +181,12 @@ Jo Ann Colas        27AUG2021   create
     %endmacro:
 %mend;
 
-%CHECKUNINVARS();
-%CHECKUNINVARS(help);
+%*CHECKUNINVARS();
+%*CHECKUNINVARS(help);
 /*%CHECKUNINVARS(dsn=car);*/
-%CHECKUNINVARS(lib=sashelp,dsn=cars);
-data cars;
-    format car $200.;
-    set sashelp.cars;
-run;
-%CHECKUNINVARS(dsn=cars);
+%*CHECKUNINVARS(lib=sashelp,dsn=cars);
+*data cars;
+    *format car $200.;
+    *set sashelp.cars;
+*run;
+%*CHECKUNINVARS(dsn=cars);
