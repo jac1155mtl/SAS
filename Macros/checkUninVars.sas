@@ -16,11 +16,10 @@ NOTES               : run %checkDups(help) for syntax help in SAS
 
 SPECIAL REQUIREMENTS: n/a
 
-EXAMPLES            : %checkDups();
-                      %checkDups(help);
-                      %checkDups(lib=sashelp,dsn=cars,vars=make);
-                      %checkDups(lib=sashelp,dsn=sashelp.cars,vars=make model);
-                      %checkDups(dsn=sashelp.cars,vars=make model type origin drivetrain);
+EXAMPLES            : %CHECKUNINVARS();
+                      %CHECKUNINVARS(help);
+                      %CHECKUNINVARS(dsn=car);
+                      %CHECKUNINVARS(lib=sashelp,dsn=cars);
 ---------------------------------------------------------------------
 MACRO HISTORY       :
 
@@ -57,7 +56,7 @@ Jo Ann Colas        27AUG2021   create
         %put NOTE: |     dsn..........: SAS dataset                               |;
         %put NOTE: |     vars.........: space delimited list of variables to      |;
         %put NOTE: |                    check if initiated (if blank, will check  |;
-        %put NOTE  |                    all variables in dataset)                 |;
+        %put NOTE: |                    all variables in dataset)                 |;
         %put NOTE: |                                                              |;
         %put NOTE: +--------------------------------------------------------------+;
         %goto endmacro;
@@ -98,7 +97,6 @@ Jo Ann Colas        27AUG2021   create
         %goto endmacro;
     %end;
 
-
     %*CHECKING THAT &DATA. HAS AT LEAST ONE VARIABLE;
     proc sql noprint;
       select nvar
@@ -130,7 +128,8 @@ Jo Ann Colas        27AUG2021   create
 
         %*MAKE LIST OF VARIABLES THAT ARE UNINTIALIZED;
         %let list =;
-        %do i = 1 %to &nvars.;
+        %let vars_count = %sysfunc(countw(&vars.));
+        %do i = 1 %to &vars_count.;
             %let var=%scan(&vars,&i,%str( )); 
             
             %*CHECK IF VARIABLE EXISTS IN &LIB.&DSN.;
@@ -140,13 +139,13 @@ Jo Ann Colas        27AUG2021   create
                 from sashelp.vcolumn
                 where libname = "&lib."
                     and memname = "&dsn."
-                    and name = "&var."
+                    and upcase(name) = "&var."
             ;quit;
             
             %if %length(&var_check.) = 0 %then %do;
                 %put &WAR.&NING.: (CHECKUNINVARS) Variable &var. does not exist in &lib..&dsn.;                
             %end;
-            %else %if %length*&var_check.) > 0 %then %do;
+            %else %if %length(&var_check.) > 0 %then %do;
                 %*CHECK IF AT LEAST ONE ROW WITH NON-MISSING VALUE FOR &VAR.;
                 proc sql noprint;
                     select count(*) into :nobs
@@ -181,12 +180,13 @@ Jo Ann Colas        27AUG2021   create
     %endmacro:
 %mend;
 
-%*CHECKUNINVARS();
-%*CHECKUNINVARS(help);
+/*%CHECKUNINVARS();*/
+/*%CHECKUNINVARS(help);*/
 /*%CHECKUNINVARS(dsn=car);*/
-%*CHECKUNINVARS(lib=sashelp,dsn=cars);
-*data cars;
-    *format car $200.;
-    *set sashelp.cars;
-*run;
-%*CHECKUNINVARS(dsn=cars);
+/*%CHECKUNINVARS(lib=sashelp,dsn=cars);*/
+
+/*data cars;*/
+/*    format car $200.;*/
+/*    set sashelp.cars;*/
+/*run;*/
+/*%CHECKUNINVARS(dsn=cars);*/
