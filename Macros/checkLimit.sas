@@ -69,29 +69,29 @@ Jo Ann Colas        27AUG2021   create
         %goto endmacro;
     %end;
     %else %if (%bquote(%upcase(&help.)) ne ) %then %do;
-        %put &ER.&ROR.:(CHECKUNINVARS) Your &help request is not valid. Run checkDups(help) for brief syntax help.;
+        %put &ER.&ROR.: (CHECKLIMIT) Your &help request is not valid. Run checkDups(help) for brief syntax help.;
         %goto endmacro;
     %end;
 
     %*CHECKING FOR REQUIRED PARAMETERS;
     %if %length(&dsn.) = 0 %then %do;
-        %put &ER.&ROR.:(CHECKLIMIT) Parameter DSN required;
+        %put &ER.&ROR.: (CHECKLIMIT) Parameter DSN required;
         %goto endmacro;
     %end;
     %else %length(&vars.) = 0 %then %do;
-        %put &ER.&ROR.:(CHECKLIMIT) Parameter VARS required;
+        %put &ER.&ROR.: (CHECKLIMIT) Parameter VARS required;
         %goto endmacro;
     %end;
     %else %length(&limits.) = 0 %then %do;
-        %put &ER.&ROR.:(CHECKLIMIT) Parameter LIMITS required;
+        %put &ER.&ROR.: (CHECKLIMIT) Parameter LIMITS required;
         %goto endmacro;
     %end;
     %else %if &type. ne UPPER and &type. ne LOWER %then %do;
-        %put &ER.&ROR.:(CHECKLIMIT) The valid values for the parameter TYPE are UPPER or LOWER;
+        %put &ER.&ROR.: (CHECKLIMIT) The valid values for the parameter TYPE are UPPER or LOWER;
         %goto endmacro;
     %end;
     %else %if %length(&vars.) ne %length(&limits.) %then %do;
-        %put &ER.&ROR.:(CHECKLIMIT) There needs to be the same number of variables in VARS as there are limits in the limits in LIMITS; 
+        %put &ER.&ROR.: (CHECKLIMIT) There needs to be the same number of variables in VARS as there are limits in the limits in LIMITS; 
     %end;
     
     %*CHECKING IF LIBRARY EXISTS;
@@ -115,7 +115,7 @@ Jo Ann Colas        27AUG2021   create
     ;quit;
 
     %if &sqlobs. = 0 %then %do;
-        %put &ER.&ROR.: (CHECKUNINVARS) The dataset &lib..&dsn. does not exist;
+        %put &ER.&ROR.: (CHECKLIMIT) The dataset &lib..&dsn. does not exist;
         %goto endmacro;
     %end;
 
@@ -129,7 +129,7 @@ Jo Ann Colas        27AUG2021   create
     ;quit;
 
     %if &nvars. = 0 %then %do;
-        %put &WAR.&NING.: (CHECKUNINVARS) There are no variables in the dataset &library..&data.;
+        %put &WAR.&NING.: (CHECKLIMIT) There are no variables in the dataset &lib..&dsn.;
         %goto endmacro;
     %end;
 
@@ -185,15 +185,12 @@ Jo Ann Colas        27AUG2021   create
                     do i = 1 to 3;
                         if i = 1 then do;
                             count = &nMiss.;
-                            status = "missing";
                         end;
                         else if i = 2 then do;
                             count = &nBelowLimit.;
-                            status = "below the limit";
                         end;
                         else if i = 3 then do;
                             count = &nAboveLimit.;
-                            status = "above the limit";
                         end;
                         countc = strip(put(count,8.));
                         pct = 100*cnt{i}/&nAll.; 
@@ -212,7 +209,6 @@ Jo Ann Colas        27AUG2021   create
                         %end;
                     end;
                     drop i;
-                          
                 run;
             %end;
         %end;
