@@ -86,9 +86,12 @@ Jo Ann Colas        27AUG2021   create
         %put &ER.&ROR.:(CHECKLIMIT) Parameter LIMITS required;
         %goto endmacro;
     %end;
-    %else %if &type. ne UPPER and &type. LOWER %then %do;
+    %else %if &type. ne UPPER and &type. ne LOWER %then %do;
         %put &ER.&ROR.:(CHECKLIMIT) The valid values for the parameter TYPE are UPPER or LOWER;
         %goto endmacro;
+    %end;
+    %else %if %length(&vars.) ne %length(&limits.) %then %do;
+        %put &ER.&ROR.:(CHECKLIMIT) There needs to be the same number of variables in VARS as there are limits in the limits in LIMITS; 
     %end;
     
     %*CHECKING IF LIBRARY EXISTS;
@@ -136,29 +139,22 @@ Jo Ann Colas        27AUG2021   create
     
     %*MAKE LIST OF UNINTIALIZED VARIABLES;
     %else %if &nvars. > 0 %then %do;
-    
-        %*IF NO VARIABLES SPECIFIED, UPDATE &VARS. TO INCLUDE ALL VARIABLES IN &DSN.;
-        %if %length(&vars) = 0 %then %do;
-            proc sql noprint;
-                select upcase(name)
-                into :vars separated by " "
-                from sashelp.vcolumn
-                where libname = "&lib."
-                    and memname = "&dsn."
-            ;quit;
-            %put &=vars;
-        %end;
-
-        %*MAKE LIST OF VARIABLES THAT ARE UNINTIALIZED;
-        %let list =;
+        
+        %let nmiss = 0;
+        %let nBelowLowerlimit = 0;
+        %let nAboverUpperLimit = 0;
+        
         %let vars_count = %sysfunc(countw(&vars.));
+       
+        %*MAKE LIST OF VARIABLES THAT ARE UNINTIALIZED; 
         %do i = 1 %to &vars_count.;
-            %let var=%scan(&vars,&i,%str( )); 
+            %let var    = %scan(&vars.,&i,%str( )); 
+            %let limit  = %scan(&limits.,&i.,%str( ));
             
             %*CHECK IF VARIABLE EXISTS IN &LIB.&DSN.;
             proc sql noprint;
-                select upcase(name)
-                into :var_check trimmed
+                select upcase(name), upcase(type)
+                into :var_check trimmed :var_type trimmed
                 from sashelp.vcolumn
                 where libname = "&lib."
                     and memname = "&dsn."
@@ -166,50 +162,75 @@ Jo Ann Colas        27AUG2021   create
             ;quit;
             
             %if %length(&var_check.) = 0 %then %do;
-                %put &WAR.&NING.: (CHECKUNINVARS) Variable &var. does not exist in &lib..&dsn.;                
+                %put &WAR.&NING.: (CHECKLIMIT) Variable &var. does not exist in &lib..&dsn.;                
             %end;
-            %else %if %length(&var_check.) > 0 %then %do;
-                %*CHECK IF AT LEAST ONE ROW WITH NON-MISSING VALUE FOR &VAR.;
+            %else %if %length(&var_check.) > 0 and &var_type ne N %then %do;
+                %put &WAR.&NING.: (CHECKLIMIT) Variable &var. is not numeric;
+            %end;
+            %else %if %length(&Var_check.) > 0 and &var_type eq N %then %do;
                 proc sql noprint;
-                    select count(*) into :nobs
+                    select count(case when &var is null then 1 else 0 end) 
+                           ,count(case when . < &var <= &limit. then 1 else 0 end)
+                           ,count(case when &limit. < &var. then 1 else 0 end)
+                           ,count(*)
+                    into :nmiss trimmed
+                         ,:nBelowLimit trimmed
+                         ,:nAboveLimit trimmed
+                         ,:nAll trimmed
                     from &lib..&dsn.
-                    where &var. is not null
                 ;quit;
+                    
+                data _null_;
+                    format count 8. countc $100. status $15. pct 8.2 pctc $100. outtext $100.;
+                    do i = 1 to 3;
+                        if i = 1 then do;
+                            count = &nMiss.;
+                            status = "missing";
+                        end;
+                        else if i = 2 then do;
+                            count = &nBelowLimit.;
+                            status = "below the limit";
+                        end;
+                        else if i = 3 then do;
+                            count = &nAboveLimit.;
+                            status = "above the limit";
+                        end;
+                        countc = strip(put(count,8.));
+                        pct = 100*cnt{i}/&nAll.; 
+                        pctc = strip(put(pct,8.2.)); 
 
-                %if &nobs. = 0 %then %do;
-                    %put &WAR.&NING.: (CHECKUNINVARS) Variable &var. is uninitialized in &lib..&dsn.;
-                    data _null_;
-                        newlist = catx(" ","&list.","&var.");
-                        call symput("list",newlist);
-                    run;
-
-                    %let list = %trim(&list.);
-                %end; 
-             %end;
-        %end;
-
-        %*OUTPUT NOTE IF ALL VARIABLES ARE INITIALIZED;
-        %if %length(&list) = 0 and %length(&vars) = &nvars. %then %do;
-            %put NOTE: (CHECKUNINVARS) All the variables in &lib..&dsn. are initialized;
-        %end;
-        %else %if %length(&list) = 0 and %length(&vars) < &nvars. %then %do;
-            %put NOTE: (CHECKUNINVARS) The variables &vars. in &lib..&dsn. are initialized;
+                        if i = 1 then putlog "NOTE:(CHECKLIMIT) There are " || countc || "(" || pctc || "%) records with missing value for &VAR. in &LIB..&DSN.";
+                        %if &type eq LOWER %then %do;
+                            else if i = 2 and &nBelowLimit = 0 then putlog "NOTE:(CHECKLIMIT) There are " || countc || "(" || pctc || "%) non-missing records <= &LIMIT for &VAR. in &LIB..&DSN.";
+                            else if i = 2 and &nBelowLimit. > 0 then putlog "&WAR.&NING.:(CHECKLIMIT) There are " || countc || "(" || pctc || "%) non-missing records <= &LIMIT for &VAR. in &LIB..&DSN.";
+                            else if i = 3 the putlog "NOTE:(CHECKLIMIT) There are " || countc || "(" || pctc || "%) non-missing records > &LIMIT for &VAR. in &LIB..&DSN.";
+                        %end;
+                        %else %if %type eq UPPER %then %do;
+                            else if i = 2 the putlog "NOTE:(CHECKLIMIT) There are " || countc || "(" || pctc || "%) non-missing records <= &LIMIT for &VAR. in &LIB..&DSN.";
+                            else if i = 3 and &nAboveLimit = 0 then putlog "NOTE:(CHECKLIMIT) There are " || countc || "(" || pctc || "%) non-missing records > &LIMIT for &VAR. in &LIB..&DSN.";
+                            else if i = 3 and &nAboveLimit. > 0 then putlog "&WAR.&NING.:(CHECKLIMIT) There are " || countc || "(" || pctc || "%) non-missing records > &LIMIT for &VAR. in &LIB..&DSN.";
+                        %end;
+                    end;
+                    drop i;
+                          
+                run;
+            %end;
         %end;
     %end;
     
 
     %*END OF MACRO;
-    %put --------------------EOF CHECKUNINVARS.sas--------------------------;
+    %put --------------------EOF CHECKLIMIT.sas--------------------------;
     %endmacro:
 %mend;
 
-/*%CHECKUNINVARS();*/
-/*%CHECKUNINVARS(help);*/
-/*%CHECKUNINVARS(dsn=car);*/
-/*%CHECKUNINVARS(lib=sashelp,dsn=cars);*/
+/*%CHECKLIMIT();*/
+/*%CHECKLIMIT(help);*/
+/*%CHECKLIMIT(dsn=car);*/
+/*%CHECKLIMIT(lib=sashelp,dsn=cars,vars=engineSize cylinders,type=LOWER,limits=1 4);*/
 
 /*data cars;*/
 /*    format car $200.;*/
 /*    set sashelp.cars;*/
 /*run;*/
-/*%CHECKUNINVARS(dsn=cars);*/
+/*%CHECKLIMIT(lib=work,dsn=cars,vars=car engineSize cylinders,type=LOWER,limits=. 1 4);*/
