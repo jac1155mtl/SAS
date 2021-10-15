@@ -34,7 +34,7 @@ Jo Ann Colas        27AUG2021   create
 
 %put MACRO CALLED: CHECKLIMIT;
 
-%macro checkUninVars(help,lib=WORK,dsn=,vars=,type=UPPER,limits=);
+%macro checkLimit(help,lib=WORK,dsn=,vars=,type=UPPER,limits=);
     %local nobs sqlobs dsn war ning er ror library data list;
 
     %let WAR = WAR;
@@ -78,11 +78,11 @@ Jo Ann Colas        27AUG2021   create
         %put &ER.&ROR.: (CHECKLIMIT) Parameter DSN required;
         %goto endmacro;
     %end;
-    %else %length(&vars.) = 0 %then %do;
+    %else %if %length(&vars.) = 0 %then %do;
         %put &ER.&ROR.: (CHECKLIMIT) Parameter VARS required;
         %goto endmacro;
     %end;
-    %else %length(&limits.) = 0 %then %do;
+    %else %if %length(&limits.) = 0 %then %do;
         %put &ER.&ROR.: (CHECKLIMIT) Parameter LIMITS required;
         %goto endmacro;
     %end;
@@ -90,8 +90,9 @@ Jo Ann Colas        27AUG2021   create
         %put &ER.&ROR.: (CHECKLIMIT) The valid values for the parameter TYPE are UPPER or LOWER;
         %goto endmacro;
     %end;
-    %else %if %length(&vars.) ne %length(&limits.) %then %do;
+    %else %if %sysfunc(countw(&vars.)) ne %sysfunc(countw(&limits.)) %then %do;
         %put &ER.&ROR.: (CHECKLIMIT) There needs to be the same number of variables in VARS as there are limits in the limits in LIMITS; 
+        %goto endmacro;
     %end;
     
     %*CHECKING IF LIBRARY EXISTS;
@@ -151,10 +152,10 @@ Jo Ann Colas        27AUG2021   create
             %let var    = %scan(&vars.,&i,%str( )); 
             %let limit  = %scan(&limits.,&i.,%str( ));
             
-            %*CHECK IF VARIABLE EXISTS IN &LIB.&DSN.;
+            %*CHECK IF VARIABLE EXISTS AND IS NUMERIC IN &LIB.&DSN.;
             proc sql noprint;
                 select upcase(name), upcase(type)
-                into :var_check trimmed :var_type trimmed
+                into :var_check trimmed ,:var_type trimmed
                 from sashelp.vcolumn
                 where libname = "&lib."
                     and memname = "&dsn."
@@ -164,14 +165,14 @@ Jo Ann Colas        27AUG2021   create
             %if %length(&var_check.) = 0 %then %do;
                 %put &WAR.&NING.: (CHECKLIMIT) Variable &var. does not exist in &lib..&dsn.;                
             %end;
-            %else %if %length(&var_check.) > 0 and &var_type ne N %then %do;
+            %else %if %length(&var_check.) > 0 and &var_type ne NUM %then %do;
                 %put &WAR.&NING.: (CHECKLIMIT) Variable &var. is not numeric;
             %end;
-            %else %if %length(&Var_check.) > 0 and &var_type eq N %then %do;
+            %else %if %length(&var_check.) > 0 and &var_type eq NUM %then %do;
                 proc sql noprint;
-                    select count(case when &var is null then 1 else 0 end) 
-                           ,count(case when . < &var <= &limit. then 1 else 0 end)
-                           ,count(case when &limit. < &var. then 1 else 0 end)
+                    select sum(case when &var is null then 1 else 0 end) 
+                           ,sum(case when . < &var <= &limit. then 1 else 0 end)
+                           ,sum(case when &limit. < &var. then 1 else 0 end)
                            ,count(*)
                     into :nmiss trimmed
                          ,:nBelowLimit trimmed
@@ -180,35 +181,57 @@ Jo Ann Colas        27AUG2021   create
                     from &lib..&dsn.
                 ;quit;
                     
+                **CHECK NUMBER OF RECORDS WITH MISSING VALUES;
                 data _null_;
-                    format count 8. countc $100. status $15. pct 8.2 pctc $100. outtext $100.;
-                    do i = 1 to 3;
-                        if i = 1 then do;
-                            count = &nMiss.;
-                        end;
-                        else if i = 2 then do;
-                            count = &nBelowLimit.;
-                        end;
-                        else if i = 3 then do;
-                            count = &nAboveLimit.;
-                        end;
-                        countc = strip(put(count,8.));
-                        pct = 100*cnt{i}/&nAll.; 
-                        pctc = strip(put(pct,8.2.)); 
+                    format n 8. nc $100. count 8. countc $100. pct 8.2 pctc $100.;
+                    n = &nAll.;
+                    nc = strip(put(n,8.));
+                    count = &nMiss.;
+                    countc = strip(put(count,8.));
+                    pct = 100*count/n; 
+                    pctc = strip(put(pct,8.1)); 
 
-                        if i = 1 then putlog "NOTE:(CHECKLIMIT) There are " || countc || "(" || pctc || "%) records with missing value for &VAR. in &LIB..&DSN.";
-                        %if &type eq LOWER %then %do;
-                            else if i = 2 and &nBelowLimit = 0 then putlog "NOTE:(CHECKLIMIT) There are " || countc || "(" || pctc || "%) non-missing records <= &LIMIT for &VAR. in &LIB..&DSN.";
-                            else if i = 2 and &nBelowLimit. > 0 then putlog "&WAR.&NING.:(CHECKLIMIT) There are " || countc || "(" || pctc || "%) non-missing records <= &LIMIT for &VAR. in &LIB..&DSN.";
-                            else if i = 3 the putlog "NOTE:(CHECKLIMIT) There are " || countc || "(" || pctc || "%) non-missing records > &LIMIT for &VAR. in &LIB..&DSN.";
-                        %end;
-                        %else %if %type eq UPPER %then %do;
-                            else if i = 2 the putlog "NOTE:(CHECKLIMIT) There are " || countc || "(" || pctc || "%) non-missing records <= &LIMIT for &VAR. in &LIB..&DSN.";
-                            else if i = 3 and &nAboveLimit = 0 then putlog "NOTE:(CHECKLIMIT) There are " || countc || "(" || pctc || "%) non-missing records > &LIMIT for &VAR. in &LIB..&DSN.";
-                            else if i = 3 and &nAboveLimit. > 0 then putlog "&WAR.&NING.:(CHECKLIMIT) There are " || countc || "(" || pctc || "%) non-missing records > &LIMIT for &VAR. in &LIB..&DSN.";
-                        %end;
-                    end;
-                    drop i;
+                    if count = n then putlog "&WAR.&NING.:(CHECKLIMIT) All &NALL records have missing value for &VAR. in &LIB..&DSN.";
+                    else if count < n then putlog "NOTE:(CHECKLIMIT) There are " countc "(" pctc "%) records with missing value for &VAR. in &LIB..&DSN.";
+                run;
+
+                **CHECK NUMBER OF RECORDS BELOW LIMIT;
+                data _null_;
+                    format n 8. nc $100. count 8. countc $100. pct 8.2 pctc $100.;
+                    n = &nAll.;
+                    nc = strip(put(n,8.));
+                    count = &nBelowLimit.;
+                    countc = strip(put(count,8.));
+                    pct = 100*count/n; 
+                    pctc = strip(put(pct,8.1)); 
+
+                    %if &type. eq LOWER %then %do;
+                             if count = 0       then putlog "NOTE:(CHECKLIMIT) None of the non-missing records are below the lower limit = &LIMIT for &VAR in &LIB..&DSN.";
+                        else if 0 < count < n   then putlog "&WAR.&NING.:(CHECKLIMIT) There are " countc "(" pctc "%) non-missing records below the lower limit = &LIMIT for &VAR. in &LIB..&DSN.";
+                        else if count = n       then putlog "&WAR.&NING.:(CHECKLIMIT) All &NALL records are below the lower limit = &LIMIT for &VAR. in &LIB..&DSN.";
+                    %end;
+                    %else %if &type. eq UPPER %then %do;
+                        else if 0 < count < n   then putlog "&WAR.&NING.:(CHECKLIMIT) There are " countc "(" pctc "%) non-missing records below the upper limit = &LIMIT for &VAR. in &LIB..&DSN.";
+                    %end;
+                
+                **CHECK NUMBER OF RECORDS ABOVE LIMIT;
+                data _null_;
+                    format n 8. nc $100. count 8. countc $100. pct 8.2 pctc $100.;
+                    n = &nAll.;
+                    nc = strip(put(n,8.));
+                    count = &nAboveLimit.;
+                    countc = strip(put(count,8.));
+                    pct = 100*count/n; 
+                    pctc = strip(put(pct,8.1)); 
+
+                    %if &type. eq LOWER %then %do;
+                        if 0 < count < n   then putlog "NOTE:(CHECKLIMIT) There are " countc "(" pctc "%) non-missing records above the lower limit = &LIMIT for &VAR. in &LIB..&DSN.";
+                    %end;
+                    %else %if type. eq UPPER %then %do;
+                             if count = 0       then putlog "NOTE:(CHECKLIMIT) None of the non-missing records are above the upper limit = &LIMIT for &VAR in &LIB..&DSN.";
+                        else if 0 < count < n   then putlog "&WAR.&NING.:(CHECKLIMIT) There are " countc "(" pctc "%) non-missing records above the upper limit = &LIMIT for &VAR. in &LIB..&DSN.";
+                        else if count = n       then putlog "&WAR.&NING.:(CHECKLIMIT) All &NALL records are above the upper limit = &LIMIT for &VAR. in &LIB..&DSN.";
+                    %end;
                 run;
             %end;
         %end;
@@ -229,4 +252,4 @@ Jo Ann Colas        27AUG2021   create
 /*    format car $200.;*/
 /*    set sashelp.cars;*/
 /*run;*/
-/*%CHECKLIMIT(lib=work,dsn=cars,vars=car engineSize cylinders,type=LOWER,limits=. 1 4);*/
+/*%CHECKLIMIT(lib=work,dsn=cars,vars=car engineSize cylinders,type=LOWER,limits=.z 1 4);*/
