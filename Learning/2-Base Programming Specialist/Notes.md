@@ -24,9 +24,9 @@ name:
 ## 2.1 THE BASICS OF THE SAS LANGUAGE
 ### 2.1.1 SAS STATEMENTS
 
-> Defn. A *SAS statement* is a type of SAS language elemetn that is used to perform a particular operation in a SAS program or to provide information to a SAS program.
+> Defn. A *SAS statement* is a type of SAS language element that is used to perform a particular operation in a SAS program or to provide information to a SAS program.
 
-There are two important rules for wirting SAS programs:
+There are two important rules for writing SAS programs:
 - a SAS statement ends with a semicolon; and
 - a SAS statement usually start with a SAS keyword. 
 
@@ -71,7 +71,7 @@ run;
 ### 2.1.6 PROCESSING SAS PROGRAMS
 When a SAS program is submitted for executing, SAS first validates the syntax then compiles the statements. At a step boundary (end of a step) SAS executes any statement that has not been previously executed and ends the step.
 
-> Tip. the `RUN` statement is not required between steps in a SAS program but it is a good practice beauces it kames the SAS program easier to read and the SAS log easier to understand when debugging.
+> Tip. the `RUN` statement is not required between steps in a SAS program but it is a good practice because it makes the SAS program easier to read and the SAS log easier to understand when debugging.
 
 ### 2.1.7 LOG MESSAGES
 
@@ -91,7 +91,7 @@ By default, SAS defines several libraries for you:
 - WORK: a temporary library for files that don't need to be saved from session to session.
 
 ### 2.2.3 DEFINING LIBRARIES
-To define a library, you assign a library name to it and specify the location of the file, sunc as a directory path.
+To define a library, you assign a library name to it and specify the location of the file, such as a directory path.
 
 You can define SAS libraries using programming statements.
 
@@ -125,7 +125,7 @@ To reference temporary SAS files, you can specify the default libref `WORK`, a p
 WORK.DATASET
 ```
 
-Alternatively, you canse use a one-lvel name (the dataset name's only) to reference a file in a temporary SAS library.
+Alternatively, you can use a one-level name (the dataset name's only) to reference a file in a temporary SAS library.
 
 ### 2.3.3 RULES FOR SAS NAMES
 
@@ -135,7 +135,7 @@ By default, the following rules apply to the names of SAS datasets, variables an
 - they can be 1 to 32 characters long; and
 - SAS library names (librefs) can be 1 to 8 characters long.
 
-### 2.3.4 VALIDVARNAME=SYSTEM OPTION
+### 2.3.4 VALIDVARNAME= SYSTEM OPTION
 
 SAS has various rules for variable names. You set these rules using the `VALIDVARNAME=` system option.
 
@@ -144,10 +144,10 @@ SAS has various rules for variable names. You set these rules using the `VALIDVA
 `VALIDVARNAME=V7` specifies that variable names must follow these rules:
 - SAS variable names can be up to 32 characters long;
 - the first character must begin with a letter of the Latin alphabet (A-Z, either uppercase or lowercase) or an underscore (\_). Subsequent characters can be letters of the Latin alphabet, numerals or underscores.
-- trailing blanks are ingored. the variable name alignment is left-adjusted;
-- a variable name cannon contain blanks or special characters except for an underscore;
-- a variable name can contain mixed-case leters: you cannot use the same variable name with a different combination of uppercase and owercase letters to represent different variables;
-- do not assign variables the names of special SAS automatic variables (e.g \_N\_, \_ERROR\_) or variable list names (e.g. \_NUMERIC\_, \_CHARACTER\_, \_ALL\_) to variables.
+- trailing blanks are ignored. the variable name alignment is left-adjusted;
+- a variable name can't contain blanks or special characters except for an underscore;
+- a variable name can contain mixed-case letters: you cannot use the same variable name with a different combination of uppercase and owercase letters to represent different variables;
+- do not assign variables the names of special SAS automatic variables (e.g \_N\_, \_ERROR\_) or variable list names (e.g. \_NUMERIC\_, \_CHARACTER\_, \_ALL\_).
 
 `VALIDVARNAME=UPCASE` specifies that variable names follow these rules:
 - the same rules as `VALIDVARNAME=V7`, 
@@ -158,7 +158,7 @@ SAS has various rules for variable names. You set these rules using the `VALIDVA
 - the name can be up to 32 bytes long;
 - the name cannot contain any null bytes;
 - the name must contain at least one character. A name with all blanks is not permitted;
-- a variable name can contain mixed-case leters: you cannot use the same variable name with a different combination of uppercase and owercase letters to represent different variables.
+- a variable name can contain mixed-case letters: you cannot use the same variable name with a different combination of uppercase and owercase letters to represent different variables.
 
 >N.B. If you use characters other than the ones that are valid when `VALIDVARNME=V7`, then you must express the variable name as a name literal (?) and set `VALIDVARNME=ANY`.
 
@@ -166,7 +166,7 @@ SAS has various rules for variable names. You set these rules using the `VALIDVA
 
 [SAS documentation for `VALIDVARNAME=`](https://documentation.sas.com/doc/en/pgmsascdc/9.4_3.5/lesysoptsref/p124dqdk8zoqu3n1r4nsfqu5vx52.htm).
 
-### 2.3.5 VALIDMEMNAME=SYSTEM OPTION
+### 2.3.5 VALIDMEMNAME= SYSTEM OPTION
 
 You can use the `VALIDMEMNAME=` system option to specify rules for naming SAS datasets.
 
@@ -175,7 +175,7 @@ You can use the `VALIDMEMNAME=` system option to specify rules for naming SAS da
 `VALIDNMEMNAME=COMPATIBLE` specifies that a SAS dataset name must follow these rules:
 - the length of the names can be up to 32 characters long;
 - the first character must begin with a letter of the Latin alphabet (A-Z, either uppercase or lowercase) or an underscore (\_). Subsequent characters can be letters of the Latin alphabet, numerals or underscores.
-- a dataset name cannon contain blanks or special characters except for an underscore;
+- a dataset name can't contain blanks or special characters except for an underscore;
 - a dataset name can contain mixed-case leters: you cannot use the same dataset name with a different combination of uppercase and owercase letters to represent different datasets.
 
 `VALIDMEMNAME=EXTEND` specifies that a SAS dataset name must follow these rules:
@@ -194,7 +194,7 @@ You can use the `VALIDMEMNAME=` system option to specify rules for naming SAS da
 
 [SAS documentation for `VALIDMEMNAME=`](https://documentation.sas.com/doc/en/pgmsascdc/9.4_3.5/lesysoptsref/n10nwm6blrcrtmn0zdcwyxlwxfjh.htm).
 
-### 2.3.6 WHEN TO USE VALIDMEMNAME=SYSTEM OPTION
+### 2.3.6 WHEN TO USE VALIDMEMNAME= SYSTEM OPTION
 
 Use the `VALIDMEMNAME=EXTEND` system option when the characters in SAS dataset name contains one of the following:
 - international characters;
@@ -208,14 +208,14 @@ Use the `VALIDMEMNAME=EXTEND` system option when the characters in SAS dataset n
 
 ### 2.4.2 DESCRIPTIOR PORTION
 
-The descriptor portion of a SAS dataset contains information aobu the dataset, including the following:
+The descriptor portion of a SAS dataset contains information about the dataset, including the following:
 - the name of the dataset;
 - the date and time the dataset was created;
 - the number of observations;
 - the number of variables.
 
 ### 2.4.3 SAS VARIABLE ATTRIBUTES
-The descptor portion of a SAS dataset contains information about the properties of each variable in the dataset. The properties include:
+The descriptor portion of a SAS dataset contains information about the properties of each variable in the dataset. The properties include:
 
 |VARIABLE ATTRIBUTE | DEFINITION |POSSIBLE VALUES|
 |---                |---         |---|
@@ -227,23 +227,23 @@ The descptor portion of a SAS dataset contains information about the properties 
 |Label              |refers to a descriptive label|up to 256 characters|
 
 ### 2.4.4 DATA PORTION
-The data portion of a SAS dataset is a collection of data vlues that are arranged in a rectangular table.
+The data portion of a SAS dataset is a collection of data values that are arranged in a rectangular table.
 
 #### Observations (rows)
->Defn. *Observations* (also called rows) in the dataset are collections of data vlues that usuial relate to a single object.
+>Defn. *Observations* (also called rows) in the dataset are collections of data values that usually relate to a single object.
 
 #### Variables (columns)
->Defn. *Variables* (also called columns) in the dataset are collections of values that descripbe a particular characteristic.
+>Defn. *Variables* (also called columns) in the dataset are collections of values that describe a particular characteristic.
 
 #### Missing values
-every variable and observation in a SAS dataset must have a value. if a data value is unknonw for a particular observation, a missing value is record in the SAS dataset. A period (.) is the default value for a missing numeric value and a blank space is the fefault value for a missing character value.
+every variable and observation in a SAS dataset must have a value. if a data value is unknown for a particular observation, a missing value is recorded in the SAS dataset. A period (.) is the default value for a missing numeric value and a blank space is the default value for a missing character value.
 
 ### 2.4.5 SAS INDEXES
-An index is a separate file that you can create for a SAS data file in order to provide direct access to a specific observation. Indexes can provide faster access to specific observations, particular whe you have a large dataset. the purpose of SAS indexes is to optimize `WHERE` expressions and to facilitate `BY`-group processing.
+An index is a separate file that you can create for a SAS data file in order to provide direct access to a specific observation. Indexes can provide faster access to specific observations, particularly when you have a large dataset. the purpose of SAS indexes is to optimize `WHERE` expressions and to facilitate `BY`-group processing.
 
 ### 2.4.6 EXTENDED ATTRIBUTES
 Extended attributes are user-defined metadata that is defined for a dataset or for a variable.
 
->Tip. you can use `PROC CONTENTS` to display dataseset and variable extended attributes.
+>Tip. you can use `PROC CONTENTS` to display dataset and variable extended attributes.
 
 [SAS documentation for `PROC CONTENTS`](https://documentation.sas.com/doc/en/proc/3.2/n1hqa4dk5tay0an15nrys1iwr5o2.htm).
