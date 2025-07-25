@@ -62,7 +62,7 @@ data work.junefee;
     where age > 39;
 run;                            (3)
 
-proc print data=work.junefee;   (4)
+proc print data = work.junefee;   (4)
 run;
 ```
 1. global statements are typically outside steps and don't require a `RUN` statement;
@@ -135,15 +135,15 @@ By default, the following rules apply to the names of SAS datasets, variables an
 - they can be 1 to 32 characters long; and
 - SAS library names (librefs) can be 1 to 8 characters long.
 
-### 2.3.4 VALIDVARNAME= SYSTEM OPTION
+### 2.3.4 VALIDVARNAME =  SYSTEM OPTION
 
-SAS has various rules for variable names. You set these rules using the `VALIDVARNAME=` system option.
+SAS has various rules for variable names. You set these rules using the `VALIDVARNAME = ` system option.
 ___
->Syntax. `VALIDVARNAME=` system option
+>Syntax. `VALIDVARNAME = ` system option
 ```
-VALIDVARNAME=V7|UPCASE|ANY
+VALIDVARNAME = V7|UPCASE|ANY
 ```
-`VALIDVARNAME=V7` specifies that variable names must follow these rules:
+`VALIDVARNAME = V7` specifies that variable names must follow these rules:
 - SAS variable names can be up to 32 characters long;
 - the first character must begin with a letter of the Latin alphabet (A-Z, either uppercase or lowercase) or an underscore (\_). Subsequent characters can be letters of the Latin alphabet, numerals or underscores.
 - trailing blanks are ignored. the variable name alignment is left-adjusted;
@@ -151,40 +151,40 @@ VALIDVARNAME=V7|UPCASE|ANY
 - a variable name can contain mixed-case letters: you cannot use the same variable name with a different combination of uppercase and owercase letters to represent different variables;
 - do not assign variables the names of special SAS automatic variables (e.g \_N\_, \_ERROR\_) or variable list names (e.g. \_NUMERIC\_, \_CHARACTER\_, \_ALL\_).
 
-`VALIDVARNAME=UPCASE` specifies that variable names follow these rules:
-- the same rules as `VALIDVARNAME=V7`, 
+`VALIDVARNAME = UPCASE` specifies that variable names follow these rules:
+- the same rules as `VALIDVARNAME = V7`, 
 - the variable name is uppercase, as in earlier versions of SAS.
 
-`VALIDVARNAME=ANY` specifies that variable names follow these rules:
+`VALIDVARNAME = ANY` specifies that variable names follow these rules:
 - the name can begin with or contain any character, including blanks, national characters, special characters, and multi-byte characters;
 - the name can be up to 32 bytes long;
 - the name cannot contain any null bytes;
 - the name must contain at least one character. A name with all blanks is not permitted;
 - a variable name can contain mixed-case letters: you cannot use the same variable name with a different combination of uppercase and owercase letters to represent different variables.
 
-[SAS documentation for VALIDVARNAME=](https://documentation.sas.com/doc/en/pgmsascdc/9.4_3.5/lesysoptsref/p124dqdk8zoqu3n1r4nsfqu5vx52.htm).
+[SAS documentation for VALIDVARNAME = ](https://documentation.sas.com/doc/en/pgmsascdc/9.4_3.5/lesysoptsref/p124dqdk8zoqu3n1r4nsfqu5vx52.htm).
 ___
 
 >N.B. If you use characters other than the ones that are valid when `VALIDVARNME=V7`, then you must express the variable name as a name literal (?) and set `VALIDVARNME=ANY`.
 
->CAUTION: The `VALIDVARNAME=ANY` system option enables compatibility with other DBMS variable naming conventions.
+>CAUTION: The `VALIDVARNAME = ANY` system option enables compatibility with other DBMS variable naming conventions.
 
-### 2.3.5 VALIDMEMNAME= SYSTEM OPTION
+### 2.3.5 VALIDMEMNAME =  SYSTEM OPTION
 
-You can use the `VALIDMEMNAME=` system option to specify rules for naming SAS datasets.
+You can use the `VALIDMEMNAME = ` system option to specify rules for naming SAS datasets.
 
 ___
->Syntax. `VALIDMEMNAME=` system option
+>Syntax. `VALIDMEMNAME = ` system option
 ```
-VALIDMEMNAME=COMPATIBLE (default)|EXTEND
+VALIDMEMNAME = COMPATIBLE (default)|EXTEND
 ```
-`VALIDNMEMNAME=COMPATIBLE` specifies that a SAS dataset name must follow these rules:
+`VALIDNMEMNAME = COMPATIBLE` specifies that a SAS dataset name must follow these rules:
 - the length of the names can be up to 32 characters long;
 - the first character must begin with a letter of the Latin alphabet (A-Z, either uppercase or lowercase) or an underscore (\_). Subsequent characters can be letters of the Latin alphabet, numerals or underscores.
 - a dataset name can't contain blanks or special characters except for an underscore;
 - a dataset name can contain mixed-case leters: you cannot use the same dataset name with a different combination of uppercase and owercase letters to represent different datasets.
 
-`VALIDMEMNAME=EXTEND` specifies that a SAS dataset name must follow these rules:
+`VALIDMEMNAME = EXTEND` specifies that a SAS dataset name must follow these rules:
 - the name can include national characters;
 - the name can include special characters, except for /\ \* ? " < > |: - characters
 - the name can be up to 32 bytes long;
@@ -194,16 +194,16 @@ VALIDMEMNAME=COMPATIBLE (default)|EXTEND
 - the name must contain at least one character. A name with all blanks is not permitted;
 - a variable name can contain mixed-case leters: you cannot use the same variable name with a different combination of uppercase and owercase letters to represent different variables.
 
-[SAS documentation for VALIDMEMNAME=](https://documentation.sas.com/doc/en/pgmsascdc/9.4_3.5/lesysoptsref/n10nwm6blrcrtmn0zdcwyxlwxfjh.htm).
+[SAS documentation for VALIDMEMNAME = ](https://documentation.sas.com/doc/en/pgmsascdc/9.4_3.5/lesysoptsref/n10nwm6blrcrtmn0zdcwyxlwxfjh.htm).
 ___
 
->N.B. If `VALIDMEMNAME=EXTEND`, SAS dataset names must be written as a SAS name literal.
+>N.B. If `VALIDMEMNAME = EXTEND`, SAS dataset names must be written as a SAS name literal.
 
->CAUTION: The `VALIDVMEMNAME=EXTEND` system option enables compatibility with other DBMS dataset naming conventions.
+>CAUTION: The `VALIDVMEMNAME = EXTEND` system option enables compatibility with other DBMS dataset naming conventions.
 
-### 2.3.6 WHEN TO USE VALIDMEMNAME= SYSTEM OPTION
+### 2.3.6 WHEN TO USE VALIDMEMNAME =  SYSTEM OPTION
 
-Use the `VALIDMEMNAME=EXTEND` system option when the characters in SAS dataset name contains one of the following:
+Use the `VALIDMEMNAME = EXTEND` system option when the characters in SAS dataset name contains one of the following:
 - international characters;
 - characters supported by third-party databases;
 - characters that are commonly used in a filename.
@@ -264,9 +264,9 @@ Often the first step in setting up your SAS session is to define the libraries. 
 
 to reference a permanent SAS file:
 1. assign a name (`LIBREF`) to the SAS library in which the file is stored
-2. use the libref as teh first part of the two-level name (`LIBREF.FILENAME`) to reference the file within the library
+2. use the libref as the first part of the two-level name (`LIBREF.FILENAME`) to reference the file within the library
 
-a libref can be assigned to a SAS library using the `LIBNAME` statement. you can include the `LIBNAME` statement with any SAS program sot that the SAS library is assigned each time the program is submitted. using the the user interface, you can set up `LIBNAME` statements to automatically assigned when SAS starts.
+A libref can be assigned to a SAS library using the `LIBNAME` statement. You can include the `LIBNAME` statement with any SAS program so that the SAS library is assigned each time the program is submitted. using the user interface, you can set up `LIBNAME` statements to automatically assigned when SAS starts.
 
 ___
 Synthax. `LIBNAME` statement
@@ -282,31 +282,31 @@ ___
 
 >N.B. For SAS 9, the default engine is V9, which works in all operating environments.
 
-the `LIBNAME` statement below assigns the libref CERT to the SAS library `C:\Users\Student1\Cert` in the Windows environment. when the default engine is used, you do not have to specify it in the `LIBNAME` statement
+the `LIBNAME` statement below assigns the libref CERT to the SAS library `C:\Users\Student1\Cert` in the Windows environment (1). When the default engine is used, you do not have to specify it in the `LIBNAME` statement.
 
 ```
-libname cert “C:\Users\Student1\Cert”;
+libname cert “C:\Users\Student1\Cert”; (1)
 ```
 
 >Tip. You can use multiple `LIBNAME` statements to assign as many librefs as needed.
 
 ### 3.1.2 VERIFYING LIBREFS
-after assigning a libref, it is a good idea to check the log to verify that the libref has been assigned successfully
+After assigning a libref, it is a good idea to check the log to verify that the libref has been assigned successfully.
 
 ### 3.1.3 HOW LONG LIBREFS REMAIN IN EFFECT
-the `LIBNAME` statement is global which means that the librefs remain in effect until changed or canceled or until the SAS session ends
+The `LIBNAME` statement is global which means that the librefs remain in effect until changed or canceled or until the SAS session ends.
 
 ### 3.1.4 SPECIFYING TWO-LEVEL NAMES
-after you assign a libref, you specify it as the first element in the two-level name for a SAS file
+After you assign a libref, you specify it as the first element in the two-level name for a SAS file (1).
 ```
-proc print data=cert.admit; (1)
+proc print data = cert.admit; (1)
 run;
 ```
 
-(1) in order for the print procedure to read `CERT.ADMIT`, you specify the two-level name of the file
+(1) In order for the `PRINT` procedure to read `CERT.ADMIT`, you specify the two-level name of the file.
 
 ### 3.1.5 REFERENCING THIRD-PARTY DATA
-you can use the`LIBNAME` statement to reference not only SAS files but also files that were created with other sofware products, such as database management systems (DBMS).
+You can use the `LIBNAME` statement to reference not only SAS files but also files that were created with other software products, such as database management systems (DBMS).
 
 >Defn. A *SAS engine* is a set of internal instructions that SAS uses for writing to and reading from files in a SAS library or a thrid-party database.
 
@@ -322,18 +322,18 @@ N/A
 ### 3.2.2 VIEWING LIBRARIES USING PROC CONTENTS
 you can use the `CONTENTS` procedure to create SAS output that describes either of the following:
 - the contents of a library
-- the descriptor information of for an individual SAS dataset
+- the descriptor information for an individual SAS dataset
 
 ___
 >Synthax. `PROC CONTENTS` step
 ```
-proc contents data=SAS-file-specifications nods;
+proc contents data = SAS-file-specifications nods;
 run;
 ```
-- *SAS-file-specification* specifies an eintre library or a specific SAS dataset within a library. *SAS-file-specification* can take one of the following forms:
+- *SAS-file-specification* specifies an entire library or a specific SAS dataset within a library. *SAS-file-specification* can take one of the following forms:
 	- *libref.SAS-data-set* names one SAS dataset to process
 	- *libref.\_all\_* requests a listing of all files in the library
-- `NODS` suppresses the pringint of detailed information about each file when you specify `_ALL_`(you can specify `NODS` only when you specify `_ALL_`)
+- `NODS` suppresses the printing of detailed information about each file when you specify `_ALL_`(you can specify `NODS` only when you specify `_ALL_`)
 
 [SAS documentation for PROC CONTENTS](https://documentation.sas.com/doc/en/proc/3.2/n1hqa4dk5tay0an15nrys1iwr5o2.htm).
 ___
@@ -341,14 +341,14 @@ ___
 ### 3.2.3 EXAMPLE: VIEW THE CONTENTS OF AN ENTIRE LIBRARY
 to view the contents of an entire library, specify the `_ALL_` and `NODS` options in the `PROC CONTENTS` step (1).
 ```
-proc contents data=cert._all_ nods; (1)
+proc contents data = cert._all_ nods; (1)
 run;
 ```
 
 ### 3.2.4 EXAMPLE: VIEW DESCRIPTOR INFORMATION
 to view the descriptor information for only a specific dataset, use the `PROC CONTENTS` step (1).
 ```
-proc contents data=cert.amounts; (1)
+proc contents data = cert.amounts; (1)
 run;
 ```
 
@@ -356,7 +356,7 @@ run;
 ### 3.2.5 EXAMPLE: VIEW DESCRIPTOR INFORMATION USING THE VARNUM OPTION
 by default, `PROC CONTENTS` lists variables alphabetically. to list variable names in the order of the logical position (or creation order) in the dataset, specify the `VARNUM` option in `PROC CONTENTS` (1).
 ```
-proc contents data=cert.amounts varnum; (1)
+proc contents data = cert.amounts varnum; (1)
 run;
 ```
 
