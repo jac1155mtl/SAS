@@ -57,14 +57,14 @@ there are two types of SAS statements:
 A SAS program consists of a sequence of steps. A program can be any combination of DATA or PROC steps. 
 
 ```sas
-title1 "June Billing";          			(1)
+title1 "June Billing";                      (1)
 
 data work.junefee;
-    set cert.admitjune;         			(2)
+    set cert.admitjune;                     (2)
     where age > 39;
-run;                            			(3)
+run;                                        (3)
 
-proc print data = work.junefee;   			(4)
+proc print data = work.junefee;             (4)
 run;
 ```
 
@@ -150,23 +150,23 @@ validvarname = V7|upcase|any
 ```
 
 - `VALIDVARNAME=V7` specifies that variable names must follow these rules:
-	- SAS variable names can be up to 32 characters long;
-	- the first character must begin with a letter of the Latin alphabet (A-Z, either uppercase or lowercase) or an underscore (\_). Subsequent characters can be letters of the Latin alphabet, numerals or underscores.
-	- trailing blanks are ignored. the variable name alignment is left-adjusted;
-	- a variable name can't contain blanks or special characters except for an underscore;
-	- a variable name can contain mixed-case letters: you cannot use the same variable name with a different combination of uppercase and owercase letters to represent different variables;
-	- do not assign variables the names of special SAS automatic variables (e.g \_N\_, \_ERROR\_) or variable list names (e.g. \_NUMERIC\_, \_CHARACTER\_, \_ALL\_).
+    - SAS variable names can be up to 32 characters long;
+    - the first character must begin with a letter of the Latin alphabet (A-Z, either uppercase or lowercase) or an underscore (\_). Subsequent characters can be letters of the Latin alphabet, numerals or underscores.
+    - trailing blanks are ignored. the variable name alignment is left-adjusted;
+    - a variable name can't contain blanks or special characters except for an underscore;
+    - a variable name can contain mixed-case letters: you cannot use the same variable name with a different combination of uppercase and owercase letters to represent different variables;
+    - do not assign variables the names of special SAS automatic variables (e.g \_N\_, \_ERROR\_) or variable list names (e.g. \_NUMERIC\_, \_CHARACTER\_, \_ALL\_).
 
 - `VALIDVARNAME=UPCASE` specifies that variable names follow these rules:
-	- the same rules as `VALIDVARNAME=V7`, 
-	- the variable name is uppercase, as in earlier versions of SAS.
+    - the same rules as `VALIDVARNAME=V7`, 
+    - the variable name is uppercase, as in earlier versions of SAS.
 
 - `VALIDVARNAME=ANY` specifies that variable names follow these rules:
-	- the name can begin with or contain any character, including blanks, national characters, special characters, and multi-byte characters;
-	- the name can be up to 32 bytes long;
-	- the name cannot contain any null bytes;
-	- the name must contain at least one character. A name with all blanks is not permitted;
-	- a variable name can contain mixed-case letters: you cannot use the same variable name with a different combination of uppercase and owercase letters to represent different variables.
+    - the name can begin with or contain any character, including blanks, national characters, special characters, and multi-byte characters;
+    - the name can be up to 32 bytes long;
+    - the name cannot contain any null bytes;
+    - the name must contain at least one character. A name with all blanks is not permitted;
+    - a variable name can contain mixed-case letters: you cannot use the same variable name with a different combination of uppercase and owercase letters to represent different variables.
 
 [SAS documentation for VALIDVARNAME = ](https://documentation.sas.com/doc/en/pgmsascdc/9.4_3.5/lesysoptsref/p124dqdk8zoqu3n1r4nsfqu5vx52.htm).
 ___
@@ -187,20 +187,20 @@ validmemname = compatible (default)|extend
 ```
 
 - `VALIDNMEMNAME=COMPATIBLE` specifies that a SAS dataset name must follow these rules:
-	- the length of the names can be up to 32 characters long;
-	- the first character must begin with a letter of the Latin alphabet (A-Z, either uppercase or lowercase) or an underscore (\_). Subsequent characters can be letters of the Latin alphabet, numerals or underscores.
-	- a dataset name can't contain blanks or special characters except for an underscore;
-	- a dataset name can contain mixed-case leters: you cannot use the same dataset name with a different combination of uppercase and owercase letters to represent different datasets.
+    - the length of the names can be up to 32 characters long;
+    - the first character must begin with a letter of the Latin alphabet (A-Z, either uppercase or lowercase) or an underscore (\_). Subsequent characters can be letters of the Latin alphabet, numerals or underscores.
+    - a dataset name can't contain blanks or special characters except for an underscore;
+    - a dataset name can contain mixed-case leters: you cannot use the same dataset name with a different combination of uppercase and owercase letters to represent different datasets.
 
 - `VALIDMEMNAME=EXTEND` specifies that a SAS dataset name must follow these rules:
-	- the name can include national characters;
-	- the name can include special characters, except for /\ \* ? " < > |: - characters
-	- the name can be up to 32 bytes long;
-	- the name cannot contain any null bytes;
-	- the name cannot begin with a blank or a period;
-	- leading and trailing blanks are deleted when the member is created;
-	- the name must contain at least one character. A name with all blanks is not permitted;
-	- a variable name can contain mixed-case leters: you cannot use the same variable name with a different combination of uppercase and owercase letters to represent different variables.
+    - the name can include national characters;
+    - the name can include special characters, except for /\ \* ? " < > |: - characters
+    - the name can be up to 32 bytes long;
+    - the name cannot contain any null bytes;
+    - the name cannot begin with a blank or a period;
+    - leading and trailing blanks are deleted when the member is created;
+    - the name must contain at least one character. A name with all blanks is not permitted;
+    - a variable name can contain mixed-case leters: you cannot use the same variable name with a different combination of uppercase and owercase letters to represent different variables.
 
 [SAS documentation for VALIDMEMNAME = ](https://documentation.sas.com/doc/en/pgmsascdc/9.4_3.5/lesysoptsref/n10nwm6blrcrtmn0zdcwyxlwxfjh.htm).
 ___
@@ -295,7 +295,7 @@ ___
 the LIBNAME statement below assigns the libref CERT to the SAS library `C:\Users\Student1\cert` in the Windows environment (1). When the default engine is used, you do not have to specify it in the LIBNAME statement.
 
 ```sas
-libname cert “C:\Users\Student1\cert”;		(1)
+libname cert “C:\Users\Student1\cert”;      (1)
 ```
 
 >Tip. You can use multiple LIBNAME statements to assign as many librefs as needed.
@@ -310,7 +310,7 @@ The LIBNAME statement is global which means that the librefs remain in effect un
 After you assign a libref, you specify it as the first element in the two-level name for a SAS file (1).
 
 ```sas
-proc print data = cert.admit;				(1)
+proc print data = cert.admit;               (1)
 run;
 ```
 
@@ -344,8 +344,8 @@ run;
 ```
 
 - *SAS-file-specification* specifies an entire library or a specific SAS dataset within a library. *SAS-file-specification* can take one of the following forms:
-	- *libref.SAS-data-set* names one SAS dataset to process
-	- *libref.\_all\_* requests a listing of all files in the library
+    - *libref.SAS-data-set* names one SAS dataset to process
+    - *libref.\_all\_* requests a listing of all files in the library
 - *NODS* suppresses the printing of detailed information about each file when you specify \_ALL\_(you can specify NODS only when you specify \_ALL\_)
 
 [SAS documentation for PROC CONTENTS](https://documentation.sas.com/doc/en/proc/3.2/n1hqa4dk5tay0an15nrys1iwr5o2.htm).
@@ -355,7 +355,7 @@ ___
 to view the contents of an entire library, specify the \_ALL\_ and NODS options in the PROC CONTENTS step (1).
 
 ```sas
-proc contents data = cert._all_ nods;		(1)
+proc contents data = cert._all_ nods;       (1)
 run;
 ```
 
@@ -363,7 +363,7 @@ run;
 to view the descriptor information for only a specific dataset, use the PROC CONTENTS step (1).
 
 ```sas
-proc contents data = cert.amounts;			(1)
+proc contents data = cert.amounts;          (1)
 run;
 ```
 
@@ -371,7 +371,7 @@ run;
 by default, PROC CONTENTS lists variables alphabetically. to list variable names in the order of the logical position (or creation order) in the dataset, specify the VARNUM option in PROC CONTENTS (1).
 
 ```sas
-proc contents data = cert.amounts varnum;	(1)
+proc contents data = cert.amounts varnum;   (1)
 run;
 ```
 
@@ -401,14 +401,14 @@ The following FILENAME statement temporarily associates the fileref EXERCISE wit
 When you associate a fileref with an individual external file, you specify the fileref in subsequent SAS statements and commands (2).
 
 ```sas
-filename exercise “C:\Users\Student1\cert\exercise.txt”;	(1)
+filename exercise “C:\Users\Student1\cert\exercise.txt”;    (1)
 
 proc import
-		datafile = exercise					(2)
-		dbms = dlm
-		out = work.exstress
-		replace;
-	getnames = no;
+        datafile = exercise                 (2)
+        dbms = dlm
+        out = work.exstress
+        replace;
+    getnames = no;
 run;
 
 proc print data = work.exstress;
@@ -432,53 +432,53 @@ ___
 
 ```sas
 proc import
-		datafile = “filename”|table = “tablename”
-		out = <libref.SAS-dataset><SAS-dataset-options>
-		<dbms = identifier>
-		<replace>;
+        datafile = “filename”|table = “tablename”
+        out = <libref.SAS-dataset><SAS-dataset-options>
+        <dbms = identifier>
+        <replace>;
 ```
 
 - *datafile = “filename”|”fileref”* specifies the complete path and filename or fileref for the imput PC file, spreadsheet or delimited external file.
-	- Restrictions: 
-		- PROC IMPORT does not support device types or access methods for the FILENAME statement except for DISK.
-		- PROC IMPORT can import data only if SAS supports the data type. SAS support numeric and character types of data but not binary objects. The procedure attempts to convert the data to the best of its ability. However conversion is not possible for some types.
-	- Interactions:
-		- By default, PROC IMPORT reads delimited files as varying record-length files. If your external file has a fixed-length format, use the FILENAME statement prior to PROC IMPORT to specify the imput filename using the RECFM=F and LRECL= options.
-		- The logical record length defaults to 256 unless you specify the LRECL= option in the FILENAME statement.
-		- For delimited files, the first 20 rows are scanned to determine the variable attributes. All values are read in as character strings. If a Date and time format or a numeric informat can be applied to the data value, the type is declared as numeric. Otherwise, the type remains character.
+    - Restrictions: 
+        - PROC IMPORT does not support device types or access methods for the FILENAME statement except for DISK.
+        - PROC IMPORT can import data only if SAS supports the data type. SAS support numeric and character types of data but not binary objects. The procedure attempts to convert the data to the best of its ability. However conversion is not possible for some types.
+    - Interactions:
+        - By default, PROC IMPORT reads delimited files as varying record-length files. If your external file has a fixed-length format, use the FILENAME statement prior to PROC IMPORT to specify the imput filename using the RECFM=F and LRECL= options.
+        - The logical record length defaults to 256 unless you specify the LRECL= option in the FILENAME statement.
+        - For delimited files, the first 20 rows are scanned to determine the variable attributes. All values are read in as character strings. If a Date and time format or a numeric informat can be applied to the data value, the type is declared as numeric. Otherwise, the type remains character.
 
 - *out = <libref.>SAS-dataset* identifies the output SAS dataset. If the specified SAS dataset does not exist, PROC IMPORT creates it. A SAS dataset name can contain a single quotation mark when the VALIDMEMNAME=EXTEND system option is also specified (see section 2.3.5).
 
 - *table = “tablename”* specifies the name of the input DBMS table. You must include the quotation marks. Note, the DBMS table name might be case sensitive.
-	- Requirement: when you import a DBMS table, you must specify the DBMS= option.
+    - Requirement: when you import a DBMS table, you must specify the DBMS= option.
 
 - *<dbms=identifier>* specifies the type of data to import. Here are the common DBMS identifiers that are included with Base SAS:
-	- CSV - for a common-separated file with a .csv extension, DBMS= is optional.
-	- JMP - if you are using SAS 9.4 you can import JMP 7 or later files.
-	- TAB - specify DBMS=DLM to import any other delimited file that does end in .csv.
+    - CSV - for a common-separated file with a .csv extension, DBMS= is optional.
+    - JMP - if you are using SAS 9.4 you can import JMP 7 or later files.
+    - TAB - specify DBMS=DLM to import any other delimited file that does end in .csv.
 
 - *<replace>* overwrites and existing SAS dataset. If you omit the REPLACE option, PROC IMPORT does not overwrite an existing dataset.
 
 - *<SAS-dataset-options>* specifies SAS dataset options.
-	- Restriction: you cannot specify dataset options when importing delimited, comma-separted, or tab-delimited external files.
+    - Restriction: you cannot specify dataset options when importing delimited, comma-separted, or tab-delimited external files.
 
 [SAS documentation for PROC IMPORT](https://documentation.sas.com/doc/en/proc/3.2/n1qn5sclnu2l9dn1w61ifw8wqhts.htm)
 ___
 ### 4.2.3 EXAMPLE: IMPORTING AN EXCEL FILE WITH AN XLSX EXTENSION
 
 ```sas
-options validvarname=v7;						(1)
+options validvarname=v7;                        (1)
 
-proc import										(2)
-		datafile = “C:\Users\Student1\cert\boots.xlsx”
-		dbms = xlsx
-		out = work.bootsales
-		replace;
-	sheet = boot;								(3)
-	getnames = yes;								(4)
+proc import                                     (2)
+        datafile = “C:\Users\Student1\cert\boots.xlsx”
+        dbms = xlsx
+        out = work.bootsales
+        replace;
+    sheet = boot;                               (3)
+    getnames = yes;                             (4)
 run;
 
-proc contents data = work.bootsales;			(5)
+proc contents data = work.bootsales;            (5)
 run;
 
 proc print data = work.bootsales;
@@ -497,12 +497,12 @@ run;
 options validvarname=v7;
 
 proc import
-		datafile = “C:\Users\Student1\cert\delimiter.txt”
-		dbms = dlm								(1)
-		out = work.mydata
-		replace;
-	delimiter = “&”;							(2)
-	getnames = yes;	
+        datafile = “C:\Users\Student1\cert\delimiter.txt”
+        dbms = dlm                              (1)
+        out = work.mydata
+        replace;
+    delimiter = “&”;                            (2)
+    getnames = yes; 
 run;
 
 proc print data = work.mydata;
@@ -517,14 +517,14 @@ run;
 ```sas
 options validvarname=v7;
 
-filename stdata “C:\Users\Student1\cert\state_data.txt” lrecl=100;	(1)
+filename stdata “C:\Users\Student1\cert\state_data.txt” lrecl=100;  (1)
 proc import
-		datafile = stdata
-		dbms = dlm
-		out = work.states
-		replace;
-	delimiter = “ “;							(2)
-	getnames = yes;
+        datafile = stdata
+        dbms = dlm
+        out = work.states
+        replace;
+    delimiter = “ “;                            (2)
+    getnames = yes;
 run;
 
 proc print data = work.states;
@@ -540,11 +540,11 @@ run;
 options validvarname=v7;
 
 proc import
-		datafile = “C:\Users\Student1\cert\boots.csv”
-		dbms = csv 								(1)
-		out = work.shoes
-		replace;
-	getnames = no;								(2)
+        datafile = “C:\Users\Student1\cert\boots.csv”
+        dbms = csv                              (1)
+        out = work.shoes
+        replace;
+    getnames = no;                              (2)
 run;
 
 proc print data = work.shoes;
@@ -558,11 +558,11 @@ run;
 
 ```sas
 proc import
-		datafile = “C:\Users\Student1\cert\class.txt”
-		dbms = tab 								(1)
-		out = work.class
-		replace;
-	delimiter = ’09’x;							(2)
+        datafile = “C:\Users\Student1\cert\class.txt”
+        dbms = tab                              (1)
+        out = work.class
+        replace;
+    delimiter = ’09’x;                          (2)
 run;
 
 proc print data = work.class;
@@ -579,11 +579,11 @@ Before you read a complete external file, you can verify the code that reads the
 ```sas
 options obs = 5; (1)
 proc import
-		datafile = “C:\Users\Student1\cert\boots.csv”
-		dbms = csv
-		out = work.shoes
-		replace;
-	getnames = no;
+        datafile = “C:\Users\Student1\cert\boots.csv”
+        dbms = csv
+        out = work.shoes
+        replace;
+    getnames = no;
 run;
 
 proc print data = work.shoes; (2)
@@ -602,11 +602,11 @@ To modify the PROC step to read the entire external file, restore the default va
 ```sas
 options obs = max; (3)
 proc import
-		datafile = “C:\Users\Student1\cert\boots.csv”
-		dbms = csv
-		out = work.shoes
-		replace;
-	getnames = no;
+        datafile = “C:\Users\Student1\cert\boots.csv”
+        dbms = csv
+        out = work.shoes
+        replace;
+    getnames = no;
 run;
 ```
 
@@ -633,8 +633,8 @@ ___
 
 ```sas
 data SAS-dataset;
-	set SAS-dataset;
-	<…more SAS statements…>
+    set SAS-dataset;
+    <…more SAS statements…>
 run;
 ```
 
@@ -647,16 +647,16 @@ The DATA statement tells SAS to name the new dataset BOOTS and store it in the t
 
 ```sas
 proc import 
-		datafile = “C:\certdata\boot.csv”
-		out = work.shoes (2)
-		dbms = csv
-		replace;
-	getnames = no;
+        datafile = “C:\certdata\boot.csv”
+        out = work.shoes (2)
+        dbms = csv
+        replace;
+    getnames = no;
 run;
 
 data work.boots; (1)
-	set work.shoes; (2)
-	where var1 = “South America” or var1 = “Canada”; (3)
+    set work.shoes; (2)
+    where var1 = “South America” or var1 = “Canada”; (3)
 run;
 ```
 
@@ -674,12 +674,12 @@ libname cert “C:\Users\Student\Cert\”; (1)
 libname men50 “C:\Users\Student\Cert\Men50”; (2)
 
 data men50.males; (3)
-	set cert.admit;
-	where sex = “M” and age > 50;
+    set cert.admit;
+    where sex = “M” and age > 50;
 run;
 
 proc print data = men50.males; (4)
-	title “Men Over 50”;
+    title “Men Over 50”;
 run; 
 ```
 
@@ -690,8 +690,8 @@ You can specify the DROP= and KEEP= dataset options anywhere you name a SAS data
 
 ```sas
 data cert.drug1h(drop=placebo); (2)
-	set cert.cltrials(drop=triglyc uric); (1)
-	if placebo = “YES”;
+    set cert.cltrials(drop=triglyc uric); (1)
+    if placebo = “YES”;
 run;
 
 proc print data = cert.drug1h;
@@ -714,7 +714,7 @@ proc contents data = cert._all_;
 run;
 
 data work.stress;
-	set cert.actlevel;
+    set cert.actlevel;
 run;
 
 proc print data = work.stress;
@@ -734,9 +734,9 @@ libname <libref> xlsx <“physical-path-and-filename.xlsx”><options>;
 ```
 
 - *xlsx* is the SAS LIBNAME  engine name for and XLSX file format. The SAS/ACCESS LIBNAME statement associates a libref with an XLSX engine that supports the connections to Microsfot Excel 2007, 2010 and later files. When reading XLSX data, the XLSX engine reads mixed data (columns containing numeric and character values) and converts it to character data values.
-	- Important: the engine name XLSX is required.
+    - Important: the engine name XLSX is required.
 - *“physical-path-and-filename.xlsx”* is the physical location of the Excel workbook.
-	- Note: the XLSX engine requires quotation marks for the *physical-path-and-filename.xlsx*.
+    - Note: the XLSX engine requires quotation marks for the *physical-path-and-filename.xlsx*.
 ___
 
 ### 4.6.4 REFERENCING AN EXCEL WORKBOOK
@@ -753,7 +753,7 @@ Uset the SET statement to indicate which worksheet in the Excel file you want to
 libname certxl xlsx “C:\Users\Student1\cert\exercise.xlsx”; (1)
 
 data work.stress;
-	set certxl.activitylevels; (2)
+    set certxl.activitylevels; (2)
 run;
 ```
 
@@ -768,7 +768,7 @@ In the case of Excel files, the name literal tells SAS to allow special characte
 libname certxl xlsx “C:\Users\Student1\cert\stock.xlsx”;
 
 data work.bstock;
-	set certxl.’boots stock’n; (1)
+    set certxl.’boots stock’n; (1)
 run;
 
 proc print data = work.bstock;
@@ -800,7 +800,7 @@ In addition to readign Microselft Excel data, SAS can alos create Excel workshee
 libname excelout xlsx “C:\Users\Student1\cert\newExcel.xlsx”;
 
 data excelout.HighStress;
-	set cert.stress;
+    set cert.stress;
 run;
 ```
 
@@ -824,8 +824,8 @@ With an OUTPUT statement, your program now rites a single observation to ouptut,
 
 ```sas
 data work.usa5;
-	set cert.usa(keep=manager wagerate);
-	if _n_ = 5 then output; (1)
+    set cert.usa(keep=manager wagerate);
+    if _n_ = 5 then output; (1)
 run;
 
 proc print data = work.usa5;
@@ -836,8 +836,8 @@ Suppose your DATA statements contains two dataset names, and you include an outp
 
 ```sas
 data work.empty work.full;
-	set cert.usa;
-	output work.full; (1)
+    set cert.usa;
+    output work.full; (1)
 run;
 ```
 
@@ -861,11 +861,11 @@ filename boots “C:\Users\Student1\cert\boots.csv”;
 
 options obs = 5;
 proc import
-		datafile = boots
-		dbms = csv
-		out = work.shoes
-		replace;
-	getnames = no;
+        datafile = boots
+        dbms = csv
+        out = work.shoes
+        replace;
+    getnames = no;
 run;
 
 proc contents data = work.shoes varnum;
@@ -876,11 +876,11 @@ run;
 
 options obs = max;
 proc import
-		datafile = boots
-		dbms = csv
-		out = work.shoes
-		replace;
-	getnames = no;
+        datafile = boots
+        dbms = csv
+        out = work.shoes
+        replace;
+    getnames = no;
 run;
 
 proc contents data = work.shoes varnum;
@@ -899,7 +899,7 @@ proc contents data = certxl._all_ nods;
 run;
 
 data work.bstock;
-	set certxl.’boots stock’n;
+    set certxl.’boots stock’n;
 run;
 
 proc contents data = work.bstock varnum;
